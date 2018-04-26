@@ -23,11 +23,6 @@ class Employee
     private $employeeStatus;
 
     /**
-     * @ORM\Column(type="boolean", nullable=false, options={"default"=false})
-     */
-    private $typeAdmin;
-
-    /**
      * @ORM\Column(type="string", length=100, nullable=true)
      */
     private $image;
@@ -36,6 +31,11 @@ class Employee
      * @ORM\Column(type="string", length=9, nullable=false, unique=true, options={"default"="-"})
      */
     private $nif;
+
+    /**
+     * @ORM\Column(type="string", length=50, nullable=false)
+     */
+    private $password;
 
     /**
      * @ORM\Column(type="string", length=50, nullable=false, options={"default"="-"})
@@ -52,6 +52,17 @@ class Employee
      */
     private $telephone;
 
+    public function __construct($employeeStatus, $image, $nif, $password, $name, $inSsNumber, $telephone)
+    {
+        $this->employeeStatus = $employeeStatus;
+        $this->image = $image;
+        $this->nif = $nif;
+        $this->password = $password;
+        $this->name = $name;
+        $this->inSsNumber = $inSsNumber;
+        $this->telephone = $telephone;
+    }
+
     public function getId(): int
     {
         return $this->id;
@@ -65,16 +76,6 @@ class Employee
     public function setEmployeeStatus(EmployeeStatus $employeeStatus): void
     {
         $this->employeeStatus = $employeeStatus;
-    }
-
-    public function getTypeAdmin(): bool
-    {
-        return $this->typeAdmin;
-    }
-
-    public function setTypeAdmin(bool $typeAdmin): void
-    {
-        $this->typeAdmin = $typeAdmin;
     }
 
     public function getImage(): string
@@ -95,6 +96,16 @@ class Employee
     public function setNif(string $nif): void
     {
         $this->nif = $nif;
+    }
+
+    public function getPassword(): string
+    {
+        return $this->password;
+    }
+
+    public function setPassword(string $password): void
+    {
+        $this->password = $password;
     }
 
     public function getName(): string

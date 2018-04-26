@@ -18,7 +18,7 @@ class SubDepartment
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Inventory\Management\Domain\Model\Entity\Department\Department")
+     * @ORM\ManyToOne(targetEntity="Inventory\Management\Domain\Model\Entity\Department\Department", inversedBy="subDepartments")
      * @ORM\JoinColumn(nullable=false)
      */
     private $department;
@@ -27,6 +27,12 @@ class SubDepartment
      * @ORM\Column(type="string", length=50, nullable=false)
      */
     private $name;
+
+    public function __construct(Department $department, string $name)
+    {
+        $this->department = $department;
+        $this->name = $name;
+    }
 
     public function getId(): int
     {

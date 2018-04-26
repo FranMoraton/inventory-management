@@ -2,6 +2,7 @@
 
 namespace Inventory\Management\Domain\Model\Entity\Department;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -22,9 +23,35 @@ class Department
      */
     private $name;
 
+    /**
+     * @ORM\OneToMany(targetEntity="Inventory\Management\Domain\Model\Entity\Department\SubDepartment", mappedBy="department")
+     */
+    private $subDepartments;
+
+    public function __construct(string $name)
+    {
+        $this->name = $name;
+    }
+
     public function getId(): int
     {
         return $this->id;
+    }
+
+    /**
+     * @return Collection|SubDepartment[]
+     */
+    public function getSubDepartments(): Collection
+    {
+        return $this->subDepartments;
+    }
+
+    /**
+     * @param Collection|SubDepartment[] $subDepartments
+     */
+    public function setSubDepartments(Collection $subDepartments): void
+    {
+        $this->subDepartments = $subDepartments;
     }
 
     public function getName(): string

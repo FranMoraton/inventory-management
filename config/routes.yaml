@@ -1,3 +1,11 @@
 #index:
 #    path: /
 #    controller: App\Controller\DefaultController::index
+
+department:
+    resource: ./routes/department/department.yaml
+    prefix: /department
+
+employee:
+    resource: ./routes/employee/employee.yaml
+    prefix: /employee

@@ -18,37 +18,37 @@ class EmployeeStatus
     private $id;
 
     /**
-     * @@ORM\Column(type="boolean", nullable=false, options={"default"=false})
+     * @@ORM\Column(type="boolean", nullable=false, options={"default":false})
      */
     private $disabledEmployee;
 
     /**
-     * @ORM\Column(type="datetime", nullable=false, options={"default"="00/00/00"})
+     * @ORM\Column(type="datetime", nullable=false)
      */
     private $firstContractDate;
 
     /**
-     * @ORM\Column(type="datetime", nullable=false, options={"default"="00/00/00"})
+     * @ORM\Column(type="datetime", nullable=false)
      */
     private $seniorityDate;
 
     /**
-     * @ORM\Column(type="datetime", nullable=false, options={"default"="00/00/00"})
+     * @ORM\Column(type="datetime", nullable=true)
      */
     private $expirationContractDate;
 
     /**
-     * @ORM\Column(type="datetime", nullable=false, options={"default"="00/00/00"})
+     * @ORM\Column(type="datetime", nullable=true)
      */
     private $possibleRenewal;
 
     /**
-     * @ORM\Column(type="integer", nullable=false, options={"default"= 0})
+     * @ORM\Column(type="integer", nullable=true, options={"default"=0})
      */
     private $availableHolidays;
 
     /**
-     * @ORM\Column(type="integer", nullable=false, options={"default"= 0})
+     * @ORM\Column(type="integer", nullable=true, options={"default"=0})
      */
     private $holidaysPendingToApplyFor;
 
@@ -61,6 +61,15 @@ class EmployeeStatus
      * @ORM\ManyToOne(targetEntity="Inventory\Management\Domain\Model\Entity\Department\SubDepartment")
      */
     private $subDepartment;
+
+    public function __construct($firstContractDate, $seniorityDate,
+                                $department, $subDepartment)
+    {
+        $this->firstContractDate = $firstContractDate;
+        $this->seniorityDate = $seniorityDate;
+        $this->department = $department;
+        $this->subDepartment = $subDepartment;
+    }
 
     public function getId(): int
     {
