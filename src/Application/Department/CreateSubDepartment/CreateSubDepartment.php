@@ -2,7 +2,7 @@
 
 namespace Inventory\Management\Application\Department\CreateSubDepartment;
 
-use Inventory\Management\Domain\Model\Department\NotCreatedDepartmentException;
+use Doctrine\ORM\ORMException;
 use Inventory\Management\Domain\Model\Entity\Department\SubDepartment;
 use Inventory\Management\Infrastructure\Repository\Department\DepartmentRepository;
 use Inventory\Management\Infrastructure\Repository\Department\SubDepartmentRepository;
@@ -11,25 +11,21 @@ class CreateSubDepartment
 {
     private $departmentRepository;
     private $subDepartmentRepository;
-    private $createSubDepartmentTransform;
 
-    public function __construct(DepartmentRepository $departmentRepository,
-                                SubDepartmentRepository $subDepartmentRepository,
-                                CreateSubDepartmentTransformInterface $createSubDepartmentTransform)
-    {
+    public function __construct(
+        DepartmentRepository $departmentRepository,
+        SubDepartmentRepository $subDepartmentRepository
+    ) {
         $this->departmentRepository = $departmentRepository;
         $this->subDepartmentRepository = $subDepartmentRepository;
-        $this->createSubDepartmentTransform = $createSubDepartmentTransform;
     }
 
     /**
      * @param CreateSubDepartmentCommand $createSubDepartmentCommand
-     * @return array
-     * @throws NotCreatedDepartmentException
-     * @throws \Doctrine\ORM\ORMException
+     * @throws ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function handle(CreateSubDepartmentCommand $createSubDepartmentCommand): array
+    public function handle(CreateSubDepartmentCommand $createSubDepartmentCommand)
     {
         $idDepartment = $createSubDepartmentCommand->department();
         $nameSubDepartment = $createSubDepartmentCommand->name();
@@ -39,8 +35,5 @@ class CreateSubDepartment
             $nameSubDepartment
         );
         $this->subDepartmentRepository->createSubDepartment($subDepartment);
-
-        return $this->createSubDepartmentTransform
-            ->transform();
     }
 }

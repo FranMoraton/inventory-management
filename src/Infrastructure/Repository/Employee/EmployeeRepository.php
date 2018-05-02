@@ -3,15 +3,11 @@
 namespace Inventory\Management\Infrastructure\Repository\Employee;
 
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Common\Persistence\ManagerRegistry;
 use Inventory\Management\Domain\Model\Entity\Employee\Employee;
 
 class EmployeeRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry, string $entityClass)
-    {
-        parent::__construct($registry, Employee::class);
-    }
+    private const MAX_RESULTS_QUERY = 20;
 
     /**
      * @param Employee $employee
@@ -51,5 +47,15 @@ class EmployeeRepository extends ServiceEntityRepository
         $this->getEntityManager()->flush();
 
         return $updatedEmployee;
+    }
+
+    public function showByFirstResultEmployees(int $initialResult): array
+    {
+        $query = $this->createQueryBuilder('em')
+            ->setFirstResult($initialResult)
+            ->setMaxResults(self::MAX_RESULTS_QUERY)
+            ->getQuery();
+
+        return $query->execute();
     }
 }

@@ -4,10 +4,8 @@ namespace Inventory\Management\Infrastructure\Controller\Department;
 
 use Inventory\Management\Application\Department\CreateDepartment\CreateDepartment;
 use Inventory\Management\Application\Department\CreateDepartment\CreateDepartmentCommand;
-use Inventory\Management\Application\Department\CreateDepartment\CreateDepartmentTransform;
 use Inventory\Management\Application\Department\showDepartments\ShowDepartments;
 use Inventory\Management\Application\Department\showDepartments\ShowDepartmentsTransform;
-use Inventory\Management\Domain\Model\Entity\Department\Department;
 use Inventory\Management\Infrastructure\Repository\Department\DepartmentRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
@@ -20,18 +18,16 @@ class DepartmentController extends Controller
      * @return Response
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
-     * @throws \Inventory\Management\Domain\Model\Department\NotCreatedDepartmentException
+     * @throws \Inventory\Management\Domain\Model\Department\CanNotCreateDepartmentException
      */
     public function createDepartment(Request $request, DepartmentRepository $departmentRepository): Response
     {
-        //$departmentRepository = $this->getDoctrine()->getRepository(Department::class);
-        $createDepartmentTransform = new CreateDepartmentTransform();
-        $createDepartment = new CreateDepartment($departmentRepository, $createDepartmentTransform);
+        $createDepartment = new CreateDepartment($departmentRepository);
         $name = $request->query->get('name');
         $createDepartmentCommand = new CreateDepartmentCommand($name);
-        $response = $createDepartment->handle($createDepartmentCommand);
+        $createDepartment->handle($createDepartmentCommand);
 
-        return $this->json($response);
+        return $this->json(['ok' => 200]);
     }
 
     /**
@@ -40,7 +36,6 @@ class DepartmentController extends Controller
      */
     public function showAllDepartments(DepartmentRepository $departmentRepository): Response
     {
-        //$departmentRepository = $this->getDoctrine()->getRepository(Department::class);
         $showDepartmentsTransform = new ShowDepartmentsTransform();
         $showDepartments = new ShowDepartments($departmentRepository, $showDepartmentsTransform);
         $response = $showDepartments->handle();

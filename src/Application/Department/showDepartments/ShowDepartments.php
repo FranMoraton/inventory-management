@@ -2,7 +2,7 @@
 
 namespace Inventory\Management\Application\Department\showDepartments;
 
-use Inventory\Management\Domain\Model\Department\NotFoundDepartmentsException;
+use Inventory\Management\Domain\Model\Entity\Department\NotFoundDepartmentsException;
 use Inventory\Management\Infrastructure\Repository\Department\DepartmentRepository;
 
 class ShowDepartments
@@ -10,9 +10,10 @@ class ShowDepartments
     private $departmentRepository;
     private $showDepartmentsTransform;
 
-    public function __construct(DepartmentRepository $departmentRepository,
-                                ShowDepartmentsTransformInterface $showDepartmentsTransform)
-    {
+    public function __construct(
+        DepartmentRepository $departmentRepository,
+        ShowDepartmentsTransformInterface $showDepartmentsTransform
+    ) {
         $this->departmentRepository = $departmentRepository;
         $this->showDepartmentsTransform = $showDepartmentsTransform;
     }

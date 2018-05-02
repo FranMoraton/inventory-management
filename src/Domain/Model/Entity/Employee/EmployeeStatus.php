@@ -3,6 +3,8 @@
 namespace Inventory\Management\Domain\Model\Entity\Employee;
 
 use Doctrine\ORM\Mapping as ORM;
+use Inventory\Management\Domain\Model\Entity\Department\Department;
+use Inventory\Management\Domain\Model\Entity\Department\SubDepartment;
 
 /**
  * @ORM\Entity(repositoryClass="Inventory\Management\Infrastructure\Repository\Employee\EmployeeStatusRepository")
@@ -62,9 +64,12 @@ class EmployeeStatus
      */
     private $subDepartment;
 
-    public function __construct($firstContractDate, $seniorityDate,
-                                $department, $subDepartment)
-    {
+    public function __construct(
+        $firstContractDate,
+        $seniorityDate,
+        $department,
+        $subDepartment
+    ) {
         $this->firstContractDate = $firstContractDate;
         $this->seniorityDate = $seniorityDate;
         $this->department = $department;
@@ -146,7 +151,7 @@ class EmployeeStatus
         $this->holidaysPendingToApplyFor = $holidaysPendingToApplyFor;
     }
 
-    public function getDepartment()
+    public function getDepartment(): Department
     {
         return $this->department;
     }
@@ -156,7 +161,7 @@ class EmployeeStatus
         $this->department = $department;
     }
 
-    public function getSubDepartment()
+    public function getSubDepartment(): SubDepartment
     {
         return $this->subDepartment;
     }

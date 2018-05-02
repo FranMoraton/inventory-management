@@ -46,21 +46,8 @@ class Department
         return $this->subDepartments;
     }
 
-    /**
-     * @param Collection|SubDepartment[] $subDepartments
-     */
-    public function setSubDepartments(Collection $subDepartments): void
-    {
-        $this->subDepartments = $subDepartments;
-    }
-
     public function getName(): string
     {
         return $this->name;
-    }
-
-    public function setName(string $name): void
-    {
-        $this->name = $name;
     }
 }

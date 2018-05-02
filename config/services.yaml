@@ -26,8 +26,22 @@ services:
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
 
-    Inventory\Management\Infrastructure\Repository\:
-        resource: '../src/Infrastructure/Repository'
+    Inventory\Management\Infrastructure\Repository\Department\DepartmentRepository:
         arguments:
             - '@Doctrine\Common\Persistence\ManagerRegistry'
-            - ''
+            - Inventory\Management\Domain\Model\Entity\Department\Department
+
+    Inventory\Management\Infrastructure\Repository\Department\SubDepartmentRepository:
+        arguments:
+            - '@Doctrine\Common\Persistence\ManagerRegistry'
+            - Inventory\Management\Domain\Model\Entity\Department\SubDepartment
+            
+    Inventory\Management\Infrastructure\Repository\Employee\EmployeeRepository:
+        arguments:
+            - '@Doctrine\Common\Persistence\ManagerRegistry'
+            - Inventory\Management\Domain\Model\Entity\Employee\Employee
+
+    Inventory\Management\Infrastructure\Repository\Employee\EmployeeStatusRepository:
+        arguments:
+            - '@Doctrine\Common\Persistence\ManagerRegistry'
+            - Inventory\Management\Domain\Model\Entity\Employee\EmployeeStatus

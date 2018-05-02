@@ -10,9 +10,10 @@ class ChangeStatusToDisableEmployee
     private $employeeRepository;
     private $changeStatusToDisableEmployeeTransform;
 
-    public function __construct(EmployeeRepository $employeeRepository,
-                                ChangeStatusToDisableEmployeeTransformInterface $changeStatusToDisableEmployeeTransform)
-    {
+    public function __construct(
+        EmployeeRepository $employeeRepository,
+        ChangeStatusToDisableEmployeeTransformInterface $changeStatusToDisableEmployeeTransform
+    ) {
         $this->employeeRepository = $employeeRepository;
         $this->changeStatusToDisableEmployeeTransform = $changeStatusToDisableEmployeeTransform;
     }

@@ -19,11 +19,12 @@ class CreateEmployee
     private $subDepartmentRepository;
     private $createEmployeeTransform;
 
-    public function __construct(EmployeeRepository $employeeRepository,
-                                EmployeeStatusRepository $employeeStatusRepository,
-                                SubDepartmentRepository $subDepartmentRepository,
-                                CreateEmployeeTransformInterface $createEmployeeTransform)
-    {
+    public function __construct(
+        EmployeeRepository $employeeRepository,
+        EmployeeStatusRepository $employeeStatusRepository,
+        SubDepartmentRepository $subDepartmentRepository,
+        CreateEmployeeTransformInterface $createEmployeeTransform
+    ) {
         $this->employeeRepository = $employeeRepository;
         $this->employeeStatusRepository = $employeeStatusRepository;
         $this->subDepartmentRepository = $subDepartmentRepository;
