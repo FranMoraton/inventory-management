@@ -7,6 +7,8 @@ use Inventory\Management\Application\Department\CreateSubDepartment\CreateSubDep
 use Inventory\Management\Application\Department\CreateSubDepartment\CreateSubDepartmentTransform;
 use Inventory\Management\Domain\Model\Entity\Department\Department;
 use Inventory\Management\Domain\Model\Entity\Department\SubDepartment;
+use Inventory\Management\Infrastructure\Repository\Department\DepartmentRepository;
+use Inventory\Management\Infrastructure\Repository\Department\SubDepartmentRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,10 +22,11 @@ class SubDepartmentController extends Controller
      * @throws \Doctrine\ORM\OptimisticLockException
      * @throws \Inventory\Management\Domain\Model\Department\NotCreatedDepartmentException
      */
-    public function createSubDepartment(Request $request): Response
+    public function createSubDepartment(Request $request, DepartmentRepository $departmentRepository,
+                                        SubDepartmentRepository $subDepartmentRepository): Response
     {
-        $departmentRepository  = $this->getDoctrine()->getRepository(Department::class);
-        $subDepartmentRepository = $this->getDoctrine()->getRepository(SubDepartment::class);
+        //$departmentRepository  = $this->getDoctrine()->getRepository(Department::class);
+        //$subDepartmentRepository = $this->getDoctrine()->getRepository(SubDepartment::class);
         $createSubDepartmentTransform = new CreateSubDepartmentTransform();
         $createSubDepartment = new CreateSubDepartment($departmentRepository, $subDepartmentRepository,
             $createSubDepartmentTransform);

@@ -3,6 +3,7 @@
 namespace Inventory\Management\Domain\Model\Entity\GarmentSize\Size;
 
 use Doctrine\ORM\Mapping as ORM;
+use Inventory\Management\Domain\Model\Entity\GarmentSize\Garment\GarmentType;
 
 /**
  * @ORM\Entity(repositoryClass="Inventory\Management\Infrastructure\Repository\GarmentSize\Size\SizeRepository")
@@ -18,10 +19,10 @@ class Size
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Inventory\Management\Domain\Model\Entity\GarmentSize\Size\SizeType", inversedBy="sizes")
+     * @ORM\ManyToOne(targetEntity="Inventory\Management\Domain\Model\Entity\GarmentSize\Garment\GarmentType", inversedBy="sizes")
      * @ORM\JoinColumn(nullable=false)
      */
-    private $sizeType;
+    private $garmentType;
 
     /**
      * @ORM\Column(type="string", length=3, nullable=false)
@@ -33,14 +34,9 @@ class Size
         return $this->id;
     }
 
-    public function getSizeType(): SizeType
+    public function getGarmentType(): GarmentType
     {
-        return $this->sizeType;
-    }
-
-    public function setSizeType(SizeType $sizeType): void
-    {
-        $this->sizeType = $sizeType;
+        return $this->garmentType;
     }
 
     public function getSizeValue(): string

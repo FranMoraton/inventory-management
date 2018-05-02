@@ -8,6 +8,7 @@ use Inventory\Management\Application\Department\CreateDepartment\CreateDepartmen
 use Inventory\Management\Application\Department\showDepartments\ShowDepartments;
 use Inventory\Management\Application\Department\showDepartments\ShowDepartmentsTransform;
 use Inventory\Management\Domain\Model\Entity\Department\Department;
+use Inventory\Management\Infrastructure\Repository\Department\DepartmentRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,9 +22,9 @@ class DepartmentController extends Controller
      * @throws \Doctrine\ORM\OptimisticLockException
      * @throws \Inventory\Management\Domain\Model\Department\NotCreatedDepartmentException
      */
-    public function createDepartment(Request $request): Response
+    public function createDepartment(Request $request, DepartmentRepository $departmentRepository): Response
     {
-        $departmentRepository = $this->getDoctrine()->getRepository(Department::class);
+        //$departmentRepository = $this->getDoctrine()->getRepository(Department::class);
         $createDepartmentTransform = new CreateDepartmentTransform();
         $createDepartment = new CreateDepartment($departmentRepository, $createDepartmentTransform);
         $name = $request->query->get('name');
@@ -37,9 +38,9 @@ class DepartmentController extends Controller
      * @return Response
      * @throws \Inventory\Management\Domain\Model\Department\NotFoundDepartmentsException
      */
-    public function showAllDepartments(): Response
+    public function showAllDepartments(DepartmentRepository $departmentRepository): Response
     {
-        $departmentRepository = $this->getDoctrine()->getRepository(Department::class);
+        //$departmentRepository = $this->getDoctrine()->getRepository(Department::class);
         $showDepartmentsTransform = new ShowDepartmentsTransform();
         $showDepartments = new ShowDepartments($departmentRepository, $showDepartmentsTransform);
         $response = $showDepartments->handle();

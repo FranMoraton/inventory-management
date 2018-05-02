@@ -2,11 +2,17 @@
 
 namespace Inventory\Management\Infrastructure\Repository\Department;
 
-use Doctrine\ORM\EntityRepository;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Common\Persistence\ManagerRegistry;
 use Inventory\Management\Domain\Model\Entity\Department\Department;
 
-class DepartmentRepository extends EntityRepository
+class DepartmentRepository extends ServiceEntityRepository
 {
+    public function __construct(ManagerRegistry $registry, string $entityClass)
+    {
+        parent::__construct($registry, Department::class);
+    }
+
     /**
      * @param Department $department
      * @throws \Doctrine\ORM\ORMException

@@ -5,7 +5,7 @@ namespace Inventory\Management\Domain\Model\Entity\RequestEmployee;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass="Inventory\Management\Infrastructure\Repository\RequestEmployee\FilmRepository")
+ * @ORM\Entity(repositoryClass="FirmRepository")
  * @ORM\Table(name="firm")
  */
 class Firm
