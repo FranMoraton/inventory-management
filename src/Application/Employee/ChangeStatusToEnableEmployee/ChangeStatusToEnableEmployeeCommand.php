@@ -1,10 +1,10 @@
 <?php
 
-namespace Inventory\Management\Application\Employee\ChangeStatusToDisableEmployee;
+namespace Inventory\Management\Application\Employee\ChangeStatusToEnableEmployee;
 
 use Assert\Assertion;
 
-class ChangeStatusToDisableEmployeeCommand
+class ChangeStatusToEnableEmployeeCommand
 {
     private const LENGTH_NIF = 9;
 

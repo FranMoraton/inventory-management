@@ -3,6 +3,7 @@
 namespace Inventory\Management\Application\Department\CreateSubDepartment;
 
 use Doctrine\ORM\ORMException;
+use Inventory\Management\Domain\Model\Entity\Department\NotFoundDepartmentsException;
 use Inventory\Management\Domain\Model\Entity\Department\SubDepartment;
 use Inventory\Management\Infrastructure\Repository\Department\DepartmentRepository;
 use Inventory\Management\Infrastructure\Repository\Department\SubDepartmentRepository;
@@ -22,17 +23,21 @@ class CreateSubDepartment
 
     /**
      * @param CreateSubDepartmentCommand $createSubDepartmentCommand
+     * @throws NotFoundDepartmentsException
      * @throws ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function handle(CreateSubDepartmentCommand $createSubDepartmentCommand)
+    public function handle(CreateSubDepartmentCommand $createSubDepartmentCommand): void
     {
-        $idDepartment = $createSubDepartmentCommand->department();
-        $nameSubDepartment = $createSubDepartmentCommand->name();
-        $searchedDepartment = $this->departmentRepository->searchByIdDepartment($idDepartment);
+        $department = $this->departmentRepository->findDepartmentById(
+            $createSubDepartmentCommand->department()
+        );
+        if (null === $department) {
+            throw new NotFoundDepartmentsException('No se ha encontrado el departamento');
+        }
         $subDepartment = new SubDepartment(
-            $searchedDepartment,
-            $nameSubDepartment
+            $department,
+            $createSubDepartmentCommand->name()
         );
         $this->subDepartmentRepository->createSubDepartment($subDepartment);
     }

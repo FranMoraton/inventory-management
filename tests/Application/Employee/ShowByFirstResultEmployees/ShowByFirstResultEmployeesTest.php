@@ -16,7 +16,7 @@ class ShowByFirstResultEmployeesTest extends TestCase
     /**
      * @test
      */
-    public function given_employees_when_request_by_first_result_then_not_found_exception()
+    public function given_employees_when_request_by_first_result_then_not_found_exception(): void
     {
         $firstResultPosition = 0;
         $employeeRepository = $this->getMockBuilder(EmployeeRepository::class)
@@ -37,7 +37,7 @@ class ShowByFirstResultEmployeesTest extends TestCase
     /**
      * @test
      */
-    public function given_employees_when_request_by_first_result_then_show()
+    public function given_employees_when_request_by_first_result_then_show(): void
     {
         $firstResultPosition = 0;
         $employeeStatus = $this->getMockBuilder(EmployeeStatus::class)

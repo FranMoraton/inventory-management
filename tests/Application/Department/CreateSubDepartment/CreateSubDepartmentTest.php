@@ -2,11 +2,10 @@
 
 namespace Inventory\Management\Tests\Application\Department\CreateSubDepartment;
 
-use Doctrine\ORM\ORMException;
 use Inventory\Management\Application\Department\CreateSubDepartment\CreateSubDepartment;
 use Inventory\Management\Application\Department\CreateSubDepartment\CreateSubDepartmentCommand;
-use Inventory\Management\Domain\Model\Entity\Department\CanNotCreateDepartmentException;
 use Inventory\Management\Domain\Model\Entity\Department\Department;
+use Inventory\Management\Domain\Model\Entity\Department\NotFoundDepartmentsException;
 use Inventory\Management\Domain\Model\Entity\Department\SubDepartment;
 use Inventory\Management\Infrastructure\Repository\Department\DepartmentRepository;
 use Inventory\Management\Infrastructure\Repository\Department\SubDepartmentRepository;
@@ -17,28 +16,20 @@ class CreateSubDepartmentTest extends TestCase
     /**
      * @test
      */
-    public function create_sub_department_then_can_not_create_exception(): void
+    public function create_sub_department_then_department_not_found_exception(): void
     {
         $idDepartment = 1;
-
-        $department = $this->getMockBuilder(Department::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $subDepartment = new SubDepartment($department, 'warehouse');
         $departmentRepository = $this->getMockBuilder(DepartmentRepository::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $departmentRepository->method('searchByIdDepartment')
+        $departmentRepository->method('findDepartmentById')
             ->with($idDepartment)
-            ->willReturn($department);
+            ->willReturn(null);
         $subDepartmentRepository = $this->getMockBuilder(SubDepartmentRepository::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $subDepartmentRepository->method('createSubDepartment')
-            ->with($subDepartment)
-            ->willThrowException(new ORMException());
         $createSubDepartment = new CreateSubDepartment($departmentRepository, $subDepartmentRepository);
-        $this->expectException(CanNotCreateDepartmentException::class);
+        $this->expectException(NotFoundDepartmentsException::class);
         $createDepartmentCommand = new CreateSubDepartmentCommand(1, 'warehouse');
         $createSubDepartment->handle($createDepartmentCommand);
     }
@@ -49,7 +40,6 @@ class CreateSubDepartmentTest extends TestCase
     public function create_sub_department_then_ok_response(): void
     {
         $idDepartment = 1;
-
         $department = $this->getMockBuilder(Department::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -57,7 +47,7 @@ class CreateSubDepartmentTest extends TestCase
         $departmentRepository = $this->getMockBuilder(DepartmentRepository::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $departmentRepository->method('searchByIdDepartment')
+        $departmentRepository->method('findDepartmentById')
             ->with($idDepartment)
             ->willReturn($department);
         $subDepartmentRepository = $this->getMockBuilder(SubDepartmentRepository::class)

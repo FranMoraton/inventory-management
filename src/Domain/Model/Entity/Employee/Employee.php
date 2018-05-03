@@ -28,27 +28,27 @@ class Employee
     private $image;
 
     /**
-     * @ORM\Column(type="string", length=9, nullable=false, unique=true, options={"default"="-"})
+     * @ORM\Column(type="string", length=9, nullable=false, unique=true)
      */
     private $nif;
 
     /**
-     * @ORM\Column(type="string", length=50, nullable=false)
+     * @ORM\Column(type="string", length=100, nullable=false)
      */
     private $password;
 
     /**
-     * @ORM\Column(type="string", length=50, nullable=false, options={"default"="-"})
+     * @ORM\Column(type="string", length=50, nullable=false)
      */
     private $name;
 
     /**
-     * @ORM\Column(type="string", length=30, nullable=false, unique=true, options={"default"="-"})
+     * @ORM\Column(type="string", length=30, nullable=false, unique=true)
      */
     private $inSsNumber;
 
     /**
-     * @ORM\Column(type="string", length=12, nullable=false, unique=true, options={"default"="-"})
+     * @ORM\Column(type="string", length=12, nullable=false, unique=true)
      */
     private $telephone;
 

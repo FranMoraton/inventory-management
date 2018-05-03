@@ -21,7 +21,7 @@ class SubDepartmentRepository extends ServiceEntityRepository
         return $subDepartment;
     }
 
-    public function searchByIdSubDepartment(int $idSubDepartment): SubDepartment
+    public function findSubDepartmentById(int $idSubDepartment): ?SubDepartment
     {
         /* @var SubDepartment $subDepartment */
         $subDepartment = $this->find($idSubDepartment);

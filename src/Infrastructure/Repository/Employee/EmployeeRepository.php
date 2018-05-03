@@ -24,29 +24,54 @@ class EmployeeRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param string $nif
+     * @param Employee $employee
+     * @return Employee|null
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function changeStatusToDisableEmployee(Employee $employee): Employee
+    {
+        return $this->changeStatusToEmployee($employee, true);
+    }
+
+    /**
+     * @param Employee $employee
+     * @return Employee|null
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function changeStatusToEnableEmployee(Employee $employee): Employee
+    {
+        return $this->changeStatusToEmployee($employee, false);
+    }
+
+    /**
+     * @param Employee $employee
+     * @param bool $status
      * @return Employee
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function changeStatusToDisableEmployee(string $nif): Employee
+    private function changeStatusToEmployee(Employee $employee, bool $status): Employee
     {
-        $query = $this->createQueryBuilder('es')
-            ->andWhere('es.nif = :nif')
-            ->setParameter('nif', $nif)
-            ->getQuery();
-        $employees = $query->execute();
-        $updatedEmployee = null;
-        /* @var Employee $employee */
-        foreach ($employees as $employee) {
-            $employee->getEmployeeStatus()
-                ->setDisabledEmployee(true);
+        $employee->getEmployeeStatus()
+            ->setDisabledEmployee($status);
 
-            $updatedEmployee = $employee;
-        }
         $this->getEntityManager()->flush();
 
-        return $updatedEmployee;
+        return $employee;
+    }
+
+    /**
+     * @param string $nif
+     * @return Employee
+     */
+    public function findEmployeeByNif(string $nif): ?Employee
+    {
+        /* @var Employee $employee */
+        $employee = $this->findOneBy(['nif' => $nif]);
+
+        return $employee;
     }
 
     public function showByFirstResultEmployees(int $initialResult): array
@@ -54,6 +79,17 @@ class EmployeeRepository extends ServiceEntityRepository
         $query = $this->createQueryBuilder('em')
             ->setFirstResult($initialResult)
             ->setMaxResults(self::MAX_RESULTS_QUERY)
+            ->getQuery();
+
+        return $query->execute();
+    }
+
+    public function checkNotExistsNif(): array
+    {
+        $query = $this->createQueryBuilder('em')
+            ->andWhere('em.nif = :nif')
+            ->andWhere('em.inSsNumber = :inSsNumber')
+            ->andWhere('em.telephone = :telephone')
             ->getQuery();
 
         return $query->execute();

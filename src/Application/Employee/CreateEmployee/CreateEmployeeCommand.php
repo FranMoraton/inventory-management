@@ -16,13 +16,23 @@ class CreateEmployeeCommand
     private $name;
     private $inSsNumber;
     private $telephone;
+    private $codeEmployee;
     private $firstContractDate;
     private $seniorityDate;
     private $subDepartment;
 
-    public function __construct($image, $nif, $password, $name, $inSsNumber, $telephone,
-                                $firstContractDate, $seniorityDate, $subDepartment)
-    {
+    public function __construct(
+        $image,
+        $nif,
+        $password,
+        $name,
+        $inSsNumber,
+        $telephone,
+        $codeEmployee,
+        $firstContractDate,
+        $seniorityDate,
+        $subDepartment
+    ) {
         Assertion::notBlank($image, 'Tienes que especificar una imagen');
         Assertion::notBlank($nif, 'Tienes que especificar un NIF');
         Assertion::string($nif, 'El NIF tiene que ser de tipo texto');
@@ -41,6 +51,7 @@ class CreateEmployeeCommand
         $this->name = $name;
         $this->inSsNumber = $inSsNumber;
         $this->telephone = $telephone;
+        $this->codeEmployee = $codeEmployee;
         $this->firstContractDate = $firstContractDate;
         $this->seniorityDate = $seniorityDate;
         $this->subDepartment = $subDepartment;
@@ -74,6 +85,11 @@ class CreateEmployeeCommand
     public function telephone(): string
     {
         return $this->telephone;
+    }
+
+    public function codeEmployee(): int
+    {
+        return $this->codeEmployee;
     }
 
     public function firstContractDate(): string

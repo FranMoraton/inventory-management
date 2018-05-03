@@ -1,12 +1,12 @@
 <?php
 
-namespace Inventory\Management\Application\Employee\ChangeStatusToDisableEmployee;
+namespace Inventory\Management\Application\Employee\ChangeStatusToEnableEmployee;
 
 use Inventory\Management\Domain\Model\Entity\Employee\NotFoundEmployeesException;
 use Inventory\Management\Domain\Service\Employee\SearchByNifEmployee;
 use Inventory\Management\Infrastructure\Repository\Employee\EmployeeRepository;
 
-class ChangeStatusToDisableEmployee
+class ChangeStatusToEnableEmployee
 {
     private $employeeRepository;
     private $searchByNifEmployee;
@@ -20,16 +20,16 @@ class ChangeStatusToDisableEmployee
     }
 
     /**
-     * @param ChangeStatusToDisableEmployeeCommand $disableEmployeeCommand
+     * @param ChangeStatusToEnableEmployeeCommand $enableEmployeeCommand
      * @throws NotFoundEmployeesException
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function handle(ChangeStatusToDisableEmployeeCommand $disableEmployeeCommand): void
+    public function handle(ChangeStatusToEnableEmployeeCommand $enableEmployeeCommand): void
     {
         $employee = $this->searchByNifEmployee->execute(
-            $disableEmployeeCommand->nif()
+            $enableEmployeeCommand->nif()
         );
-        $this->employeeRepository->changeStatusToDisableEmployee($employee);
+        $this->employeeRepository->changeStatusToEnableEmployee($employee);
     }
 }

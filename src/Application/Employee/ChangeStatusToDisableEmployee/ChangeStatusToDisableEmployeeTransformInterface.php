@@ -4,5 +4,5 @@ namespace Inventory\Management\Application\Employee\ChangeStatusToDisableEmploye
 
 interface ChangeStatusToDisableEmployeeTransformInterface
 {
-    public function transform();
+
 }

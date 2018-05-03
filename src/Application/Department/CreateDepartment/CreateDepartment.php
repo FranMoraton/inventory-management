@@ -20,10 +20,11 @@ class CreateDepartment
      * @throws ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function handle(CreateDepartmentCommand $createDepartmentCommand)
+    public function handle(CreateDepartmentCommand $createDepartmentCommand): void
     {
-        $nameDepartment = $createDepartmentCommand->name();
-        $department = new Department($nameDepartment);
+        $department = new Department(
+            $createDepartmentCommand->name()
+        );
         $this->departmentRepository->createDepartment($department);
     }
 }

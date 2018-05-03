@@ -20,7 +20,12 @@ class EmployeeStatus
     private $id;
 
     /**
-     * @@ORM\Column(type="boolean", nullable=false, options={"default":false})
+     * @ORM\Column(type="integer", nullable=false)
+     */
+    private $codeEmployee;
+
+    /**
+     * @@ORM\Column(type="boolean", nullable=false, options={"default"=false})
      */
     private $disabledEmployee;
 
@@ -65,11 +70,13 @@ class EmployeeStatus
     private $subDepartment;
 
     public function __construct(
+        $codeEmployee,
         $firstContractDate,
         $seniorityDate,
         $department,
         $subDepartment
     ) {
+        $this->codeEmployee = $codeEmployee;
         $this->firstContractDate = $firstContractDate;
         $this->seniorityDate = $seniorityDate;
         $this->department = $department;
@@ -79,6 +86,11 @@ class EmployeeStatus
     public function getId(): int
     {
         return $this->id;
+    }
+
+    public function getCodeEmployee(): int
+    {
+        return $this->codeEmployee;
     }
 
     public function getDisabledEmployee(): bool

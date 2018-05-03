@@ -2,10 +2,7 @@
 
 namespace Inventory\Management\Application\Employee\ChangeStatusToDisableEmployee;
 
-class ChangeStatusToDisableEmployeeTransform implements ChangeStatusToDisableEmployeeTransformInterface
+class ChangeStatusToDisableEmployeeTransform implements ChangeStatusToEnableEmployeeTransformInterface
 {
-    public function transform()
-    {
-        return ['ok' => 200];
-    }
+
 }

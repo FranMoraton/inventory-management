@@ -24,7 +24,7 @@ class SubDepartment
     private $department;
 
     /**
-     * @ORM\Column(type="string", length=50, nullable=false)
+     * @ORM\Column(type="string", length=50, nullable=false, unique=true)
      */
     private $name;
 

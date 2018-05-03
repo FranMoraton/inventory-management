@@ -1,10 +1,10 @@
 <?php
 
-namespace Inventory\Management\Application\Employee\LoginEmployee;
+namespace Inventory\Management\Application\Employee\CheckDataEmployee;
 
 use Assert\Assertion;
 
-class LoginEmployeeCommand
+class CheckDataEmployeeCommand
 {
     private const LENGTH_NIF = 9;
     private const MIN_LENGTH_PASSWORD = 4;
