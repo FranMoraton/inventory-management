@@ -21,10 +21,33 @@ class SubDepartmentRepository extends ServiceEntityRepository
         return $subDepartment;
     }
 
+    /**
+     * @param SubDepartment $subDepartment
+     * @param string $name
+     * @return SubDepartment
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function updateNameSubDepartment(SubDepartment $subDepartment, string $name): SubDepartment
+    {
+        $subDepartment->setName($name);
+        $this->getEntityManager()->flush();
+
+        return $subDepartment;
+    }
+
     public function findSubDepartmentById(int $idSubDepartment): ?SubDepartment
     {
         /* @var SubDepartment $subDepartment */
         $subDepartment = $this->find($idSubDepartment);
+
+        return $subDepartment;
+    }
+
+    public function checkNotExistsNameSubDepartment($name): ?SubDepartment
+    {
+        /* @var SubDepartment $subDepartment */
+        $subDepartment = $this->findOneBy(['name' => $name]);
 
         return $subDepartment;
     }

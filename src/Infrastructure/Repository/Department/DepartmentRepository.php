@@ -21,6 +21,21 @@ class DepartmentRepository extends ServiceEntityRepository
         return $department;
     }
 
+    /**
+     * @param Department $department
+     * @param string $name
+     * @return Department
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function updateNameDepartment(Department $department, string $name): Department
+    {
+        $department->setName($name);
+        $this->getEntityManager()->flush();
+
+        return $department;
+    }
+
     public function findDepartmentById(int $idDepartment): ?Department
     {
         /* @var Department $department */
@@ -34,5 +49,13 @@ class DepartmentRepository extends ServiceEntityRepository
         $departments = $this->findAll();
 
         return $departments;
+    }
+
+    public function checkNotExistsName($name): ?Department
+    {
+        /* @var Department $department */
+        $department = $this->findOneBy(['name' => $name]);
+
+        return $department;
     }
 }

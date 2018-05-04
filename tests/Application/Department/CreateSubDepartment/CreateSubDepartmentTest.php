@@ -7,31 +7,42 @@ use Inventory\Management\Application\Department\CreateSubDepartment\CreateSubDep
 use Inventory\Management\Domain\Model\Entity\Department\Department;
 use Inventory\Management\Domain\Model\Entity\Department\NotFoundDepartmentsException;
 use Inventory\Management\Domain\Model\Entity\Department\SubDepartment;
+use Inventory\Management\Domain\Service\Department\SearchDepartmentById;
 use Inventory\Management\Infrastructure\Repository\Department\DepartmentRepository;
 use Inventory\Management\Infrastructure\Repository\Department\SubDepartmentRepository;
+use PHPUnit\Framework\MockObject\MockBuilder;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class CreateSubDepartmentTest extends TestCase
 {
+    /* @var MockObject $departmentRepository */
+    private $departmentRepository;
+    /* @var MockObject $subDepartmentRepository */
+    private $subDepartmentRepository;
+    private $searchDepartmentById;
+    private $createDepartmentCommand;
+
+    public function setUp(): void
+    {
+        $this->departmentRepository = $this->createMock(DepartmentRepository::class);
+        $this->subDepartmentRepository = $this->createMock(SubDepartmentRepository::class);
+        $this->searchDepartmentById = new SearchDepartmentById($this->departmentRepository);
+        $this->createDepartmentCommand = new CreateSubDepartmentCommand(1, 'warehouse');
+    }
+
     /**
      * @test
      */
     public function create_sub_department_then_department_not_found_exception(): void
     {
         $idDepartment = 1;
-        $departmentRepository = $this->getMockBuilder(DepartmentRepository::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $departmentRepository->method('findDepartmentById')
+        $this->departmentRepository->method('findDepartmentById')
             ->with($idDepartment)
             ->willReturn(null);
-        $subDepartmentRepository = $this->getMockBuilder(SubDepartmentRepository::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $createSubDepartment = new CreateSubDepartment($departmentRepository, $subDepartmentRepository);
-        $this->expectException(NotFoundDepartmentsException::class);
-        $createDepartmentCommand = new CreateSubDepartmentCommand(1, 'warehouse');
-        $createSubDepartment->handle($createDepartmentCommand);
+        $createSubDepartment = new CreateSubDepartment($this->subDepartmentRepository, $this->searchDepartmentById);
+        $result = $createSubDepartment->handle($this->createDepartmentCommand);
+        $this->assertEquals(['ko' => 'No se ha encontrado ningún departamento'], $result);
     }
 
     /**
@@ -40,25 +51,16 @@ class CreateSubDepartmentTest extends TestCase
     public function create_sub_department_then_ok_response(): void
     {
         $idDepartment = 1;
-        $department = $this->getMockBuilder(Department::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $department = $this->createMock(Department::class);
         $subDepartment = new SubDepartment($department, 'warehouse');
-        $departmentRepository = $this->getMockBuilder(DepartmentRepository::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $departmentRepository->method('findDepartmentById')
+        $this->departmentRepository->method('findDepartmentById')
             ->with($idDepartment)
             ->willReturn($department);
-        $subDepartmentRepository = $this->getMockBuilder(SubDepartmentRepository::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $subDepartmentRepository->method('createSubDepartment')
+        $this->subDepartmentRepository->method('createSubDepartment')
             ->with($subDepartment)
             ->willReturn($subDepartment);
-        $createSubDepartment = new CreateSubDepartment($departmentRepository, $subDepartmentRepository);
-        $createDepartmentCommand = new CreateSubDepartmentCommand(1, 'warehouse');
-        $createSubDepartment->handle($createDepartmentCommand);
-        $this->assertTrue(true, true);
+        $createSubDepartment = new CreateSubDepartment($this->subDepartmentRepository, $this->searchDepartmentById);
+        $result = $createSubDepartment->handle($this->createDepartmentCommand);
+        $this->assertEquals(['ok' => 200], $result);
     }
 }

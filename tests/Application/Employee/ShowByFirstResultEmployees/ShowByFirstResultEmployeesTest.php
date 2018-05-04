@@ -7,31 +7,37 @@ use Inventory\Management\Application\Employee\ShowByFirstResultEmployees\ShowByF
 use Inventory\Management\Application\Employee\ShowByFirstResultEmployees\ShowByFirstResultEmployeesTransform;
 use Inventory\Management\Domain\Model\Entity\Employee\Employee;
 use Inventory\Management\Domain\Model\Entity\Employee\EmployeeStatus;
-use Inventory\Management\Domain\Model\Entity\Employee\NotFoundEmployeesException;
 use Inventory\Management\Infrastructure\Repository\Employee\EmployeeRepository;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class ShowByFirstResultEmployeesTest extends TestCase
 {
+    /* @var MockObject $employeeRepository */
+    private $employeeRepository;
+    private $showByFirstResultEmployeesTransform;
+    private $showByFirstResultEmployeesCommand;
+
+    public function setUp(): void
+    {
+        $this->employeeRepository = $this->createMock(EmployeeRepository::class);
+        $this->showByFirstResultEmployeesTransform = new ShowByFirstResultEmployeesTransform();
+        $this->showByFirstResultEmployeesCommand = new ShowByFirstResultEmployeesCommand(0);
+    }
+
     /**
      * @test
      */
     public function given_employees_when_request_by_first_result_then_not_found_exception(): void
     {
-        $firstResultPosition = 0;
-        $employeeRepository = $this->getMockBuilder(EmployeeRepository::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $employeeRepository->method('showByFirstResultEmployees')
+        $this->employeeRepository->method('showByFirstResultEmployees')
             ->willReturn([]);
-        $showByFirstResultEmployeesTransform = new ShowByFirstResultEmployeesTransform();
         $showByFirstResultEmployees = new ShowByFirstResultEmployees(
-            $employeeRepository,
-            $showByFirstResultEmployeesTransform
+            $this->employeeRepository,
+            $this->showByFirstResultEmployeesTransform
         );
-        $this->expectException(NotFoundEmployeesException::class);
-        $showByFirstResultEmployeesCommand = new ShowByFirstResultEmployeesCommand($firstResultPosition);
-        $showByFirstResultEmployees->handle($showByFirstResultEmployeesCommand);
+        $result = $showByFirstResultEmployees->handle($this->showByFirstResultEmployeesCommand);
+        $this->assertEquals(['ko' => 'No se han encontrado trabajadores'], $result);
     }
 
     /**
@@ -39,13 +45,8 @@ class ShowByFirstResultEmployeesTest extends TestCase
      */
     public function given_employees_when_request_by_first_result_then_show(): void
     {
-        $firstResultPosition = 0;
-        $employeeStatus = $this->getMockBuilder(EmployeeStatus::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $employee = $this->getMockBuilder(Employee::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $employeeStatus = $this->createMock(EmployeeStatus::class);
+        $employee = $this->createMock(Employee::class);
         $employee->method('getId')
             ->willReturn(1);
         $employee->method('getImage')
@@ -62,17 +63,13 @@ class ShowByFirstResultEmployeesTest extends TestCase
             ->willReturn(649356871);
         $employee->method('getEmployeeStatus')
             ->willReturn($employeeStatus);
-        $employeeRepository = $this->getMockBuilder(EmployeeRepository::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $employeeRepository->method('showByFirstResultEmployees')
+        $this->employeeRepository->method('showByFirstResultEmployees')
             ->willReturn([$employee]);
-        $showByFirstResultEmployeesTransform = new ShowByFirstResultEmployeesTransform();
         $showByFirstResultEmployees = new ShowByFirstResultEmployees(
-            $employeeRepository,
-            $showByFirstResultEmployeesTransform
+            $this->employeeRepository,
+            $this->showByFirstResultEmployeesTransform
         );
-        $showByFirstResultEmployeesCommand = new ShowByFirstResultEmployeesCommand($firstResultPosition);
+        $result = $showByFirstResultEmployees->handle($this->showByFirstResultEmployeesCommand);
         $this->assertArraySubset(
             [
                 0 => [
@@ -81,7 +78,7 @@ class ShowByFirstResultEmployeesTest extends TestCase
                     'name' => 'Javier'
                 ]
             ],
-            $showByFirstResultEmployees->handle($showByFirstResultEmployeesCommand)
+            $result
         );
     }
 }

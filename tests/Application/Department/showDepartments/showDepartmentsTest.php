@@ -6,26 +6,33 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Inventory\Management\Application\Department\showDepartments\ShowDepartments;
 use Inventory\Management\Application\Department\showDepartments\ShowDepartmentsTransform;
 use Inventory\Management\Domain\Model\Entity\Department\Department;
-use Inventory\Management\Domain\Model\Entity\Department\NotFoundDepartmentsException;
 use Inventory\Management\Infrastructure\Repository\Department\DepartmentRepository;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class showDepartmentsTest extends TestCase
 {
+    /* @var MockObject */
+    private $departmentRepository;
+    private $showDepartmentsTransform;
+
+    public function setUp(): void
+    {
+        $this->departmentRepository = $this->createMock(DepartmentRepository::class);
+        $this->showDepartmentsTransform = new ShowDepartmentsTransform();
+    }
+
     /**
      * @test
      */
-    public function given_departments_when_request_then_not_found_exception(): void
+    public function given_departments_when_request_then_not_found_error(): void
     {
-        $departmentRepository = $this->getMockBuilder(DepartmentRepository::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $departmentRepository->method('showAllDepartments')
+
+        $this->departmentRepository->method('showAllDepartments')
             ->willReturn([]);
-        $showDepartmentsTransform = new ShowDepartmentsTransform();
-        $showDepartments = new ShowDepartments($departmentRepository, $showDepartmentsTransform);
-        $this->expectException(NotFoundDepartmentsException::class);
-        $showDepartments->handle();
+        $showDepartments = new ShowDepartments($this->departmentRepository, $this->showDepartmentsTransform);
+        $result = $showDepartments->handle();
+        $this->assertEquals(['ko' => 'No se han encontrado departamentos'], $result);
     }
 
     /**
@@ -33,22 +40,17 @@ class showDepartmentsTest extends TestCase
      */
     public function given_departments_when_request_then_show(): void
     {
-        $department = $this->getMockBuilder(Department::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $department = $this->createMock(Department::class);
         $department->method('getId')
             ->willReturn(1);
         $department->method('getName')
             ->willReturn('warehouse');
         $department->method('getSubDepartments')
             ->willReturn(new ArrayCollection());
-        $departmentRepository = $this->getMockBuilder(DepartmentRepository::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $departmentRepository->method('showAllDepartments')
+        $this->departmentRepository->method('showAllDepartments')
             ->willReturn([$department]);
-        $showDepartmentsTransform = new ShowDepartmentsTransform();
-        $showDepartments = new ShowDepartments($departmentRepository, $showDepartmentsTransform);
+        $showDepartments = new ShowDepartments($this->departmentRepository, $this->showDepartmentsTransform);
+        $result = $showDepartments->handle();
         $this->assertArraySubset(
             [
                 0 => [
@@ -56,7 +58,7 @@ class showDepartmentsTest extends TestCase
                     'name' => 'warehouse'
                 ]
             ],
-            $showDepartments->handle()
+            $result
         );
     }
 }

@@ -16,9 +16,7 @@ class CreateDepartmentTest extends TestCase
     public function create_department_then_ok_response(): void
     {
         $department = new Department('warehouse');
-        $departmentRepository = $this->getMockBuilder(DepartmentRepository::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $departmentRepository = $this->createMock(DepartmentRepository::class);
         $departmentRepository->method('createDepartment')
             ->with($department)
             ->willReturn($department);

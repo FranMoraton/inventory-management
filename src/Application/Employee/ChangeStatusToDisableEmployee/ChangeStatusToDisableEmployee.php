@@ -3,33 +3,39 @@
 namespace Inventory\Management\Application\Employee\ChangeStatusToDisableEmployee;
 
 use Inventory\Management\Domain\Model\Entity\Employee\NotFoundEmployeesException;
-use Inventory\Management\Domain\Service\Employee\SearchByNifEmployee;
+use Inventory\Management\Domain\Service\Employee\SearchEmployeeByNif;
 use Inventory\Management\Infrastructure\Repository\Employee\EmployeeRepository;
 
 class ChangeStatusToDisableEmployee
 {
     private $employeeRepository;
-    private $searchByNifEmployee;
+    private $searchEmployeeByNif;
 
     public function __construct(
         EmployeeRepository $employeeRepository,
-        SearchByNifEmployee $searchByNifEmployee
+        SearchEmployeeByNif $searchEmployeeByNif
     ) {
         $this->employeeRepository = $employeeRepository;
-        $this->searchByNifEmployee = $searchByNifEmployee;
+        $this->searchEmployeeByNif = $searchEmployeeByNif;
     }
 
     /**
      * @param ChangeStatusToDisableEmployeeCommand $disableEmployeeCommand
-     * @throws NotFoundEmployeesException
+     * @return array
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function handle(ChangeStatusToDisableEmployeeCommand $disableEmployeeCommand): void
+    public function handle(ChangeStatusToDisableEmployeeCommand $disableEmployeeCommand): array
     {
-        $employee = $this->searchByNifEmployee->execute(
-            $disableEmployeeCommand->nif()
-        );
+        try {
+            $employee = $this->searchEmployeeByNif->execute(
+                $disableEmployeeCommand->nif()
+            );
+        } catch (NotFoundEmployeesException $notFoundEmployeesException) {
+            return ['ko' => $notFoundEmployeesException->getMessage()];
+        }
         $this->employeeRepository->changeStatusToDisableEmployee($employee);
+
+        return ['ok' => 200];
     }
 }

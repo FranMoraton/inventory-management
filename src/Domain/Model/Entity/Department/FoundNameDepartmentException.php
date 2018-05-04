@@ -2,11 +2,11 @@
 
 namespace Inventory\Management\Domain\Model\Entity\Department;
 
-class NotFoundDepartmentsException extends \Exception
+class FoundNameDepartmentException extends \Exception
 {
     public function __construct()
     {
-        $message = 'No se ha encontrado ningún departamento';
+        $message = 'El departamento ya existe';
         parent::__construct($message);
     }
 }

@@ -20,4 +20,12 @@ class EmployeeStatusRepository extends ServiceEntityRepository
 
         return $employeeStatus;
     }
+
+    public function checkNotExistsCodeEmployeeStatus(string $codeEmployee): ?EmployeeStatus
+    {
+        /* @var EmployeeStatus $employeeStatus */
+        $employeeStatus = $this->findOneBy(['codeEmployee' => $codeEmployee]);
+
+        return $employeeStatus;
+    }
 }

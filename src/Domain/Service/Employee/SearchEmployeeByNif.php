@@ -6,7 +6,7 @@ use Inventory\Management\Domain\Model\Entity\Employee\Employee;
 use Inventory\Management\Domain\Model\Entity\Employee\NotFoundEmployeesException;
 use Inventory\Management\Infrastructure\Repository\Employee\EmployeeRepository;
 
-class SearchByNifEmployee
+class SearchEmployeeByNif
 {
     private $employeeRepository;
 
@@ -26,7 +26,7 @@ class SearchByNifEmployee
             $nifEmployee
         );
         if (null === $resultEmployee) {
-            throw new NotFoundEmployeesException('No se ha encontrado ningún trabajador');
+            throw new NotFoundEmployeesException();
         }
 
         return $resultEmployee;

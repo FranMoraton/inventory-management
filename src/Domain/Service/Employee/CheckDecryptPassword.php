@@ -18,7 +18,7 @@ class CheckDecryptPassword
             $passwordEncrypted
         );
         if (false === $ifIsCorrectPassword) {
-            throw new NotFoundPasswordEmployeeException('La contraseña no es correcta');
+            throw new NotFoundPasswordEmployeeException();
         }
     }
 }

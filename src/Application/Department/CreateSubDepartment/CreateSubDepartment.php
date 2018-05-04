@@ -5,40 +5,43 @@ namespace Inventory\Management\Application\Department\CreateSubDepartment;
 use Doctrine\ORM\ORMException;
 use Inventory\Management\Domain\Model\Entity\Department\NotFoundDepartmentsException;
 use Inventory\Management\Domain\Model\Entity\Department\SubDepartment;
-use Inventory\Management\Infrastructure\Repository\Department\DepartmentRepository;
+use Inventory\Management\Domain\Service\Department\SearchDepartmentById;
 use Inventory\Management\Infrastructure\Repository\Department\SubDepartmentRepository;
 
 class CreateSubDepartment
 {
-    private $departmentRepository;
     private $subDepartmentRepository;
+    private $searchDepartmentById;
 
     public function __construct(
-        DepartmentRepository $departmentRepository,
-        SubDepartmentRepository $subDepartmentRepository
+        SubDepartmentRepository $subDepartmentRepository,
+        SearchDepartmentById $searchDepartmentById
     ) {
-        $this->departmentRepository = $departmentRepository;
         $this->subDepartmentRepository = $subDepartmentRepository;
+        $this->searchDepartmentById = $searchDepartmentById;
     }
 
     /**
      * @param CreateSubDepartmentCommand $createSubDepartmentCommand
-     * @throws NotFoundDepartmentsException
+     * @return array
      * @throws ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function handle(CreateSubDepartmentCommand $createSubDepartmentCommand): void
+    public function handle(CreateSubDepartmentCommand $createSubDepartmentCommand): array
     {
-        $department = $this->departmentRepository->findDepartmentById(
-            $createSubDepartmentCommand->department()
-        );
-        if (null === $department) {
-            throw new NotFoundDepartmentsException('No se ha encontrado el departamento');
+        try {
+            $department = $this->searchDepartmentById->execute(
+                $createSubDepartmentCommand->department()
+            );
+        } catch (NotFoundDepartmentsException $notFoundDepartmentsException) {
+            return ['ko' => $notFoundDepartmentsException->getMessage()];
         }
         $subDepartment = new SubDepartment(
             $department,
             $createSubDepartmentCommand->name()
         );
         $this->subDepartmentRepository->createSubDepartment($subDepartment);
+
+        return ['ok' => 200];
     }
 }

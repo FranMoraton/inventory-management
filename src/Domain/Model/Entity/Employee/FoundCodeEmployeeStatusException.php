@@ -2,11 +2,11 @@
 
 namespace Inventory\Management\Domain\Model\Entity\Employee;
 
-class NotFoundPasswordEmployeeException extends \Exception
+class FoundCodeEmployeeStatusException extends \Exception
 {
     public function __construct()
     {
-        $message = 'La contraseña introducida no es correcta';
+        $message = 'El código de trabajador introducido ya existe';
         parent::__construct($message);
     }
 }

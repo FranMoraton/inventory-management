@@ -84,14 +84,27 @@ class EmployeeRepository extends ServiceEntityRepository
         return $query->execute();
     }
 
-    public function checkNotExistsNif(): array
+    public function checkNotExistsNifEmployee(string $nif): ?Employee
     {
-        $query = $this->createQueryBuilder('em')
-            ->andWhere('em.nif = :nif')
-            ->andWhere('em.inSsNumber = :inSsNumber')
-            ->andWhere('em.telephone = :telephone')
-            ->getQuery();
+        /* @var Employee $employee */
+        $employee = $this->findOneBy(['nif' => $nif]);
 
-        return $query->execute();
+        return $employee;
+    }
+
+    public function checkNotExistsInSsNumberEmployee(string $inSsNumber): ?Employee
+    {
+        /* @var Employee $employee */
+        $employee = $this->findOneBy(['inSsNumber' => $inSsNumber]);
+
+        return $employee;
+    }
+
+    public function checkNotExistsTelephoneEmployee(string $telephone): ?Employee
+    {
+        /* @var Employee $employee */
+        $employee = $this->findOneBy(['telephone' => $telephone]);
+
+        return $employee;
     }
 }

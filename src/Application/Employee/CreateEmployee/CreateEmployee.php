@@ -2,11 +2,16 @@
 
 namespace Inventory\Management\Application\Employee\CreateEmployee;
 
-use Inventory\Management\Domain\Model\Entity\Department\NotFoundDepartmentsException;
+use Inventory\Management\Domain\Model\Entity\Department\NotFoundSubDepartmentsException;
 use Inventory\Management\Domain\Model\Entity\Employee\Employee;
 use Inventory\Management\Domain\Model\Entity\Employee\EmployeeStatus;
+use Inventory\Management\Domain\Model\Entity\Employee\FoundCodeEmployeeStatusException;
+use Inventory\Management\Domain\Model\Entity\Employee\FoundInSsNumberEmployeeException;
+use Inventory\Management\Domain\Model\Entity\Employee\FoundNifEmployeeException;
+use Inventory\Management\Domain\Model\Entity\Employee\FoundTelephoneEmployeeException;
+use Inventory\Management\Domain\Service\Department\SearchSubDepartmentById;
+use Inventory\Management\Domain\Service\Employee\CheckNotExistsUniqueColumns;
 use Inventory\Management\Domain\Service\Employee\EncryptPassword;
-use Inventory\Management\Infrastructure\Repository\Department\SubDepartmentRepository;
 use Inventory\Management\Infrastructure\Repository\Employee\EmployeeRepository;
 use Inventory\Management\Infrastructure\Repository\Employee\EmployeeStatusRepository;
 
@@ -14,33 +19,54 @@ class CreateEmployee
 {
     private $employeeRepository;
     private $employeeStatusRepository;
-    private $subDepartmentRepository;
+    private $searchSubDepartmentById;
+    private $checkNotExistsUniqueColumns;
     private $encryptPassword;
 
     public function __construct(
         EmployeeRepository $employeeRepository,
         EmployeeStatusRepository $employeeStatusRepository,
-        SubDepartmentRepository $subDepartmentRepository,
+        SearchSubDepartmentById $searchSubDepartmentById,
+        CheckNotExistsUniqueColumns $checkNotExistsUniqueColumns,
         EncryptPassword $encryptPassword
     ) {
         $this->employeeRepository = $employeeRepository;
         $this->employeeStatusRepository = $employeeStatusRepository;
-        $this->subDepartmentRepository = $subDepartmentRepository;
+        $this->searchSubDepartmentById = $searchSubDepartmentById;
+        $this->checkNotExistsUniqueColumns = $checkNotExistsUniqueColumns;
         $this->encryptPassword = $encryptPassword;
     }
 
     /**
      * @param CreateEmployeeCommand $createEmployeeCommand
-     * @throws NotFoundDepartmentsException
+     * @return array
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function handle(CreateEmployeeCommand $createEmployeeCommand): void
+    public function handle(CreateEmployeeCommand $createEmployeeCommand): array
     {
-        $idSubDepartment = $createEmployeeCommand->subDepartment();
-        $subDepartment = $this->subDepartmentRepository->findSubDepartmentById($idSubDepartment);
-        if (null === $subDepartment) {
-            throw new NotFoundDepartmentsException('No se ha encontrado el subdepartamento');
+        try {
+            $subDepartment = $this->searchSubDepartmentById->execute(
+                $createEmployeeCommand->subDepartment()
+            );
+        } catch (NotFoundSubDepartmentsException $notFoundSubDepartmentsException) {
+            return ['ko' => $notFoundSubDepartmentsException->getMessage()];
+        }
+        try {
+            $this->checkNotExistsUniqueColumns->execute(
+                $createEmployeeCommand->nif(),
+                $createEmployeeCommand->inSsNumber(),
+                $createEmployeeCommand->telephone(),
+                $createEmployeeCommand->codeEmployee()
+            );
+        } catch (FoundNifEmployeeException $foundNifEmployeeException) {
+            return ['ko' => $foundNifEmployeeException->getMessage()];
+        } catch (FoundInSsNumberEmployeeException $foundInSsNumberEmployeeException) {
+            return ['ko' => $foundInSsNumberEmployeeException->getMessage()];
+        } catch (FoundTelephoneEmployeeException $foundTelephoneEmployeeException) {
+            return ['ko' => $foundTelephoneEmployeeException->getMessage()];
+        } catch (FoundCodeEmployeeStatusException $foundCodeEmployeeStatusException) {
+            return ['ko' => $foundCodeEmployeeStatusException->getMessage()];
         }
         $employeeStatus = new EmployeeStatus(
             $createEmployeeCommand->codeEmployee(),
@@ -63,5 +89,7 @@ class CreateEmployee
             $createEmployeeCommand->telephone()
         );
         $this->employeeRepository->createEmployee($employee);
+
+        return ['ok' => 200];
     }
 }
