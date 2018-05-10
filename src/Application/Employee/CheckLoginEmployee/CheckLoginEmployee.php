@@ -1,13 +1,13 @@
 <?php
 
-namespace Inventory\Management\Application\Employee\CheckDataEmployee;
+namespace Inventory\Management\Application\Employee\CheckLoginEmployee;
 
 use Inventory\Management\Domain\Model\Entity\Employee\NotFoundEmployeesException;
 use Inventory\Management\Domain\Model\Entity\Employee\NotFoundPasswordEmployeeException;
 use Inventory\Management\Domain\Service\Employee\CheckDecryptPassword;
 use Inventory\Management\Domain\Service\Employee\SearchEmployeeByNif;
 
-class CheckDataEmployee
+class CheckLoginEmployee
 {
     private $searchEmployeeByNif;
     private $checkDecryptPassword;
@@ -19,11 +19,11 @@ class CheckDataEmployee
     }
 
     /**
-     * @param CheckDataEmployeeCommand $checkDataEmployeeCommand
+     * @param CheckLoginEmployeeCommand $checkDataEmployeeCommand
      * @return array
      * @throws NotFoundPasswordEmployeeException
      */
-    public function handle(CheckDataEmployeeCommand $checkDataEmployeeCommand): array
+    public function handle(CheckLoginEmployeeCommand $checkDataEmployeeCommand): array
     {
         try {
             $resultEmployee = $this->searchEmployeeByNif->execute(

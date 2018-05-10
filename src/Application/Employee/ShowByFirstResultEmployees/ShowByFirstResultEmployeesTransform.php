@@ -17,6 +17,7 @@ class ShowByFirstResultEmployeesTransform implements ShowByFirstResultEmployeesT
             $status = $employee->getEmployeeStatus();
             $employeeStatus = [
                 'id' => $status->getId(),
+                'codeEmployee' => $status->getCodeEmployee(),
                 'disabledEmployee' => $status->getDisabledEmployee(),
                 'firstContractDate' => $status->getFirstContractDate(),
                 'seniorityDate' => $status->getSeniorityDate(),

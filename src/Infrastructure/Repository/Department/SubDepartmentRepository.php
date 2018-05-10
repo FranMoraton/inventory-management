@@ -44,7 +44,7 @@ class SubDepartmentRepository extends ServiceEntityRepository
         return $subDepartment;
     }
 
-    public function checkNotExistsNameSubDepartment($name): ?SubDepartment
+    public function checkNotExistNameSubDepartment($name): ?SubDepartment
     {
         /* @var SubDepartment $subDepartment */
         $subDepartment = $this->findOneBy(['name' => $name]);

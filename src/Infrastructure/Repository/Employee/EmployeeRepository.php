@@ -62,10 +62,6 @@ class EmployeeRepository extends ServiceEntityRepository
         return $employee;
     }
 
-    /**
-     * @param string $nif
-     * @return Employee
-     */
     public function findEmployeeByNif(string $nif): ?Employee
     {
         /* @var Employee $employee */
