@@ -2,8 +2,8 @@
 
 namespace Inventory\Management\Tests\Application\Employee\CheckDataEmployee;
 
-use Inventory\Management\Application\Employee\CheckDataEmployee\CheckDataEmployee;
-use Inventory\Management\Application\Employee\CheckDataEmployee\CheckDataEmployeeCommand;
+use Inventory\Management\Application\Employee\CheckLoginEmployee\CheckLoginEmployee;
+use Inventory\Management\Application\Employee\CheckLoginEmployee\CheckLoginEmployeeCommand;
 use Inventory\Management\Domain\Model\Entity\Employee\Employee;
 use Inventory\Management\Domain\Model\Entity\Employee\EmployeeStatus;
 use Inventory\Management\Domain\Service\Employee\CheckDecryptPassword;
@@ -16,6 +16,8 @@ class CheckDataEmployeeTest extends TestCase
 {
     /* @var MockObject $employeeRepository */
     private $employeeRepository;
+    /* @var MockObject $employee */
+    private $employee;
     private $checkDecryptPassword;
     private $checkDataEmployeeCommand;
 
@@ -23,10 +25,28 @@ class CheckDataEmployeeTest extends TestCase
     {
         $this->employeeRepository = $this->createMock(EmployeeRepository::class);
         $this->checkDecryptPassword = new CheckDecryptPassword();
-        $this->checkDataEmployeeCommand = new CheckDataEmployeeCommand(
+        $this->checkDataEmployeeCommand = new CheckLoginEmployeeCommand(
             '76852436D',
             '1234'
         );
+        $employeeStatus = $this->createMock(EmployeeStatus::class);
+        $this->employee = $this->createMock(Employee::class);
+        $this->employee->method('getId')
+            ->willReturn(1);
+        $this->employee->method('getImage')
+            ->willReturn('image.jpg');
+        $this->employee->method('getNif')
+            ->willReturn('76852436D');
+        $this->employee->method('getPassword')
+            ->willReturn(password_hash('1234', PASSWORD_DEFAULT));
+        $this->employee->method('getName')
+            ->willReturn('Javier');
+        $this->employee->method('getInSsNumber')
+            ->willReturn(456325789345);
+        $this->employee->method('getTelephone')
+            ->willReturn(649356871);
+        $this->employee->method('getEmployeeStatus')
+            ->willReturn($employeeStatus);
     }
 
     /**
@@ -38,7 +58,7 @@ class CheckDataEmployeeTest extends TestCase
             ->with('76852436D')
             ->willReturn(null);
         $searchEmployeeByNif = new SearchEmployeeByNif($this->employeeRepository);
-        $checkDataEmployee = new CheckDataEmployee($searchEmployeeByNif, $this->checkDecryptPassword);
+        $checkDataEmployee = new CheckLoginEmployee($searchEmployeeByNif, $this->checkDecryptPassword);
         $result = $checkDataEmployee->handle($this->checkDataEmployeeCommand);
         $this->assertEquals(['ko' => 'No se ha encontrado ningún trabajador'], $result);
     }
@@ -50,10 +70,10 @@ class CheckDataEmployeeTest extends TestCase
     {
         $this->employeeRepository->method('findEmployeeByNif')
             ->with('76852436D')
-            ->willReturn($this->createMockEmployee());
+            ->willReturn($this->employee);
         $searchEmployeeByNif = new SearchEmployeeByNif($this->employeeRepository);
-        $checkDataEmployee = new CheckDataEmployee($searchEmployeeByNif, $this->checkDecryptPassword);
-        $this->checkDataEmployeeCommand = new CheckDataEmployeeCommand(
+        $checkDataEmployee = new CheckLoginEmployee($searchEmployeeByNif, $this->checkDecryptPassword);
+        $this->checkDataEmployeeCommand = new CheckLoginEmployeeCommand(
             '76852436D',
             '12345'
         );
@@ -68,34 +88,10 @@ class CheckDataEmployeeTest extends TestCase
     {
         $this->employeeRepository->method('findEmployeeByNif')
             ->with('76852436D')
-            ->willReturn($this->createMockEmployee());
+            ->willReturn($this->employee);
         $searchEmployeeByNif = new SearchEmployeeByNif($this->employeeRepository);
-        $checkDataEmployee = new CheckDataEmployee($searchEmployeeByNif, $this->checkDecryptPassword);
+        $checkDataEmployee = new CheckLoginEmployee($searchEmployeeByNif, $this->checkDecryptPassword);
         $result = $checkDataEmployee->handle($this->checkDataEmployeeCommand);
         $this->assertEquals(['ok' => 200], $result);
-    }
-
-    private function createMockEmployee(): MockObject
-    {
-        $employeeStatus = $this->createMock(EmployeeStatus::class);
-        $employee = $this->createMock(Employee::class);
-        $employee->method('getId')
-            ->willReturn(1);
-        $employee->method('getImage')
-            ->willReturn('image.jpg');
-        $employee->method('getNif')
-            ->willReturn('76852436D');
-        $employee->method('getPassword')
-            ->willReturn(password_hash('1234', PASSWORD_DEFAULT));
-        $employee->method('getName')
-            ->willReturn('Javier');
-        $employee->method('getInSsNumber')
-            ->willReturn(456325789345);
-        $employee->method('getTelephone')
-            ->willReturn(649356871);
-        $employee->method('getEmployeeStatus')
-            ->willReturn($employeeStatus);
-
-        return $employee;
     }
 }

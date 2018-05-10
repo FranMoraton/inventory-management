@@ -7,6 +7,7 @@ use Inventory\Management\Application\Department\CreateSubDepartment\CreateSubDep
 use Inventory\Management\Domain\Model\Entity\Department\Department;
 use Inventory\Management\Domain\Model\Entity\Department\NotFoundDepartmentsException;
 use Inventory\Management\Domain\Model\Entity\Department\SubDepartment;
+use Inventory\Management\Domain\Service\Department\CheckNotExistNameSubDepartment;
 use Inventory\Management\Domain\Service\Department\SearchDepartmentById;
 use Inventory\Management\Infrastructure\Repository\Department\DepartmentRepository;
 use Inventory\Management\Infrastructure\Repository\Department\SubDepartmentRepository;
@@ -34,13 +35,43 @@ class CreateSubDepartmentTest extends TestCase
     /**
      * @test
      */
+    public function create_sub_department_then_name_sub_department_found_exception(): void
+    {
+        $name = 'warehouse';
+        $idDepartment = 1;
+        $this->departmentRepository->method('findDepartmentById')
+            ->with($idDepartment)
+            ->willReturn(null);
+        $department = $this->createMock(Department::class);
+        $subDepartment = new SubDepartment($department, 'warehouse');
+        $this->subDepartmentRepository->method('checkNotExistNameSubDepartment')
+            ->with($name)
+            ->willReturn($subDepartment);
+        $checkNotExistNameSubDepartment = new CheckNotExistNameSubDepartment($this->subDepartmentRepository);
+        $createSubDepartment = new CreateSubDepartment(
+            $this->subDepartmentRepository,
+            $this->searchDepartmentById,
+            $checkNotExistNameSubDepartment
+        );
+        $result = $createSubDepartment->handle($this->createDepartmentCommand);
+        $this->assertEquals(['ko' => 'El subdepartamento ya existe'], $result);
+    }
+
+    /**
+     * @test
+     */
     public function create_sub_department_then_department_not_found_exception(): void
     {
         $idDepartment = 1;
         $this->departmentRepository->method('findDepartmentById')
             ->with($idDepartment)
             ->willReturn(null);
-        $createSubDepartment = new CreateSubDepartment($this->subDepartmentRepository, $this->searchDepartmentById);
+        $checkNotExistNameSubDepartment = new CheckNotExistNameSubDepartment($this->subDepartmentRepository);
+        $createSubDepartment = new CreateSubDepartment(
+            $this->subDepartmentRepository,
+            $this->searchDepartmentById,
+            $checkNotExistNameSubDepartment
+        );
         $result = $createSubDepartment->handle($this->createDepartmentCommand);
         $this->assertEquals(['ko' => 'No se ha encontrado ningún departamento'], $result);
     }
@@ -59,7 +90,12 @@ class CreateSubDepartmentTest extends TestCase
         $this->subDepartmentRepository->method('createSubDepartment')
             ->with($subDepartment)
             ->willReturn($subDepartment);
-        $createSubDepartment = new CreateSubDepartment($this->subDepartmentRepository, $this->searchDepartmentById);
+        $checkNotExistNameSubDepartment = new CheckNotExistNameSubDepartment($this->subDepartmentRepository);
+        $createSubDepartment = new CreateSubDepartment(
+            $this->subDepartmentRepository,
+            $this->searchDepartmentById,
+            $checkNotExistNameSubDepartment
+        );
         $result = $createSubDepartment->handle($this->createDepartmentCommand);
         $this->assertEquals(['ok' => 200], $result);
     }

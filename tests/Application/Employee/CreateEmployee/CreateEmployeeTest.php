@@ -27,6 +27,12 @@ class CreateEmployeeTest extends TestCase
     private $employeeRepository;
     /* @var MockObject $encryptPassword */
     private $encryptPassword;
+    /* @var MockObject $department */
+    private $department;
+    /* @var MockObject $subDepartment */
+    private $subDepartment;
+    /* @var MockObject $employee */
+    private $employee;
     private $createEmployeeCommand;
 
     public function setUp(): void
@@ -47,6 +53,36 @@ class CreateEmployeeTest extends TestCase
             '03-05-2018',
             1
         );
+        $this->department = $this->createMock(Department::class);
+        $this->department->method('getId')
+            ->willReturn(1);
+        $this->department->method('getName')
+            ->willReturn('Technology');
+        $this->subDepartment = $this->createMock(SubDepartment::class);
+        $this->subDepartment->method('getId')
+            ->willReturn(1);
+        $this->subDepartment->method('getName')
+            ->willReturn('Technology');
+        $this->subDepartment->method('getDepartment')
+            ->willReturn($this->department);
+        $employeeStatus = $this->createMock(EmployeeStatus::class);
+        $this->employee = $this->createMock(Employee::class);
+        $this->employee->method('getId')
+            ->willReturn(1);
+        $this->employee->method('getImage')
+            ->willReturn('image.jpg');
+        $this->employee->method('getNif')
+            ->willReturn('76852436D');
+        $this->employee->method('getPassword')
+            ->willReturn(password_hash('1234', PASSWORD_DEFAULT));
+        $this->employee->method('getName')
+            ->willReturn('Javier');
+        $this->employee->method('getInSsNumber')
+            ->willReturn('456325789345');
+        $this->employee->method('getTelephone')
+            ->willReturn('649356871');
+        $this->employee->method('getEmployeeStatus')
+            ->willReturn($employeeStatus);
     }
 
     /**
@@ -81,17 +117,12 @@ class CreateEmployeeTest extends TestCase
     {
         $idSubDepartment = 1;
         $nif = '76852436D';
-        $department = $this->createMock(Department::class);
-        $department->method('getId')
-            ->willReturn(1);
-        $department->method('getName')
-            ->willReturn('Technology');
         $this->employeeRepository->method('checkNotExistsNifEmployee')
             ->with($nif)
-            ->willReturn($this->createMockEmployee());
+            ->willReturn($this->employee);
         $this->subDepartmentRepository->method('findSubDepartmentById')
             ->with($idSubDepartment)
-            ->willReturn($this->createMockSubDepartment($department));
+            ->willReturn($this->subDepartment);
         $checkNotExistsUniqueColumns = new CheckNotExistsUniqueColumns(
             $this->employeeRepository,
             $this->employeeStatusRepository
@@ -115,17 +146,12 @@ class CreateEmployeeTest extends TestCase
     {
         $idSubDepartment = 1;
         $inSsNumber = '456325789345';
-        $department = $this->createMock(Department::class);
-        $department->method('getId')
-            ->willReturn(1);
-        $department->method('getName')
-            ->willReturn('Technology');
         $this->employeeRepository->method('checkNotExistsInSsNumberEmployee')
             ->with($inSsNumber)
-            ->willReturn($this->createMockEmployee());
+            ->willReturn($this->employee);
         $this->subDepartmentRepository->method('findSubDepartmentById')
             ->with($idSubDepartment)
-            ->willReturn($this->createMockSubDepartment($department));
+            ->willReturn($this->subDepartment);
         $checkNotExistsUniqueColumns = new CheckNotExistsUniqueColumns(
             $this->employeeRepository,
             $this->employeeStatusRepository
@@ -149,17 +175,12 @@ class CreateEmployeeTest extends TestCase
     {
         $idSubDepartment = 1;
         $telephone = '649356871';
-        $department = $this->createMock(Department::class);
-        $department->method('getId')
-            ->willReturn(1);
-        $department->method('getName')
-            ->willReturn('Technology');
         $this->employeeRepository->method('checkNotExistsTelephoneEmployee')
             ->with($telephone)
-            ->willReturn($this->createMockEmployee());
+            ->willReturn($this->employee);
         $this->subDepartmentRepository->method('findSubDepartmentById')
             ->with($idSubDepartment)
-            ->willReturn($this->createMockSubDepartment($department));
+            ->willReturn($this->subDepartment);
         $checkNotExistsUniqueColumns = new CheckNotExistsUniqueColumns(
             $this->employeeRepository,
             $this->employeeStatusRepository
@@ -183,17 +204,13 @@ class CreateEmployeeTest extends TestCase
     {
         $idSubDepartment = 1;
         $code = 564;
-        $department = $this->createMock(Department::class);
-        $department->method('getId')
-            ->willReturn(1);
-        $department->method('getName')
-            ->willReturn('Technology');
-        $this->employeeRepository->method('checkNotExistsCodeEmployeeStatus')
+        $employeeStatus = $this->createMock(EmployeeStatus::class);
+        $this->employeeStatusRepository->method('checkNotExistsCodeEmployeeStatus')
             ->with($code)
-            ->willReturn($this->createMockEmployee());
+            ->willReturn($employeeStatus);
         $this->subDepartmentRepository->method('findSubDepartmentById')
             ->with($idSubDepartment)
-            ->willReturn($this->createMockSubDepartment($department));
+            ->willReturn($this->subDepartment);
         $checkNotExistsUniqueColumns = new CheckNotExistsUniqueColumns(
             $this->employeeRepository,
             $this->employeeStatusRepository
@@ -210,44 +227,15 @@ class CreateEmployeeTest extends TestCase
         $this->assertEquals(['ko' => 'El código de trabajador introducido ya existe'], $result);
     }
 
-    private function createMockEmployee(): MockObject
-    {
-        $employeeStatus = $this->createMock(EmployeeStatus::class);
-        $employee = $this->createMock(Employee::class);
-        $employee->method('getId')
-            ->willReturn(1);
-        $employee->method('getImage')
-            ->willReturn('image.jpg');
-        $employee->method('getNif')
-            ->willReturn('76852436D');
-        $employee->method('getPassword')
-            ->willReturn(password_hash('1234', PASSWORD_DEFAULT));
-        $employee->method('getName')
-            ->willReturn('Javier');
-        $employee->method('getInSsNumber')
-            ->willReturn('456325789345');
-        $employee->method('getTelephone')
-            ->willReturn('649356871');
-        $employee->method('getEmployeeStatus')
-            ->willReturn($employeeStatus);
-
-        return $employee;
-    }
-
     /**
      * @test
      */
     public function create_employee_then_ok_response(): void
     {
-        $department = $this->createMock(Department::class);
-        $department->method('getId')
-            ->willReturn(1);
-        $department->method('getName')
-            ->willReturn('Technology');
         $idSubDepartment = 1;
         $this->subDepartmentRepository->method('findSubDepartmentById')
             ->with($idSubDepartment)
-            ->willReturn($this->createMockSubDepartment($department));
+            ->willReturn($this->subDepartment);
         $codeEmployee = 564;
         $firstContractDate = new \DateTime('03-05-2018');
         $seniorityDate = new \DateTime('03-05-2018');
@@ -255,8 +243,8 @@ class CreateEmployeeTest extends TestCase
             $codeEmployee,
             $firstContractDate,
             $seniorityDate,
-            $department,
-            $this->createMockSubDepartment($department)
+            $this->department,
+            $this->subDepartment
         );
         $this->employeeStatusRepository->method('createEmployeeStatus')
             ->with($employeeStatus)
@@ -290,18 +278,5 @@ class CreateEmployeeTest extends TestCase
         );
         $result = $createEmployee->handle($this->createEmployeeCommand);
         $this->assertEquals(['ok' => 200], $result);
-    }
-
-    private function createMockSubDepartment(MockObject $department): MockObject
-    {
-        $subDepartment = $this->createMock(SubDepartment::class);
-        $subDepartment->method('getId')
-            ->willReturn(1);
-        $subDepartment->method('getName')
-            ->willReturn('Technology');
-        $subDepartment->method('getDepartment')
-            ->willReturn($department);
-
-        return $subDepartment;
     }
 }
