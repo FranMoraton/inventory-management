@@ -2,14 +2,14 @@
 
 namespace Inventory\Management\Domain\Service\Department;
 
+use Inventory\Management\Domain\Model\Entity\Department\DepartmentRepositoryInterface;
 use Inventory\Management\Domain\Model\Entity\Department\FoundNameDepartmentException;
-use Inventory\Management\Infrastructure\Repository\Department\DepartmentRepository;
 
 class CheckNotExistNameDepartment
 {
     private $departmentRepository;
 
-    public function __construct(DepartmentRepository $departmentRepository)
+    public function __construct(DepartmentRepositoryInterface $departmentRepository)
     {
         $this->departmentRepository = $departmentRepository;
     }

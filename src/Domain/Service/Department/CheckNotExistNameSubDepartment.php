@@ -3,13 +3,13 @@
 namespace Inventory\Management\Domain\Service\Department;
 
 use Inventory\Management\Domain\Model\Entity\Department\FoundNameSubDepartmentException;
-use Inventory\Management\Infrastructure\Repository\Department\SubDepartmentRepository;
+use Inventory\Management\Domain\Model\Entity\Department\SubDepartmentRepositoryInterface;
 
 class CheckNotExistNameSubDepartment
 {
     private $subDepartmentRepository;
 
-    public function __construct(SubDepartmentRepository $subDepartmentRepository)
+    public function __construct(SubDepartmentRepositoryInterface $subDepartmentRepository)
     {
         $this->subDepartmentRepository = $subDepartmentRepository;
     }

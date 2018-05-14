@@ -4,8 +4,9 @@ namespace Inventory\Management\Infrastructure\Repository\Department;
 
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Inventory\Management\Domain\Model\Entity\Department\Department;
+use Inventory\Management\Domain\Model\Entity\Department\DepartmentRepositoryInterface;
 
-class DepartmentRepository extends ServiceEntityRepository
+class DepartmentRepository extends ServiceEntityRepository implements DepartmentRepositoryInterface
 {
     /**
      * @param Department $department

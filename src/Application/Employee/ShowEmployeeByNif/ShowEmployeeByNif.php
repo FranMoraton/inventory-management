@@ -1,35 +1,34 @@
 <?php
 
-namespace Inventory\Management\Application\Employee\ChangeStatusToDisableEmployee;
+namespace Inventory\Management\Application\Employee\ShowEmployeeByNif;
 
-use Inventory\Management\Domain\Model\Entity\Employee\EmployeeRepositoryInterface;
 use Inventory\Management\Domain\Model\Entity\Employee\NotFoundEmployeesException;
 use Inventory\Management\Domain\Service\Employee\SearchEmployeeByNif;
 
-class ChangeStatusToDisableEmployee
+class ShowEmployeeByNif
 {
-    private $employeeRepository;
+    private $showEmployeeByNifTransform;
     private $searchEmployeeByNif;
 
     public function __construct(
-        EmployeeRepositoryInterface $employeeRepository,
+        ShowEmployeeByNifTransformInterface $showEmployeeByNifTransform,
         SearchEmployeeByNif $searchEmployeeByNif
     ) {
-        $this->employeeRepository = $employeeRepository;
+        $this->showEmployeeByNifTransform = $showEmployeeByNifTransform;
         $this->searchEmployeeByNif = $searchEmployeeByNif;
     }
 
-    public function handle(ChangeStatusToDisableEmployeeCommand $disableEmployeeCommand): array
+    public function handle(ShowEmployeeByNifCommand $showEmployeeByNifCommand)
     {
         try {
             $employee = $this->searchEmployeeByNif->execute(
-                $disableEmployeeCommand->nif()
+                $showEmployeeByNifCommand->nif()
             );
         } catch (NotFoundEmployeesException $notFoundEmployeesException) {
             return ['ko' => $notFoundEmployeesException->getMessage()];
         }
-        $this->employeeRepository->changeStatusToDisableEmployee($employee);
 
-        return ['ok' => 200];
+        return $this->showEmployeeByNifTransform
+            ->transform($employee);
     }
 }

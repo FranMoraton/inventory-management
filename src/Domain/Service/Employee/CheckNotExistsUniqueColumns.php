@@ -2,12 +2,12 @@
 
 namespace Inventory\Management\Domain\Service\Employee;
 
+use Inventory\Management\Domain\Model\Entity\Employee\EmployeeRepositoryInterface;
+use Inventory\Management\Domain\Model\Entity\Employee\EmployeeStatusRepositoryInterface;
 use Inventory\Management\Domain\Model\Entity\Employee\FoundCodeEmployeeStatusException;
 use Inventory\Management\Domain\Model\Entity\Employee\FoundInSsNumberEmployeeException;
 use Inventory\Management\Domain\Model\Entity\Employee\FoundNifEmployeeException;
 use Inventory\Management\Domain\Model\Entity\Employee\FoundTelephoneEmployeeException;
-use Inventory\Management\Infrastructure\Repository\Employee\EmployeeRepository;
-use Inventory\Management\Infrastructure\Repository\Employee\EmployeeStatusRepository;
 
 class CheckNotExistsUniqueColumns
 {
@@ -15,8 +15,8 @@ class CheckNotExistsUniqueColumns
     private $employeeStatusRepository;
 
     public function __construct(
-        EmployeeRepository $employeeRepository,
-        EmployeeStatusRepository $employeeStatusRepository
+        EmployeeRepositoryInterface $employeeRepository,
+        EmployeeStatusRepositoryInterface $employeeStatusRepository
     ) {
         $this->employeeRepository = $employeeRepository;
         $this->employeeStatusRepository = $employeeStatusRepository;

@@ -2,10 +2,14 @@
 #    path: /
 #    controller: App\Controller\DefaultController::index
 
-department:
-    resource: ./routes/department/department.yaml
-    prefix: /department
+admin_department:
+    resource: ./routes/admin/department/department.yaml
+    prefix: /admin/department
 
-employee:
-    resource: ./routes/employee/employee.yaml
-    prefix: /employee
+admin_employee:
+    resource: ./routes/admin/employee/employee.yaml
+    prefix: /admin/employee
+
+user_employee:
+    resource: ./routes/user/employee/employee.yaml
+    prefix: /user/employee

@@ -4,7 +4,9 @@ namespace Inventory\Management\Application\Employee\CreateEmployee;
 
 use Inventory\Management\Domain\Model\Entity\Department\NotFoundSubDepartmentsException;
 use Inventory\Management\Domain\Model\Entity\Employee\Employee;
+use Inventory\Management\Domain\Model\Entity\Employee\EmployeeRepositoryInterface;
 use Inventory\Management\Domain\Model\Entity\Employee\EmployeeStatus;
+use Inventory\Management\Domain\Model\Entity\Employee\EmployeeStatusRepositoryInterface;
 use Inventory\Management\Domain\Model\Entity\Employee\FoundCodeEmployeeStatusException;
 use Inventory\Management\Domain\Model\Entity\Employee\FoundInSsNumberEmployeeException;
 use Inventory\Management\Domain\Model\Entity\Employee\FoundNifEmployeeException;
@@ -12,8 +14,6 @@ use Inventory\Management\Domain\Model\Entity\Employee\FoundTelephoneEmployeeExce
 use Inventory\Management\Domain\Service\Department\SearchSubDepartmentById;
 use Inventory\Management\Domain\Service\Employee\CheckNotExistsUniqueColumns;
 use Inventory\Management\Domain\Service\Employee\EncryptPassword;
-use Inventory\Management\Infrastructure\Repository\Employee\EmployeeRepository;
-use Inventory\Management\Infrastructure\Repository\Employee\EmployeeStatusRepository;
 
 class CreateEmployee
 {
@@ -24,8 +24,8 @@ class CreateEmployee
     private $encryptPassword;
 
     public function __construct(
-        EmployeeRepository $employeeRepository,
-        EmployeeStatusRepository $employeeStatusRepository,
+        EmployeeRepositoryInterface $employeeRepository,
+        EmployeeStatusRepositoryInterface $employeeStatusRepository,
         SearchSubDepartmentById $searchSubDepartmentById,
         CheckNotExistsUniqueColumns $checkNotExistsUniqueColumns,
         EncryptPassword $encryptPassword
@@ -37,12 +37,6 @@ class CreateEmployee
         $this->encryptPassword = $encryptPassword;
     }
 
-    /**
-     * @param CreateEmployeeCommand $createEmployeeCommand
-     * @return array
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     */
     public function handle(CreateEmployeeCommand $createEmployeeCommand): array
     {
         try {

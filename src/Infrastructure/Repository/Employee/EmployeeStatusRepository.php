@@ -4,8 +4,9 @@ namespace Inventory\Management\Infrastructure\Repository\Employee;
 
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Inventory\Management\Domain\Model\Entity\Employee\EmployeeStatus;
+use Inventory\Management\Domain\Model\Entity\Employee\EmployeeStatusRepositoryInterface;
 
-class EmployeeStatusRepository extends ServiceEntityRepository
+class EmployeeStatusRepository extends ServiceEntityRepository implements EmployeeStatusRepositoryInterface
 {
     /**
      * @param EmployeeStatus $employeeStatus

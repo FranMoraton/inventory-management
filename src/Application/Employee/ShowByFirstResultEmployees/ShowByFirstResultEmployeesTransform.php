@@ -6,6 +6,8 @@ use Inventory\Management\Domain\Model\Entity\Employee\Employee;
 
 class ShowByFirstResultEmployeesTransform implements ShowByFirstResultEmployeesTransformInterface
 {
+    private const ATOM = "Y-m-d\TH:i:sP";
+
     /**
      * @param array|Employee[] $employees
      * @return array
@@ -19,10 +21,12 @@ class ShowByFirstResultEmployeesTransform implements ShowByFirstResultEmployeesT
                 'id' => $status->getId(),
                 'codeEmployee' => $status->getCodeEmployee(),
                 'disabledEmployee' => $status->getDisabledEmployee(),
-                'firstContractDate' => $status->getFirstContractDate(),
-                'seniorityDate' => $status->getSeniorityDate(),
-                'expirationContractDate' => $status->getExpirationContractDate(),
-                'possibleRenewal' => $status->getPossibleRenewal(),
+                'firstContractDate' => $status->getFirstContractDate()->format(self::ATOM),
+                'seniorityDate' => $status->getSeniorityDate()->format(self::ATOM),
+                'expirationContractDate' => null !== $status->getExpirationContractDate()
+                    ? $status->getExpirationContractDate()->format(self::ATOM) : null,
+                'possibleRenewal' => null !== $status->getPossibleRenewal()
+                    ? $status->getPossibleRenewal()->format(self::ATOM) : null,
                 'availableHolidays' => $status->getAvailableHolidays(),
                 'holidaysPendingToApplyFor' => $status->getHolidaysPendingToApplyFor(),
                 'department' => $status->getDepartment()->getName(),

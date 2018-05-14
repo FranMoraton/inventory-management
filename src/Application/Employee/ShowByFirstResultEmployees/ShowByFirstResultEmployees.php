@@ -2,7 +2,7 @@
 
 namespace Inventory\Management\Application\Employee\ShowByFirstResultEmployees;
 
-use Inventory\Management\Infrastructure\Repository\Employee\EmployeeRepository;
+use Inventory\Management\Domain\Model\Entity\Employee\EmployeeRepositoryInterface;
 
 class ShowByFirstResultEmployees
 {
@@ -10,17 +10,13 @@ class ShowByFirstResultEmployees
     private $showEmployeesTransform;
 
     public function __construct(
-        EmployeeRepository $employeeRepository,
+        EmployeeRepositoryInterface $employeeRepository,
         ShowByFirstResultEmployeesTransformInterface $showEmployeesTransform
     ) {
         $this->employeeRepository = $employeeRepository;
         $this->showEmployeesTransform = $showEmployeesTransform;
     }
 
-    /**
-     * @param ShowByFirstResultEmployeesCommand $showEmployeesCommand
-     * @return array
-     */
     public function handle(ShowByFirstResultEmployeesCommand $showEmployeesCommand): array
     {
         $listEmployees = $this->employeeRepository->showByFirstResultEmployees(

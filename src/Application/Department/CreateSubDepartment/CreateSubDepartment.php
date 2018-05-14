@@ -2,13 +2,12 @@
 
 namespace Inventory\Management\Application\Department\CreateSubDepartment;
 
-use Doctrine\ORM\ORMException;
 use Inventory\Management\Domain\Model\Entity\Department\FoundNameSubDepartmentException;
 use Inventory\Management\Domain\Model\Entity\Department\NotFoundDepartmentsException;
 use Inventory\Management\Domain\Model\Entity\Department\SubDepartment;
+use Inventory\Management\Domain\Model\Entity\Department\SubDepartmentRepositoryInterface;
 use Inventory\Management\Domain\Service\Department\CheckNotExistNameSubDepartment;
 use Inventory\Management\Domain\Service\Department\SearchDepartmentById;
-use Inventory\Management\Infrastructure\Repository\Department\SubDepartmentRepository;
 
 class CreateSubDepartment
 {
@@ -17,7 +16,7 @@ class CreateSubDepartment
     private $checkNotExistNameSubDepartment;
 
     public function __construct(
-        SubDepartmentRepository $subDepartmentRepository,
+        SubDepartmentRepositoryInterface $subDepartmentRepository,
         SearchDepartmentById $searchDepartmentById,
         CheckNotExistNameSubDepartment $checkNotExistNameSubDepartment
     ) {
@@ -26,12 +25,6 @@ class CreateSubDepartment
         $this->checkNotExistNameSubDepartment = $checkNotExistNameSubDepartment;
     }
 
-    /**
-     * @param CreateSubDepartmentCommand $createSubDepartmentCommand
-     * @return array
-     * @throws ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     */
     public function handle(CreateSubDepartmentCommand $createSubDepartmentCommand): array
     {
         try {

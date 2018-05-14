@@ -18,23 +18,18 @@ class CheckLoginEmployee
         $this->checkDecryptPassword = $checkDecryptPassword;
     }
 
-    /**
-     * @param CheckLoginEmployeeCommand $checkDataEmployeeCommand
-     * @return array
-     * @throws NotFoundPasswordEmployeeException
-     */
-    public function handle(CheckLoginEmployeeCommand $checkDataEmployeeCommand): array
+    public function handle(CheckLoginEmployeeCommand $checkLoginEmployeeCommand): array
     {
         try {
             $resultEmployee = $this->searchEmployeeByNif->execute(
-                $checkDataEmployeeCommand->nif()
+                $checkLoginEmployeeCommand->nif()
             );
         } catch (NotFoundEmployeesException $notFoundEmployeesException) {
             return ['ko' => $notFoundEmployeesException->getMessage()];
         }
         try {
             $this->checkDecryptPassword->execute(
-                $checkDataEmployeeCommand->password(),
+                $checkLoginEmployeeCommand->password(),
                 $resultEmployee->getPassword()
             );
         } catch (NotFoundPasswordEmployeeException $notFoundPasswordEmployeeException) {

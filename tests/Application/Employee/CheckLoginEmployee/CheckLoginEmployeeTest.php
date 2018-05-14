@@ -1,6 +1,6 @@
 <?php
 
-namespace Inventory\Management\Tests\Application\Employee\CheckDataEmployee;
+namespace Inventory\Management\Tests\Application\Employee\CheckLoginEmployee;
 
 use Inventory\Management\Application\Employee\CheckLoginEmployee\CheckLoginEmployee;
 use Inventory\Management\Application\Employee\CheckLoginEmployee\CheckLoginEmployeeCommand;
@@ -12,7 +12,7 @@ use Inventory\Management\Infrastructure\Repository\Employee\EmployeeRepository;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
-class CheckDataEmployeeTest extends TestCase
+class CheckLoginEmployeeTest extends TestCase
 {
     /* @var MockObject $employeeRepository */
     private $employeeRepository;
@@ -58,8 +58,8 @@ class CheckDataEmployeeTest extends TestCase
             ->with('76852436D')
             ->willReturn(null);
         $searchEmployeeByNif = new SearchEmployeeByNif($this->employeeRepository);
-        $checkDataEmployee = new CheckLoginEmployee($searchEmployeeByNif, $this->checkDecryptPassword);
-        $result = $checkDataEmployee->handle($this->checkDataEmployeeCommand);
+        $checkLoginEmployee = new CheckLoginEmployee($searchEmployeeByNif, $this->checkDecryptPassword);
+        $result = $checkLoginEmployee->handle($this->checkDataEmployeeCommand);
         $this->assertEquals(['ko' => 'No se ha encontrado ningún trabajador'], $result);
     }
 
@@ -72,12 +72,12 @@ class CheckDataEmployeeTest extends TestCase
             ->with('76852436D')
             ->willReturn($this->employee);
         $searchEmployeeByNif = new SearchEmployeeByNif($this->employeeRepository);
-        $checkDataEmployee = new CheckLoginEmployee($searchEmployeeByNif, $this->checkDecryptPassword);
+        $checkLoginEmployee = new CheckLoginEmployee($searchEmployeeByNif, $this->checkDecryptPassword);
         $this->checkDataEmployeeCommand = new CheckLoginEmployeeCommand(
             '76852436D',
             '12345'
         );
-        $result = $checkDataEmployee->handle($this->checkDataEmployeeCommand);
+        $result = $checkLoginEmployee->handle($this->checkDataEmployeeCommand);
         $this->assertEquals(['ko' => 'La contraseña introducida no es correcta'], $result);
     }
 
@@ -90,8 +90,8 @@ class CheckDataEmployeeTest extends TestCase
             ->with('76852436D')
             ->willReturn($this->employee);
         $searchEmployeeByNif = new SearchEmployeeByNif($this->employeeRepository);
-        $checkDataEmployee = new CheckLoginEmployee($searchEmployeeByNif, $this->checkDecryptPassword);
-        $result = $checkDataEmployee->handle($this->checkDataEmployeeCommand);
+        $checkLoginEmployee = new CheckLoginEmployee($searchEmployeeByNif, $this->checkDecryptPassword);
+        $result = $checkLoginEmployee->handle($this->checkDataEmployeeCommand);
         $this->assertEquals(['ok' => 200], $result);
     }
 }

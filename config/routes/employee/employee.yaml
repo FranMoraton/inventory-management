@@ -1,3 +1,0 @@
-create_employee:
-    path: /create
-    controller: Inventory\Management\Infrastructure\Controller\Employee\EmployeeController::createEmployee

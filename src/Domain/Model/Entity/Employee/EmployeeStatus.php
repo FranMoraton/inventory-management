@@ -20,12 +20,12 @@ class EmployeeStatus
     private $id;
 
     /**
-     * @ORM\Column(type="integer", nullable=false)
+     * @ORM\Column(type="integer", nullable=false, unique=true)
      */
     private $codeEmployee;
 
     /**
-     * @@ORM\Column(type="boolean", nullable=false, options={"default"=false})
+     * @ORM\Column(type="boolean", nullable=false)
      */
     private $disabledEmployee;
 
@@ -50,12 +50,12 @@ class EmployeeStatus
     private $possibleRenewal;
 
     /**
-     * @ORM\Column(type="integer", nullable=true, options={"default"=0})
+     * @ORM\Column(type="integer", nullable=true)
      */
     private $availableHolidays;
 
     /**
-     * @ORM\Column(type="integer", nullable=true, options={"default"=0})
+     * @ORM\Column(type="integer", nullable=true)
      */
     private $holidaysPendingToApplyFor;
 
@@ -81,6 +81,9 @@ class EmployeeStatus
         $this->seniorityDate = $seniorityDate;
         $this->department = $department;
         $this->subDepartment = $subDepartment;
+        $this->disabledEmployee = false;
+        $this->availableHolidays = 0;
+        $this->holidaysPendingToApplyFor = 0;
     }
 
     public function getId(): int
@@ -103,7 +106,7 @@ class EmployeeStatus
         $this->disabledEmployee = $disabledEmployee;
     }
 
-    public function getFirstContractDate()
+    public function getFirstContractDate(): \DateTime
     {
         return $this->firstContractDate;
     }
@@ -113,7 +116,7 @@ class EmployeeStatus
         $this->firstContractDate = $firstContractDate;
     }
 
-    public function getSeniorityDate()
+    public function getSeniorityDate(): \DateTime
     {
         return $this->seniorityDate;
     }
@@ -123,7 +126,7 @@ class EmployeeStatus
         $this->seniorityDate = $seniorityDate;
     }
 
-    public function getExpirationContractDate()
+    public function getExpirationContractDate(): ?\DateTime
     {
         return $this->expirationContractDate;
     }
@@ -133,7 +136,7 @@ class EmployeeStatus
         $this->expirationContractDate = $expirationContractDate;
     }
 
-    public function getPossibleRenewal()
+    public function getPossibleRenewal(): ?\DateTime
     {
         return $this->possibleRenewal;
     }

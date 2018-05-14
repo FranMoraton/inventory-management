@@ -1,0 +1,19 @@
+disable_employee:
+    path: /{nif}/disable
+    controller: Inventory\Management\Infrastructure\Controller\Employee\ChangeStatusToDisableEmployeeController::changeStatusToDisableEmployee
+
+enable_employee:
+    path: /{nif}/enable
+    controller: Inventory\Management\Infrastructure\Controller\Employee\ChangeStatusToEnableEmployeeController::changeStatusToEnableEmployee
+
+create_employee:
+    path: /create
+    controller: Inventory\Management\Infrastructure\Controller\Employee\CreateEmployeeController::createEmployee
+
+list_employees:
+    path: /list/{firstresultposition}
+    controller: Inventory\Management\Infrastructure\Controller\Employee\ShowByFirstResultEmployeesController::showByFirstResultEmployees
+
+search_employee_admin:
+    path: /{nif}
+    controller: Inventory\Management\Infrastructure\Controller\Employee\ShowEmployeeByNifController::showEmployeeByNif

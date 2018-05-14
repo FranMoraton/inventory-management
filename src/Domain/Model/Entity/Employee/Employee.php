@@ -33,7 +33,7 @@ class Employee
     private $nif;
 
     /**
-     * @ORM\Column(type="string", length=100, nullable=false)
+     * @ORM\Column(type="string", length=70, nullable=false)
      */
     private $password;
 

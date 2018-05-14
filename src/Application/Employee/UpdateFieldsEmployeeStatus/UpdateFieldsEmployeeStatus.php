@@ -1,38 +1,39 @@
 <?php
 
-namespace Inventory\Management\Application\Employee\ShowEmployeeById;
+namespace Inventory\Management\Application\Employee\UpdateFieldsEmployeeStatus;
 
+use Inventory\Management\Domain\Model\Entity\Employee\EmployeeRepositoryInterface;
 use Inventory\Management\Domain\Model\Entity\Employee\NotFoundEmployeesException;
 use Inventory\Management\Domain\Service\Employee\SearchEmployeeByNif;
-use Inventory\Management\Infrastructure\Repository\Employee\EmployeeRepository;
 
-class ShowEmployeeById
+class UpdateFieldsEmployeeStatus
 {
     private $employeeRepository;
-    private $showEmployeeByIdTransform;
     private $searchEmployeeByNif;
 
     public function __construct(
-        EmployeeRepository $employeeRepository,
-        ShowEmployeeByIdTransformInterface $showEmployeeByIdTransform,
+        EmployeeRepositoryInterface $employeeRepository,
         SearchEmployeeByNif $searchEmployeeByNif
     ) {
         $this->employeeRepository = $employeeRepository;
-        $this->showEmployeeByIdTransform = $showEmployeeByIdTransform;
         $this->searchEmployeeByNif = $searchEmployeeByNif;
     }
 
-    public function handle(ShowEmployeeByIdCommand $showEmployeeByIdCommand)
+    public function handle(UpdateFieldsEmployeeStatusCommand $updateFieldsEmployeeStatusCommand): array
     {
         try {
             $employee = $this->searchEmployeeByNif->execute(
-                $showEmployeeByIdCommand->nif()
+                $updateFieldsEmployeeStatusCommand->nif()
             );
         } catch (NotFoundEmployeesException $notFoundEmployeesException) {
             return ['ko' => $notFoundEmployeesException->getMessage()];
         }
+        $this->employeeRepository->updateFieldsEmployeeStatus(
+            $employee,
+            $updateFieldsEmployeeStatusCommand->image(),
+            $updateFieldsEmployeeStatusCommand
+        );
 
-        return $this->showEmployeeByIdTransform
-            ->transform($employee);
+        return ['ok' => 200];
     }
 }

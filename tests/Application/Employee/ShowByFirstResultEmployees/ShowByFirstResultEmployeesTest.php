@@ -58,9 +58,9 @@ class ShowByFirstResultEmployeesTest extends TestCase
         $employee->method('getName')
             ->willReturn('Javier');
         $employee->method('getInSsNumber')
-            ->willReturn(456325789345);
+            ->willReturn('456325789345');
         $employee->method('getTelephone')
-            ->willReturn(649356871);
+            ->willReturn('649356871');
         $employee->method('getEmployeeStatus')
             ->willReturn($employeeStatus);
         $this->employeeRepository->method('showByFirstResultEmployees')

@@ -3,9 +3,13 @@
 namespace Inventory\Management\Infrastructure\Repository\Employee;
 
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Inventory\Management\Application\Employee\UpdateBasicFieldsEmployee\UpdateBasicFieldsEmployeeCommand;
+use Inventory\Management\Application\Employee\UpdateFieldsEmployeeStatus\UpdateFieldsEmployeeStatus;
+use Inventory\Management\Application\Employee\UpdateFieldsEmployeeStatus\UpdateFieldsEmployeeStatusCommand;
 use Inventory\Management\Domain\Model\Entity\Employee\Employee;
+use Inventory\Management\Domain\Model\Entity\Employee\EmployeeRepositoryInterface;
 
-class EmployeeRepository extends ServiceEntityRepository
+class EmployeeRepository extends ServiceEntityRepository implements EmployeeRepositoryInterface
 {
     private const MAX_RESULTS_QUERY = 20;
 
@@ -31,7 +35,12 @@ class EmployeeRepository extends ServiceEntityRepository
      */
     public function changeStatusToDisableEmployee(Employee $employee): Employee
     {
-        return $this->changeStatusToEmployee($employee, true);
+        $employee->getEmployeeStatus()
+            ->setDisabledEmployee(true);
+
+        $this->getEntityManager()->flush();
+
+        return $employee;
     }
 
     /**
@@ -42,21 +51,52 @@ class EmployeeRepository extends ServiceEntityRepository
      */
     public function changeStatusToEnableEmployee(Employee $employee): Employee
     {
-        return $this->changeStatusToEmployee($employee, false);
+        $employee->getEmployeeStatus()
+            ->setDisabledEmployee(false);
+
+        $this->getEntityManager()->flush();
+
+        return $employee;
     }
 
     /**
      * @param Employee $employee
-     * @param bool $status
+     * @param string $passwordHash
+     * @param UpdateBasicFieldsEmployeeCommand $updateBasicFieldsEmployeeCommand
      * @return Employee
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    private function changeStatusToEmployee(Employee $employee, bool $status): Employee
-    {
-        $employee->getEmployeeStatus()
-            ->setDisabledEmployee($status);
+    public function updateBasicFieldsEmployee(
+        Employee $employee,
+        string $passwordHash,
+        UpdateBasicFieldsEmployeeCommand $updateBasicFieldsEmployeeCommand
+    ): Employee {
+        $employee->setPassword($passwordHash);
+        $employee->setName($updateBasicFieldsEmployeeCommand->name());
+        $employee->setTelephone($updateBasicFieldsEmployeeCommand->telephone());
+        $this->getEntityManager()->flush();
 
+        return $employee;
+    }
+
+    /**
+     * @param Employee $employee
+     * @param string $image
+     * @param UpdateFieldsEmployeeStatusCommand $updateFieldsEmployeeStatusCommand
+     * @return Employee
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function updateFieldsEmployeeStatus(
+        Employee $employee,
+        string $image,
+        UpdateFieldsEmployeeStatusCommand $updateFieldsEmployeeStatusCommand
+    ): Employee {
+        $employee->setImage($image);
+        $employeeStatus = $employee->getEmployeeStatus();
+        $employeeStatus->setAvailableHolidays($updateFieldsEmployeeStatusCommand->availableHolidays());
+        $employeeStatus->setHolidaysPendingToApplyFor($updateFieldsEmployeeStatusCommand->holidaysPendingToApplyFor());
         $this->getEntityManager()->flush();
 
         return $employee;

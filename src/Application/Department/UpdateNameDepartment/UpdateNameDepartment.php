@@ -2,9 +2,9 @@
 
 namespace Inventory\Management\Application\Department\UpdateNameDepartment;
 
+use Inventory\Management\Domain\Model\Entity\Department\DepartmentRepositoryInterface;
 use Inventory\Management\Domain\Model\Entity\Department\NotFoundDepartmentsException;
 use Inventory\Management\Domain\Service\Department\SearchDepartmentById;
-use Inventory\Management\Infrastructure\Repository\Department\DepartmentRepository;
 
 class UpdateNameDepartment
 {
@@ -12,19 +12,13 @@ class UpdateNameDepartment
     private $searchDepartmentById;
 
     public function __construct(
-        DepartmentRepository $departmentRepository,
+        DepartmentRepositoryInterface $departmentRepository,
         SearchDepartmentById $searchDepartmentById
     ) {
         $this->departmentRepository = $departmentRepository;
         $this->searchDepartmentById = $searchDepartmentById;
     }
 
-    /**
-     * @param UpdateNameDepartmentCommand $updateNameDepartmentCommand
-     * @return array
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     */
     public function handle(UpdateNameDepartmentCommand $updateNameDepartmentCommand): array
     {
         try {

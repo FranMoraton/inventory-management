@@ -1,0 +1,19 @@
+create_department:
+    path: /create
+    controller: Inventory\Management\Infrastructure\Controller\Department\CreateDepartmentController::createDepartment
+
+create_subdepartment:
+    path: /{department}/subdepartment/create
+    controller: Inventory\Management\Infrastructure\Controller\Department\CreateSubDepartmentController::createSubDepartment
+
+list_departments:
+    path: /list
+    controller: Inventory\Management\Infrastructure\Controller\Department\ShowDepartmentsController::showDepartments
+
+update_department:
+    path: /{department}/update
+    controller: Inventory\Management\Infrastructure\Controller\Department\UpdateNameDepartmentController::updateNameDepartment
+
+update_subdepartment:
+    path: /subdepartment/{subdepartment}/update
+    controller: Inventory\Management\Infrastructure\Controller\Department\UpdateNameSubDepartmentController::updateNameSubDepartment

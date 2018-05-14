@@ -2,7 +2,7 @@
 
 namespace Inventory\Management\Application\Department\showDepartments;
 
-use Inventory\Management\Infrastructure\Repository\Department\DepartmentRepository;
+use Inventory\Management\Domain\Model\Entity\Department\DepartmentRepositoryInterface;
 
 class ShowDepartments
 {
@@ -10,16 +10,13 @@ class ShowDepartments
     private $showDepartmentsTransform;
 
     public function __construct(
-        DepartmentRepository $departmentRepository,
+        DepartmentRepositoryInterface $departmentRepository,
         ShowDepartmentsTransformInterface $showDepartmentsTransform
     ) {
         $this->departmentRepository = $departmentRepository;
         $this->showDepartmentsTransform = $showDepartmentsTransform;
     }
 
-    /**
-     * @return array
-     */
     public function handle(): array
     {
         $listDepartments = $this->departmentRepository->showAllDepartments();

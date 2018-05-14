@@ -1,10 +1,10 @@
 <?php
 
-namespace Inventory\Management\Application\Employee\ShowEmployeeById;
+namespace Inventory\Management\Application\Employee\ShowEmployeeByNif;
 
 use Inventory\Management\Domain\Model\Entity\Employee\Employee;
 
-interface ShowEmployeeByIdTransformInterface
+interface ShowEmployeeByNifTransformInterface
 {
     public function transform(Employee $employee);
 }
