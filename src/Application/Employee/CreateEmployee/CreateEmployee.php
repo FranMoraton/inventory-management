@@ -12,7 +12,7 @@ use Inventory\Management\Domain\Model\Entity\Employee\FoundInSsNumberEmployeeExc
 use Inventory\Management\Domain\Model\Entity\Employee\FoundNifEmployeeException;
 use Inventory\Management\Domain\Model\Entity\Employee\FoundTelephoneEmployeeException;
 use Inventory\Management\Domain\Service\Department\SearchSubDepartmentById;
-use Inventory\Management\Domain\Service\Employee\CheckNotExistsUniqueColumns;
+use Inventory\Management\Domain\Service\Employee\CheckNotExistsUniqueFields;
 use Inventory\Management\Domain\Service\Employee\EncryptPassword;
 
 class CreateEmployee
@@ -20,34 +20,27 @@ class CreateEmployee
     private $employeeRepository;
     private $employeeStatusRepository;
     private $searchSubDepartmentById;
-    private $checkNotExistsUniqueColumns;
+    private $checkNotExistsUniqueFields;
     private $encryptPassword;
 
     public function __construct(
         EmployeeRepositoryInterface $employeeRepository,
         EmployeeStatusRepositoryInterface $employeeStatusRepository,
         SearchSubDepartmentById $searchSubDepartmentById,
-        CheckNotExistsUniqueColumns $checkNotExistsUniqueColumns,
+        CheckNotExistsUniqueFields $checkNotExistsUniqueFields,
         EncryptPassword $encryptPassword
     ) {
         $this->employeeRepository = $employeeRepository;
         $this->employeeStatusRepository = $employeeStatusRepository;
         $this->searchSubDepartmentById = $searchSubDepartmentById;
-        $this->checkNotExistsUniqueColumns = $checkNotExistsUniqueColumns;
+        $this->checkNotExistsUniqueFields = $checkNotExistsUniqueFields;
         $this->encryptPassword = $encryptPassword;
     }
 
     public function handle(CreateEmployeeCommand $createEmployeeCommand): array
     {
         try {
-            $subDepartment = $this->searchSubDepartmentById->execute(
-                $createEmployeeCommand->subDepartment()
-            );
-        } catch (NotFoundSubDepartmentsException $notFoundSubDepartmentsException) {
-            return ['ko' => $notFoundSubDepartmentsException->getMessage()];
-        }
-        try {
-            $this->checkNotExistsUniqueColumns->execute(
+            $this->checkNotExistsUniqueFields->execute(
                 $createEmployeeCommand->nif(),
                 $createEmployeeCommand->inSsNumber(),
                 $createEmployeeCommand->telephone(),
@@ -61,6 +54,13 @@ class CreateEmployee
             return ['ko' => $foundTelephoneEmployeeException->getMessage()];
         } catch (FoundCodeEmployeeStatusException $foundCodeEmployeeStatusException) {
             return ['ko' => $foundCodeEmployeeStatusException->getMessage()];
+        }
+        try {
+            $subDepartment = $this->searchSubDepartmentById->execute(
+                $createEmployeeCommand->subDepartment()
+            );
+        } catch (NotFoundSubDepartmentsException $notFoundSubDepartmentsException) {
+            return ['ko' => $notFoundSubDepartmentsException->getMessage()];
         }
         $employeeStatus = new EmployeeStatus(
             $createEmployeeCommand->codeEmployee(),

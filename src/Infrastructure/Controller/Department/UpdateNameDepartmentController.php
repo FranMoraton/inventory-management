@@ -13,7 +13,7 @@ class UpdateNameDepartmentController extends Controller
     public function updateNameDepartment(Request $request, UpdateNameDepartment $updateNameDepartment): Response
     {
         $updateNameDepartmentCommand = new UpdateNameDepartmentCommand(
-            $request->get('department'),
+            $request->attributes->get('department'),
             $request->query->get('name')
         );
         $response = $updateNameDepartment->handle($updateNameDepartmentCommand);

@@ -6,6 +6,8 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Inventory\Management\Application\Employee\UpdateBasicFieldsEmployee\UpdateBasicFieldsEmployeeCommand;
 use Inventory\Management\Application\Employee\UpdateFieldsEmployeeStatus\UpdateFieldsEmployeeStatus;
 use Inventory\Management\Application\Employee\UpdateFieldsEmployeeStatus\UpdateFieldsEmployeeStatusCommand;
+use Inventory\Management\Domain\Model\Entity\Department\Department;
+use Inventory\Management\Domain\Model\Entity\Department\SubDepartment;
 use Inventory\Management\Domain\Model\Entity\Employee\Employee;
 use Inventory\Management\Domain\Model\Entity\Employee\EmployeeRepositoryInterface;
 
@@ -62,7 +64,8 @@ class EmployeeRepository extends ServiceEntityRepository implements EmployeeRepo
     /**
      * @param Employee $employee
      * @param string $passwordHash
-     * @param UpdateBasicFieldsEmployeeCommand $updateBasicFieldsEmployeeCommand
+     * @param string $name
+     * @param string $telephone
      * @return Employee
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
@@ -70,11 +73,12 @@ class EmployeeRepository extends ServiceEntityRepository implements EmployeeRepo
     public function updateBasicFieldsEmployee(
         Employee $employee,
         string $passwordHash,
-        UpdateBasicFieldsEmployeeCommand $updateBasicFieldsEmployeeCommand
+        string $name,
+        string $telephone
     ): Employee {
         $employee->setPassword($passwordHash);
-        $employee->setName($updateBasicFieldsEmployeeCommand->name());
-        $employee->setTelephone($updateBasicFieldsEmployeeCommand->telephone());
+        $employee->setName($name);
+        $employee->setTelephone($telephone);
         $this->getEntityManager()->flush();
 
         return $employee;
@@ -83,7 +87,12 @@ class EmployeeRepository extends ServiceEntityRepository implements EmployeeRepo
     /**
      * @param Employee $employee
      * @param string $image
-     * @param UpdateFieldsEmployeeStatusCommand $updateFieldsEmployeeStatusCommand
+     * @param \DateTime $expirationContractDate
+     * @param \DateTime $possibleRenewal
+     * @param int $availableHolidays
+     * @param int $holidaysPendingToApplyFor
+     * @param Department $department
+     * @param SubDepartment $subDepartment
      * @return Employee
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
@@ -91,12 +100,21 @@ class EmployeeRepository extends ServiceEntityRepository implements EmployeeRepo
     public function updateFieldsEmployeeStatus(
         Employee $employee,
         string $image,
-        UpdateFieldsEmployeeStatusCommand $updateFieldsEmployeeStatusCommand
+        \DateTime $expirationContractDate,
+        \DateTime $possibleRenewal,
+        int $availableHolidays,
+        int $holidaysPendingToApplyFor,
+        Department $department,
+        SubDepartment $subDepartment
     ): Employee {
         $employee->setImage($image);
         $employeeStatus = $employee->getEmployeeStatus();
-        $employeeStatus->setAvailableHolidays($updateFieldsEmployeeStatusCommand->availableHolidays());
-        $employeeStatus->setHolidaysPendingToApplyFor($updateFieldsEmployeeStatusCommand->holidaysPendingToApplyFor());
+        $employeeStatus->setExpirationContractDate($expirationContractDate);
+        $employeeStatus->setPossibleRenewal($possibleRenewal);
+        $employeeStatus->setAvailableHolidays($availableHolidays);
+        $employeeStatus->setHolidaysPendingToApplyFor($holidaysPendingToApplyFor);
+        $employeeStatus->setDepartment($department);
+        $employeeStatus->setSubDepartment($subDepartment);
         $this->getEntityManager()->flush();
 
         return $employee;
@@ -118,14 +136,6 @@ class EmployeeRepository extends ServiceEntityRepository implements EmployeeRepo
             ->getQuery();
 
         return $query->execute();
-    }
-
-    public function checkNotExistsNifEmployee(string $nif): ?Employee
-    {
-        /* @var Employee $employee */
-        $employee = $this->findOneBy(['nif' => $nif]);
-
-        return $employee;
     }
 
     public function checkNotExistsInSsNumberEmployee(string $inSsNumber): ?Employee

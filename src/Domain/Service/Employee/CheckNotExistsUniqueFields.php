@@ -9,17 +9,20 @@ use Inventory\Management\Domain\Model\Entity\Employee\FoundInSsNumberEmployeeExc
 use Inventory\Management\Domain\Model\Entity\Employee\FoundNifEmployeeException;
 use Inventory\Management\Domain\Model\Entity\Employee\FoundTelephoneEmployeeException;
 
-class CheckNotExistsUniqueColumns
+class CheckNotExistsUniqueFields
 {
     private $employeeRepository;
     private $employeeStatusRepository;
+    private $checkNotExistTelephoneEmployee;
 
     public function __construct(
         EmployeeRepositoryInterface $employeeRepository,
-        EmployeeStatusRepositoryInterface $employeeStatusRepository
+        EmployeeStatusRepositoryInterface $employeeStatusRepository,
+        CheckNotExistTelephoneEmployee $checkNotExistTelephoneEmployee
     ) {
         $this->employeeRepository = $employeeRepository;
         $this->employeeStatusRepository = $employeeStatusRepository;
+        $this->checkNotExistTelephoneEmployee = $checkNotExistTelephoneEmployee;
     }
 
     /**
@@ -38,7 +41,7 @@ class CheckNotExistsUniqueColumns
         string $telephone,
         string $codeEmployee
     ): void {
-        $nifEmployee = $this->employeeRepository->checkNotExistsNifEmployee($nif);
+        $nifEmployee = $this->employeeRepository->findEmployeeByNif($nif);
         if (null !== $nifEmployee) {
             throw new FoundNifEmployeeException();
         }
@@ -46,10 +49,7 @@ class CheckNotExistsUniqueColumns
         if (null !== $inSsNumberEmployee) {
             throw new FoundInSsNumberEmployeeException();
         }
-        $telephoneEmployee = $this->employeeRepository->checkNotExistsTelephoneEmployee($telephone);
-        if (null !== $telephoneEmployee) {
-            throw new FoundTelephoneEmployeeException();
-        }
+        $this->checkNotExistTelephoneEmployee->execute($telephone);
         $codeEmployeeStatus = $this->employeeStatusRepository->checkNotExistsCodeEmployeeStatus($codeEmployee);
         if (null !== $codeEmployeeStatus) {
             throw new FoundCodeEmployeeStatusException();

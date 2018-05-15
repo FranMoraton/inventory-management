@@ -9,7 +9,8 @@ use Inventory\Management\Domain\Model\Entity\Department\SubDepartment;
 use Inventory\Management\Domain\Model\Entity\Employee\Employee;
 use Inventory\Management\Domain\Model\Entity\Employee\EmployeeStatus;
 use Inventory\Management\Domain\Service\Department\SearchSubDepartmentById;
-use Inventory\Management\Domain\Service\Employee\CheckNotExistsUniqueColumns;
+use Inventory\Management\Domain\Service\Employee\CheckNotExistsUniqueFields;
+use Inventory\Management\Domain\Service\Employee\CheckNotExistTelephoneEmployee;
 use Inventory\Management\Domain\Service\Employee\EncryptPassword;
 use Inventory\Management\Infrastructure\Repository\Department\SubDepartmentRepository;
 use Inventory\Management\Infrastructure\Repository\Employee\EmployeeRepository;
@@ -34,13 +35,18 @@ class CreateEmployeeTest extends TestCase
     /* @var MockObject $employee */
     private $employee;
     private $createEmployeeCommand;
+    private $checkNotExistTelephoneEmployee;
 
     public function setUp(): void
     {
         $this->subDepartmentRepository = $this->createMock(SubDepartmentRepository::class);
         $this->employeeStatusRepository = $this->createMock(EmployeeStatusRepository::class);
         $this->employeeRepository = $this->createMock(EmployeeRepository::class);
+        $this->employeeRepository->method('checkNotExistsTelephoneEmployee')
+            ->with('649356871')
+            ->willReturn(null);
         $this->encryptPassword = $this->createMock(EncryptPassword::class);
+        $this->checkNotExistTelephoneEmployee = new CheckNotExistTelephoneEmployee($this->employeeRepository);
         $this->createEmployeeCommand = new CreateEmployeeCommand(
             'image.jpg',
             '76852436D',
@@ -94,16 +100,17 @@ class CreateEmployeeTest extends TestCase
         $this->subDepartmentRepository->method('findSubDepartmentById')
             ->with($idSubDepartment)
             ->willReturn(null);
-        $checkNotExistsUniqueColumns = new CheckNotExistsUniqueColumns(
+        $checkNotExistsUniqueFields = new CheckNotExistsUniqueFields(
             $this->employeeRepository,
-            $this->employeeStatusRepository
+            $this->employeeStatusRepository,
+            $this->checkNotExistTelephoneEmployee
         );
         $searchSubDepartmentById = new SearchSubDepartmentById($this->subDepartmentRepository);
         $createEmployee = new CreateEmployee(
             $this->employeeRepository,
             $this->employeeStatusRepository,
             $searchSubDepartmentById,
-            $checkNotExistsUniqueColumns,
+            $checkNotExistsUniqueFields,
             $this->encryptPassword
         );
         $result = $createEmployee->handle($this->createEmployeeCommand);
@@ -115,24 +122,21 @@ class CreateEmployeeTest extends TestCase
      */
     public function create_employee_then_nif_found_exception(): void
     {
-        $idSubDepartment = 1;
         $nif = '76852436D';
-        $this->employeeRepository->method('checkNotExistsNifEmployee')
+        $this->employeeRepository->method('findEmployeeByNif')
             ->with($nif)
             ->willReturn($this->employee);
-        $this->subDepartmentRepository->method('findSubDepartmentById')
-            ->with($idSubDepartment)
-            ->willReturn($this->subDepartment);
-        $checkNotExistsUniqueColumns = new CheckNotExistsUniqueColumns(
+        $checkNotExistsUniqueFields = new CheckNotExistsUniqueFields(
             $this->employeeRepository,
-            $this->employeeStatusRepository
+            $this->employeeStatusRepository,
+            $this->checkNotExistTelephoneEmployee
         );
         $searchSubDepartmentById = new SearchSubDepartmentById($this->subDepartmentRepository);
         $createEmployee = new CreateEmployee(
             $this->employeeRepository,
             $this->employeeStatusRepository,
             $searchSubDepartmentById,
-            $checkNotExistsUniqueColumns,
+            $checkNotExistsUniqueFields,
             $this->encryptPassword
         );
         $result = $createEmployee->handle($this->createEmployeeCommand);
@@ -144,24 +148,21 @@ class CreateEmployeeTest extends TestCase
      */
     public function create_employee_then_in_ss_number_found_exception(): void
     {
-        $idSubDepartment = 1;
         $inSsNumber = '456325789345';
         $this->employeeRepository->method('checkNotExistsInSsNumberEmployee')
             ->with($inSsNumber)
             ->willReturn($this->employee);
-        $this->subDepartmentRepository->method('findSubDepartmentById')
-            ->with($idSubDepartment)
-            ->willReturn($this->subDepartment);
-        $checkNotExistsUniqueColumns = new CheckNotExistsUniqueColumns(
+        $checkNotExistsUniqueFields = new CheckNotExistsUniqueFields(
             $this->employeeRepository,
-            $this->employeeStatusRepository
+            $this->employeeStatusRepository,
+            $this->checkNotExistTelephoneEmployee
         );
         $searchSubDepartmentById = new SearchSubDepartmentById($this->subDepartmentRepository);
         $createEmployee = new CreateEmployee(
             $this->employeeRepository,
             $this->employeeStatusRepository,
             $searchSubDepartmentById,
-            $checkNotExistsUniqueColumns,
+            $checkNotExistsUniqueFields,
             $this->encryptPassword
         );
         $result = $createEmployee->handle($this->createEmployeeCommand);
@@ -173,24 +174,23 @@ class CreateEmployeeTest extends TestCase
      */
     public function create_employee_then_telephone_found_exception(): void
     {
-        $idSubDepartment = 1;
         $telephone = '649356871';
+        $this->employeeRepository = $this->createMock(EmployeeRepository::class);
         $this->employeeRepository->method('checkNotExistsTelephoneEmployee')
             ->with($telephone)
             ->willReturn($this->employee);
-        $this->subDepartmentRepository->method('findSubDepartmentById')
-            ->with($idSubDepartment)
-            ->willReturn($this->subDepartment);
-        $checkNotExistsUniqueColumns = new CheckNotExistsUniqueColumns(
+        $this->checkNotExistTelephoneEmployee = new CheckNotExistTelephoneEmployee($this->employeeRepository);
+        $checkNotExistsUniqueFields = new CheckNotExistsUniqueFields(
             $this->employeeRepository,
-            $this->employeeStatusRepository
+            $this->employeeStatusRepository,
+            $this->checkNotExistTelephoneEmployee
         );
         $searchSubDepartmentById = new SearchSubDepartmentById($this->subDepartmentRepository);
         $createEmployee = new CreateEmployee(
             $this->employeeRepository,
             $this->employeeStatusRepository,
             $searchSubDepartmentById,
-            $checkNotExistsUniqueColumns,
+            $checkNotExistsUniqueFields,
             $this->encryptPassword
         );
         $result = $createEmployee->handle($this->createEmployeeCommand);
@@ -202,25 +202,22 @@ class CreateEmployeeTest extends TestCase
      */
     public function create_employee_then_code_found_exception(): void
     {
-        $idSubDepartment = 1;
         $code = 564;
         $employeeStatus = $this->createMock(EmployeeStatus::class);
         $this->employeeStatusRepository->method('checkNotExistsCodeEmployeeStatus')
             ->with($code)
             ->willReturn($employeeStatus);
-        $this->subDepartmentRepository->method('findSubDepartmentById')
-            ->with($idSubDepartment)
-            ->willReturn($this->subDepartment);
-        $checkNotExistsUniqueColumns = new CheckNotExistsUniqueColumns(
+        $checkNotExistsUniqueFields = new CheckNotExistsUniqueFields(
             $this->employeeRepository,
-            $this->employeeStatusRepository
+            $this->employeeStatusRepository,
+            $this->checkNotExistTelephoneEmployee
         );
         $searchSubDepartmentById = new SearchSubDepartmentById($this->subDepartmentRepository);
         $createEmployee = new CreateEmployee(
             $this->employeeRepository,
             $this->employeeStatusRepository,
             $searchSubDepartmentById,
-            $checkNotExistsUniqueColumns,
+            $checkNotExistsUniqueFields,
             $this->encryptPassword
         );
         $result = $createEmployee->handle($this->createEmployeeCommand);
@@ -264,16 +261,17 @@ class CreateEmployeeTest extends TestCase
         $this->encryptPassword->method('execute')
             ->with('1234')
             ->willReturn('$2afs58erg2g68wj1ol2g89t3f1dgf4g7g5gd2');
-        $checkNotExistsUniqueColumns = new CheckNotExistsUniqueColumns(
+        $checkNotExistsUniqueFields = new CheckNotExistsUniqueFields(
             $this->employeeRepository,
-            $this->employeeStatusRepository
+            $this->employeeStatusRepository,
+            $this->checkNotExistTelephoneEmployee
         );
         $searchSubDepartmentById = new SearchSubDepartmentById($this->subDepartmentRepository);
         $createEmployee = new CreateEmployee(
             $this->employeeRepository,
             $this->employeeStatusRepository,
             $searchSubDepartmentById,
-            $checkNotExistsUniqueColumns,
+            $checkNotExistsUniqueFields,
             $this->encryptPassword
         );
         $result = $createEmployee->handle($this->createEmployeeCommand);

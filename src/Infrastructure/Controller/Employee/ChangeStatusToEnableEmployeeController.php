@@ -15,7 +15,7 @@ class ChangeStatusToEnableEmployeeController extends Controller
         ChangeStatusToEnableEmployee $changeStatusToEnableEmployee
     ): Response {
         $changeStatusToEnableEmployeeCommand = new ChangeStatusToEnableEmployeeCommand(
-            $request->get('nif')
+            $request->attributes->get('nif')
         );
         $response = $changeStatusToEnableEmployee->handle($changeStatusToEnableEmployeeCommand);
 

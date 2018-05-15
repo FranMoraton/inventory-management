@@ -4,6 +4,8 @@ namespace Inventory\Management\Domain\Model\Entity\Employee;
 
 use Inventory\Management\Application\Employee\UpdateBasicFieldsEmployee\UpdateBasicFieldsEmployeeCommand;
 use Inventory\Management\Application\Employee\UpdateFieldsEmployeeStatus\UpdateFieldsEmployeeStatusCommand;
+use Inventory\Management\Domain\Model\Entity\Department\Department;
+use Inventory\Management\Domain\Model\Entity\Department\SubDepartment;
 
 interface EmployeeRepositoryInterface
 {
@@ -13,16 +15,21 @@ interface EmployeeRepositoryInterface
     public function updateBasicFieldsEmployee(
         Employee $employee,
         string $passwordHash,
-        UpdateBasicFieldsEmployeeCommand $updateBasicFieldsEmployeeCommand
+        string $name,
+        string $telephone
     ): Employee;
     public function updateFieldsEmployeeStatus(
         Employee $employee,
         string $image,
-        UpdateFieldsEmployeeStatusCommand $updateFieldsEmployeeStatusCommand
+        \DateTime $expirationContractDate,
+        \DateTime $possibleRenewal,
+        int $availableHolidays,
+        int $holidaysPendingToApplyFor,
+        Department $department,
+        SubDepartment $subDepartment
     ): Employee;
     public function findEmployeeByNif(string $nif): ?Employee;
     public function showByFirstResultEmployees(int $initialResult): array;
-    public function checkNotExistsNifEmployee(string $nif): ?Employee;
     public function checkNotExistsInSsNumberEmployee(string $inSsNumber): ?Employee;
     public function checkNotExistsTelephoneEmployee(string $telephone): ?Employee;
 }

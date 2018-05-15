@@ -13,7 +13,7 @@ class ShowEmployeeByNifController extends Controller
     public function showEmployeeByNif(Request $request, ShowEmployeeByNif $showEmployeeByNif): Response
     {
         $showEmployeeByNifCommand = new ShowEmployeeByNifCommand(
-            $request->get('nif')
+            $request->attributes->get('nif')
         );
         $response = $showEmployeeByNif->handle($showEmployeeByNifCommand);
 

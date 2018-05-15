@@ -13,7 +13,7 @@ class CreateSubDepartmentController extends Controller
     public function createSubDepartment(Request $request, CreateSubDepartment $createSubDepartment): Response
     {
         $createSubDepartmentCommand = new CreateSubDepartmentCommand(
-            $request->get('department'),
+            $request->attributes->get('department'),
             $request->query->get('name')
         );
         $response = $createSubDepartment->handle($createSubDepartmentCommand);

@@ -15,7 +15,7 @@ class UpdateNameSubDepartmentController extends Controller
         UpdateNameSubDepartment $updateNameSubDepartment
     ): Response {
         $updateNameSubDepartmentCommand = new UpdateNameSubDepartmentCommand(
-            $request->get('subdepartment'),
+            $request->attributes->get('subdepartment'),
             $request->query->get('name')
         );
         $response = $updateNameSubDepartment->handle($updateNameSubDepartmentCommand);

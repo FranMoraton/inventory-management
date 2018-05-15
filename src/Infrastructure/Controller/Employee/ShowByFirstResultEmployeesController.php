@@ -15,7 +15,7 @@ class ShowByFirstResultEmployeesController extends Controller
         ShowByFirstResultEmployees $showByFirstResultEmployees
     ): Response {
         $showByFirstResultEmployeesCommand = new ShowByFirstResultEmployeesCommand(
-            $request->get('firstresultposition')
+            $request->attributes->get('firstresultposition')
         );
         $response = $showByFirstResultEmployees->handle($showByFirstResultEmployeesCommand);
 

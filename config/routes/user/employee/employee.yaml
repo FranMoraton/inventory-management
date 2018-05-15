@@ -5,3 +5,7 @@ login_employee:
 search_employee_user:
     path: /{nif}
     controller: Inventory\Management\Infrastructure\Controller\Employee\ShowEmployeeByNifController::showEmployeeByNif
+
+update_basic_employee:
+    path: /{nif}/update
+    controller: Inventory\Management\Infrastructure\Controller\Employee\UpdateBasicFieldsEmployeeController::updateBasicFieldsEmployee

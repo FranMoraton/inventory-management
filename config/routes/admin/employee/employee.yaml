@@ -17,3 +17,7 @@ list_employees:
 search_employee_admin:
     path: /{nif}
     controller: Inventory\Management\Infrastructure\Controller\Employee\ShowEmployeeByNifController::showEmployeeByNif
+
+update_employee_status:
+    path: /{nif}/update
+    controller: Inventory\Management\Infrastructure\Controller\Employee\UpdateFieldsEmployeeStatusController::UpdateFieldsEmployeeStatus
