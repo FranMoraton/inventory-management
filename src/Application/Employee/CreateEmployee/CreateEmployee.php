@@ -13,7 +13,7 @@ use Inventory\Management\Domain\Model\Entity\Employee\FoundNifEmployeeException;
 use Inventory\Management\Domain\Model\Entity\Employee\FoundTelephoneEmployeeException;
 use Inventory\Management\Domain\Service\Department\SearchSubDepartmentById;
 use Inventory\Management\Domain\Service\Employee\CheckNotExistsUniqueFields;
-use Inventory\Management\Domain\Service\Employee\EncryptPassword;
+use Inventory\Management\Domain\Service\Util\EncryptPassword;
 
 class CreateEmployee
 {

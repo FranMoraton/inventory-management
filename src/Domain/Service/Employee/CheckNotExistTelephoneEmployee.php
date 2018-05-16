@@ -17,11 +17,12 @@ class CheckNotExistTelephoneEmployee
 
     /**
      * @param string $telephone
+     * @param string $nif
      * @throws FoundTelephoneEmployeeException
      */
-    public function execute(string $telephone): void
+    public function execute(string $telephone, string $nif): void
     {
-        $telephoneEmployee = $this->employeeRepository->checkNotExistsTelephoneEmployee($telephone);
+        $telephoneEmployee = $this->employeeRepository->checkNotExistsTelephoneEmployee($telephone, $nif);
         if (null !== $telephoneEmployee) {
             throw new FoundTelephoneEmployeeException();
         }

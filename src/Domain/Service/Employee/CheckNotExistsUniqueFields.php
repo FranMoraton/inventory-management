@@ -49,7 +49,7 @@ class CheckNotExistsUniqueFields
         if (null !== $inSsNumberEmployee) {
             throw new FoundInSsNumberEmployeeException();
         }
-        $this->checkNotExistTelephoneEmployee->execute($telephone);
+        $this->checkNotExistTelephoneEmployee->execute($telephone, $nif);
         $codeEmployeeStatus = $this->employeeStatusRepository->checkNotExistsCodeEmployeeStatus($codeEmployee);
         if (null !== $codeEmployeeStatus) {
             throw new FoundCodeEmployeeStatusException();

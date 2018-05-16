@@ -31,5 +31,5 @@ interface EmployeeRepositoryInterface
     public function findEmployeeByNif(string $nif): ?Employee;
     public function showByFirstResultEmployees(int $initialResult): array;
     public function checkNotExistsInSsNumberEmployee(string $inSsNumber): ?Employee;
-    public function checkNotExistsTelephoneEmployee(string $telephone): ?Employee;
+    public function checkNotExistsTelephoneEmployee(string $telephone, string $nif): ?Employee;
 }

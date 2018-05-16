@@ -6,7 +6,7 @@ use Inventory\Management\Application\Employee\CheckLoginEmployee\CheckLoginEmplo
 use Inventory\Management\Application\Employee\CheckLoginEmployee\CheckLoginEmployeeCommand;
 use Inventory\Management\Domain\Model\Entity\Employee\Employee;
 use Inventory\Management\Domain\Model\Entity\Employee\EmployeeStatus;
-use Inventory\Management\Domain\Service\Employee\CheckDecryptPassword;
+use Inventory\Management\Domain\Service\Util\CheckDecryptPassword;
 use Inventory\Management\Domain\Service\Employee\SearchEmployeeByNif;
 use Inventory\Management\Infrastructure\Repository\Employee\EmployeeRepository;
 use PHPUnit\Framework\MockObject\MockObject;

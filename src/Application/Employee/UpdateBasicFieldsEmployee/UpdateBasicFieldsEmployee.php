@@ -6,7 +6,7 @@ use Inventory\Management\Domain\Model\Entity\Employee\EmployeeRepositoryInterfac
 use Inventory\Management\Domain\Model\Entity\Employee\FoundTelephoneEmployeeException;
 use Inventory\Management\Domain\Model\Entity\Employee\NotFoundEmployeesException;
 use Inventory\Management\Domain\Service\Employee\CheckNotExistTelephoneEmployee;
-use Inventory\Management\Domain\Service\Employee\EncryptPassword;
+use Inventory\Management\Domain\Service\Util\EncryptPassword;
 use Inventory\Management\Domain\Service\Employee\SearchEmployeeByNif;
 
 class UpdateBasicFieldsEmployee
@@ -32,7 +32,8 @@ class UpdateBasicFieldsEmployee
     {
         try {
             $this->checkNotExistTelephoneEmployee->execute(
-                $updateBasicFieldsEmployeeCommand->telephone()
+                $updateBasicFieldsEmployeeCommand->telephone(),
+                $updateBasicFieldsEmployeeCommand->nif()
             );
         } catch (FoundTelephoneEmployeeException $foundTelephoneEmployeeException) {
             return ['ko' => $foundTelephoneEmployeeException->getMessage()];

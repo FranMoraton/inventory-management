@@ -11,7 +11,7 @@ use Inventory\Management\Domain\Model\Entity\Employee\EmployeeStatus;
 use Inventory\Management\Domain\Service\Department\SearchSubDepartmentById;
 use Inventory\Management\Domain\Service\Employee\CheckNotExistsUniqueFields;
 use Inventory\Management\Domain\Service\Employee\CheckNotExistTelephoneEmployee;
-use Inventory\Management\Domain\Service\Employee\EncryptPassword;
+use Inventory\Management\Domain\Service\Util\EncryptPassword;
 use Inventory\Management\Infrastructure\Repository\Department\SubDepartmentRepository;
 use Inventory\Management\Infrastructure\Repository\Employee\EmployeeRepository;
 use Inventory\Management\Infrastructure\Repository\Employee\EmployeeStatusRepository;

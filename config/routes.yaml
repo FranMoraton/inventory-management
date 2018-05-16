@@ -1,7 +1,3 @@
-#index:
-#    path: /
-#    controller: App\Controller\DefaultController::index
-
 admin_department:
     resource: ./routes/admin/department/department.yaml
     prefix: /admin/department
@@ -12,4 +8,4 @@ admin_employee:
 
 user_employee:
     resource: ./routes/user/employee/employee.yaml
-    prefix: /user/employee
+    prefix: /employee

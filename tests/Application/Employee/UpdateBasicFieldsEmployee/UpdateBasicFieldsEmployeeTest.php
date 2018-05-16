@@ -6,7 +6,7 @@ use Inventory\Management\Application\Employee\UpdateBasicFieldsEmployee\UpdateBa
 use Inventory\Management\Application\Employee\UpdateBasicFieldsEmployee\UpdateBasicFieldsEmployeeCommand;
 use Inventory\Management\Domain\Model\Entity\Employee\Employee;
 use Inventory\Management\Domain\Service\Employee\CheckNotExistTelephoneEmployee;
-use Inventory\Management\Domain\Service\Employee\EncryptPassword;
+use Inventory\Management\Domain\Service\Util\EncryptPassword;
 use Inventory\Management\Domain\Service\Employee\SearchEmployeeByNif;
 use Inventory\Management\Infrastructure\Repository\Employee\EmployeeRepository;
 use PHPUnit\Framework\MockObject\MockObject;

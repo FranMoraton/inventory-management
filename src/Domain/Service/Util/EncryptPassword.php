@@ -1,6 +1,6 @@
 <?php
 
-namespace Inventory\Management\Domain\Service\Employee;
+namespace Inventory\Management\Domain\Service\Util;
 
 class EncryptPassword
 {

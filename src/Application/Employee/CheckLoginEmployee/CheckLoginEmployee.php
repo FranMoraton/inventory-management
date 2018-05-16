@@ -4,7 +4,7 @@ namespace Inventory\Management\Application\Employee\CheckLoginEmployee;
 
 use Inventory\Management\Domain\Model\Entity\Employee\NotFoundEmployeesException;
 use Inventory\Management\Domain\Model\Entity\Employee\NotFoundPasswordEmployeeException;
-use Inventory\Management\Domain\Service\Employee\CheckDecryptPassword;
+use Inventory\Management\Domain\Service\Util\CheckDecryptPassword;
 use Inventory\Management\Domain\Service\Employee\SearchEmployeeByNif;
 
 class CheckLoginEmployee

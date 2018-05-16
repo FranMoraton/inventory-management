@@ -10,8 +10,10 @@ use Inventory\Management\Domain\Model\Entity\Department\Department;
 use Inventory\Management\Domain\Model\Entity\Department\SubDepartment;
 use Inventory\Management\Domain\Model\Entity\Employee\Employee;
 use Inventory\Management\Domain\Model\Entity\Employee\EmployeeRepositoryInterface;
+use Symfony\Bridge\Doctrine\Security\User\UserLoaderInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
-class EmployeeRepository extends ServiceEntityRepository implements EmployeeRepositoryInterface
+class EmployeeRepository extends ServiceEntityRepository implements EmployeeRepositoryInterface, UserLoaderInterface
 {
     private const MAX_RESULTS_QUERY = 20;
 
@@ -120,6 +122,11 @@ class EmployeeRepository extends ServiceEntityRepository implements EmployeeRepo
         return $employee;
     }
 
+    /**
+     * @param string $nif
+     * @return Employee|null
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
     public function findEmployeeByNif(string $nif): ?Employee
     {
         /* @var Employee $employee */
@@ -146,11 +153,40 @@ class EmployeeRepository extends ServiceEntityRepository implements EmployeeRepo
         return $employee;
     }
 
-    public function checkNotExistsTelephoneEmployee(string $telephone): ?Employee
+    /**
+     * @param string $telephone
+     * @param string $nif
+     * @return Employee|null
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    public function checkNotExistsTelephoneEmployee(string $telephone, string $nif): ?Employee
     {
+        $query = $this->createQueryBuilder('em')
+            ->andWhere('em.telephone = :telephone')
+            ->andWhere('em.nif != :nif')
+            ->setParameter('telephone', $telephone)
+            ->setParameter('nif', $nif)
+            ->getQuery();
         /* @var Employee $employee */
-        $employee = $this->findOneBy(['telephone' => $telephone]);
+        $employee = $query->getOneOrNullResult();
 
         return $employee;
+    }
+
+    /**
+     * @param string $username
+     * @return mixed|null|UserInterface
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    public function loadUserByUsername($username)
+    {
+        return $this->createQueryBuilder('em')
+            ->innerJoin('em.employeeStatus', 'ems')
+            ->andWhere('em.nif = :nif')
+            ->andWhere('ems.disabledEmployee = :disabledEmployee')
+            ->setParameter('nif', $username)
+            ->setParameter('disabledEmployee', false)
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 }

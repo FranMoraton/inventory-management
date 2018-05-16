@@ -3,12 +3,13 @@
 namespace Inventory\Management\Domain\Model\Entity\Employee;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * @ORM\Entity(repositoryClass="Inventory\Management\Infrastructure\Repository\Employee\EmployeeRepository")
  * @ORM\Table(name="employee")
  */
-class Employee
+class Employee implements UserInterface, \Serializable
 {
     /**
      * @ORM\Id()
@@ -136,5 +137,48 @@ class Employee
     public function setTelephone(string $telephone): void
     {
         $this->telephone = $telephone;
+    }
+
+    public function serialize()
+    {
+        return serialize(
+            array(
+                $this->id,
+                $this->nif,
+                $this->password
+            )
+        );
+    }
+
+    public function unserialize($serialized)
+    {
+        list (
+            $this->id,
+            $this->nif,
+            $this->password
+        ) = unserialize(
+            $serialized,
+            ['allowed_classes' => false]
+        );
+    }
+
+    public function getRoles()
+    {
+        return array('ROLE_USER');
+    }
+
+    public function getSalt()
+    {
+        return null;
+    }
+
+    public function getUsername()
+    {
+        return $this->nif;
+    }
+
+    public function eraseCredentials()
+    {
+        // TODO: Implement eraseCredentials() method.
     }
 }
