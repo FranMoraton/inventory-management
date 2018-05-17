@@ -4,11 +4,11 @@ namespace Inventory\Management\Infrastructure\Controller\Employee;
 
 use Inventory\Management\Application\Employee\ShowEmployeeByNif\ShowEmployeeByNif;
 use Inventory\Management\Application\Employee\ShowEmployeeByNif\ShowEmployeeByNifCommand;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class ShowEmployeeByNifController extends Controller
+class ShowEmployeeByNifController
 {
     public function showEmployeeByNif(Request $request, ShowEmployeeByNif $showEmployeeByNif): Response
     {
@@ -17,6 +17,9 @@ class ShowEmployeeByNifController extends Controller
         );
         $response = $showEmployeeByNif->handle($showEmployeeByNifCommand);
 
-        return $this->json($response);
+        return new JsonResponse(
+            $response['data'],
+            $response['code']
+        );
     }
 }
