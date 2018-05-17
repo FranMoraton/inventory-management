@@ -54,7 +54,13 @@ class CreateSubDepartmentTest extends TestCase
             $checkNotExistNameSubDepartment
         );
         $result = $createSubDepartment->handle($this->createDepartmentCommand);
-        $this->assertEquals(['ko' => 'El subdepartamento ya existe'], $result);
+        $this->assertEquals(
+            [
+                'data' => 'El subdepartamento ya existe',
+                'code' => 409
+            ],
+            $result
+        );
     }
 
     /**
@@ -73,7 +79,13 @@ class CreateSubDepartmentTest extends TestCase
             $checkNotExistNameSubDepartment
         );
         $result = $createSubDepartment->handle($this->createDepartmentCommand);
-        $this->assertEquals(['ko' => 'No se ha encontrado ningún departamento'], $result);
+        $this->assertEquals(
+            [
+                'data' => 'No se ha encontrado ningún departamento',
+                'code' => 404
+            ],
+            $result
+        );
     }
 
     /**
@@ -97,6 +109,12 @@ class CreateSubDepartmentTest extends TestCase
             $checkNotExistNameSubDepartment
         );
         $result = $createSubDepartment->handle($this->createDepartmentCommand);
-        $this->assertEquals(['ok' => 200], $result);
+        $this->assertEquals(
+            [
+                'data' => 'Se ha creado el subdepartamento con éxito',
+                'code' => 200
+            ],
+            $result
+        );
     }
 }

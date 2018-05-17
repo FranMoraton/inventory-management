@@ -35,7 +35,13 @@ class ChangeStatusToEnableEmployeeTest extends TestCase
             ->willReturn(null);
         $changeStatusEmployee = new ChangeStatusToEnableEmployee($this->employeeRepository, $this->searchEmployeeByNif);
         $result = $changeStatusEmployee->handle($this->changeStatusEmployeeCommand);
-        $this->assertEquals(['ko' => 'No se ha encontrado ningún trabajador'], $result);
+        $this->assertEquals(
+            [
+                'data' => 'No se ha encontrado ningún trabajador',
+                'code' => 404
+            ],
+            $result
+        );
     }
 
     /**
@@ -69,6 +75,12 @@ class ChangeStatusToEnableEmployeeTest extends TestCase
             ->willReturn($employee);
         $changeStatusEmployee = new ChangeStatusToEnableEmployee($this->employeeRepository, $this->searchEmployeeByNif);
         $result = $changeStatusEmployee->handle($this->changeStatusEmployeeCommand);
-        $this->assertEquals(['ok' => 200], $result);
+        $this->assertEquals(
+            [
+                'data' => 'Se ha habilitado el trabajador con éxito',
+                'code' => 200
+            ],
+            $result
+        );
     }
 }

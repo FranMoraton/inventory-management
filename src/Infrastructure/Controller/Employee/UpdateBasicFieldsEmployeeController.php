@@ -4,11 +4,11 @@ namespace Inventory\Management\Infrastructure\Controller\Employee;
 
 use Inventory\Management\Application\Employee\UpdateBasicFieldsEmployee\UpdateBasicFieldsEmployee;
 use Inventory\Management\Application\Employee\UpdateBasicFieldsEmployee\UpdateBasicFieldsEmployeeCommand;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class UpdateBasicFieldsEmployeeController extends Controller
+class UpdateBasicFieldsEmployeeController
 {
     public function updateBasicFieldsEmployee(
         Request $request,
@@ -22,6 +22,9 @@ class UpdateBasicFieldsEmployeeController extends Controller
         );
         $response = $updateBasicFieldsEmployee->handle($updateBasicFieldsEmployeeCommand);
 
-        return $this->json($response);
+        return new JsonResponse(
+            $response['data'],
+            $response['code']
+        );
     }
 }

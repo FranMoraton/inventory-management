@@ -4,11 +4,11 @@ namespace Inventory\Management\Infrastructure\Controller\Department;
 
 use Inventory\Management\Application\Department\UpdateNameDepartment\UpdateNameDepartment;
 use Inventory\Management\Application\Department\UpdateNameDepartment\UpdateNameDepartmentCommand;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class UpdateNameDepartmentController extends Controller
+class UpdateNameDepartmentController
 {
     public function updateNameDepartment(Request $request, UpdateNameDepartment $updateNameDepartment): Response
     {
@@ -18,6 +18,9 @@ class UpdateNameDepartmentController extends Controller
         );
         $response = $updateNameDepartment->handle($updateNameDepartmentCommand);
 
-        return $this->json($response);
+        return new JsonResponse(
+            $response['data'],
+            $response['code']
+        );
     }
 }

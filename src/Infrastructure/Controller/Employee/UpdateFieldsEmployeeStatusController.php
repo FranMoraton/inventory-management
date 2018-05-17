@@ -4,11 +4,11 @@ namespace Inventory\Management\Infrastructure\Controller\Employee;
 
 use Inventory\Management\Application\Employee\UpdateFieldsEmployeeStatus\UpdateFieldsEmployeeStatus;
 use Inventory\Management\Application\Employee\UpdateFieldsEmployeeStatus\UpdateFieldsEmployeeStatusCommand;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class UpdateFieldsEmployeeStatusController extends Controller
+class UpdateFieldsEmployeeStatusController
 {
     public function UpdateFieldsEmployeeStatus(
         Request $request,
@@ -26,6 +26,9 @@ class UpdateFieldsEmployeeStatusController extends Controller
         );
         $response = $updateFieldsEmployeeStatus->handle($updateFieldsEmployeeStatusCommand);
 
-        return $this->json($response);
+        return new JsonResponse(
+            $response['data'],
+            $response['code']
+        );
     }
 }

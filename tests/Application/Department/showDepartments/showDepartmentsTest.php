@@ -25,19 +25,6 @@ class showDepartmentsTest extends TestCase
     /**
      * @test
      */
-    public function given_departments_when_request_then_not_found_error(): void
-    {
-
-        $this->departmentRepository->method('showAllDepartments')
-            ->willReturn([]);
-        $showDepartments = new ShowDepartments($this->departmentRepository, $this->showDepartmentsTransform);
-        $result = $showDepartments->handle();
-        $this->assertEquals(['ko' => 'No se han encontrado departamentos'], $result);
-    }
-
-    /**
-     * @test
-     */
     public function given_departments_when_request_then_show(): void
     {
         $department = $this->createMock(Department::class);
@@ -53,9 +40,11 @@ class showDepartmentsTest extends TestCase
         $result = $showDepartments->handle();
         $this->assertArraySubset(
             [
-                0 => [
-                    'id' => 1,
-                    'name' => 'warehouse'
+                'data' => [
+                    0 => [
+                        'id' => 1,
+                        'name' => 'warehouse'
+                    ]
                 ]
             ],
             $result

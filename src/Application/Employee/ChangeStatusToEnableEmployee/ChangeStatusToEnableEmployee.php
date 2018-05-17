@@ -5,6 +5,7 @@ namespace Inventory\Management\Application\Employee\ChangeStatusToEnableEmployee
 use Inventory\Management\Domain\Model\Entity\Employee\EmployeeRepositoryInterface;
 use Inventory\Management\Domain\Model\Entity\Employee\NotFoundEmployeesException;
 use Inventory\Management\Domain\Service\Employee\SearchEmployeeByNif;
+use Inventory\Management\Domain\Service\Util\Observer\ListExceptions;
 
 class ChangeStatusToEnableEmployee
 {
@@ -17,19 +18,23 @@ class ChangeStatusToEnableEmployee
     ) {
         $this->employeeRepository = $employeeRepository;
         $this->searchEmployeeByNif = $searchEmployeeByNif;
+        ListExceptions::instance()->restartExceptions();
+        ListExceptions::instance()->attach($searchEmployeeByNif);
     }
 
     public function handle(ChangeStatusToEnableEmployeeCommand $enableEmployeeCommand): array
     {
-        try {
-            $employee = $this->searchEmployeeByNif->execute(
-                $enableEmployeeCommand->nif()
-            );
-        } catch (NotFoundEmployeesException $notFoundEmployeesException) {
-            return ['ko' => $notFoundEmployeesException->getMessage()];
+        $employee = $this->searchEmployeeByNif->execute(
+            $enableEmployeeCommand->nif()
+        );
+        if (ListExceptions::instance()->checkForExceptions()) {
+            return ListExceptions::instance()->firstException();
         }
         $this->employeeRepository->changeStatusToEnableEmployee($employee);
 
-        return ['ok' => 200];
+        return [
+            'data' => 'Se ha habilitado el trabajador con éxito',
+            'code' => 200
+        ];
     }
 }

@@ -35,7 +35,13 @@ class UpdateNameSubDepartmentTest extends TestCase
             ->willReturn(null);
         $updateNameSubDepartment = new UpdateNameSubDepartment($this->subDepartmentRepository, $this->searchSubDepartmentById);
         $result = $updateNameSubDepartment->handle($this->updateNameSubDepartmentCommand);
-        $this->assertEquals(['ko' => 'No se ha encontrado ningún subdepartamento'], $result);
+        $this->assertEquals(
+            [
+                'data' => 'No se ha encontrado ningún subdepartamento',
+                'code' => 404
+            ],
+            $result
+        );
     }
 
     /**
@@ -58,6 +64,12 @@ class UpdateNameSubDepartmentTest extends TestCase
             ->willReturn($subDepartment);
         $updateNameSubDepartment = new UpdateNameSubDepartment($this->subDepartmentRepository, $this->searchSubDepartmentById);
         $result = $updateNameSubDepartment->handle($this->updateNameSubDepartmentCommand);
-        $this->assertEquals(['ok' => 200], $result);
+        $this->assertEquals(
+            [
+                'data' => 'Se ha actualizado el nombre del subdepartamento con éxito',
+                'code' => 200
+            ],
+            $result
+        );
     }
 }

@@ -4,11 +4,11 @@ namespace Inventory\Management\Infrastructure\Controller\Employee;
 
 use Inventory\Management\Application\Employee\CreateEmployee\CreateEmployee;
 use Inventory\Management\Application\Employee\CreateEmployee\CreateEmployeeCommand;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class CreateEmployeeController extends Controller
+class CreateEmployeeController
 {
     public function createEmployee(Request $request, CreateEmployee $createEmployee): Response
     {
@@ -26,6 +26,9 @@ class CreateEmployeeController extends Controller
         );
         $response = $createEmployee->handle($createEmployeeCommand);
 
-        return $this->json($response);
+        return new JsonResponse(
+            $response['data'],
+            $response['code']
+        );
     }
 }

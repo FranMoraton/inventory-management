@@ -22,11 +22,10 @@ class ShowByFirstResultEmployees
         $listEmployees = $this->employeeRepository->showByFirstResultEmployees(
             $showEmployeesCommand->firstResultPosition()
         );
-        if (0 === count($listEmployees)) {
-            return ['ko' => 'No se han encontrado trabajadores'];
-        }
 
-        return $this->showEmployeesTransform
-            ->transform($listEmployees);
+        return [
+            'data' => $this->showEmployeesTransform->transform($listEmployees),
+            'code' => 200
+        ];
     }
 }

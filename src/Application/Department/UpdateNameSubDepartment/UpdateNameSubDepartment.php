@@ -2,9 +2,9 @@
 
 namespace Inventory\Management\Application\Department\UpdateNameSubDepartment;
 
-use Inventory\Management\Domain\Model\Entity\Department\NotFoundSubDepartmentsException;
 use Inventory\Management\Domain\Model\Entity\Department\SubDepartmentRepositoryInterface;
 use Inventory\Management\Domain\Service\Department\SearchSubDepartmentById;
+use Inventory\Management\Domain\Service\Util\Observer\ListExceptions;
 
 class UpdateNameSubDepartment
 {
@@ -17,22 +17,26 @@ class UpdateNameSubDepartment
     ) {
         $this->subDepartmentRepository = $subDepartmentRepository;
         $this->searchSubDepartmentById = $searchSubDepartmentById;
+        ListExceptions::instance()->restartExceptions();
+        ListExceptions::instance()->attach($searchSubDepartmentById);
     }
 
     public function handle(UpdateNameSubDepartmentCommand $updateNameSubDepartmentCommand)
     {
-        try {
-            $subDepartment = $this->searchSubDepartmentById->execute(
-                $updateNameSubDepartmentCommand->subDepartment()
-            );
-        } catch (NotFoundSubDepartmentsException $notFoundDepartmentsException) {
-            return ['ko' => $notFoundDepartmentsException->getMessage()];
+        $subDepartment = $this->searchSubDepartmentById->execute(
+            $updateNameSubDepartmentCommand->subDepartment()
+        );
+        if (ListExceptions::instance()->checkForExceptions()) {
+            return ListExceptions::instance()->firstException();
         }
         $this->subDepartmentRepository->updateNameSubDepartment(
             $subDepartment,
             $updateNameSubDepartmentCommand->name()
         );
 
-        return ['ok' => 200];
+        return [
+            'data' => 'Se ha actualizado el nombre del subdepartamento con éxito',
+            'code' => 200
+        ];
     }
 }

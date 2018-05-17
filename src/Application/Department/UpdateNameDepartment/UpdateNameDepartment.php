@@ -3,8 +3,8 @@
 namespace Inventory\Management\Application\Department\UpdateNameDepartment;
 
 use Inventory\Management\Domain\Model\Entity\Department\DepartmentRepositoryInterface;
-use Inventory\Management\Domain\Model\Entity\Department\NotFoundDepartmentsException;
 use Inventory\Management\Domain\Service\Department\SearchDepartmentById;
+use Inventory\Management\Domain\Service\Util\Observer\ListExceptions;
 
 class UpdateNameDepartment
 {
@@ -17,22 +17,26 @@ class UpdateNameDepartment
     ) {
         $this->departmentRepository = $departmentRepository;
         $this->searchDepartmentById = $searchDepartmentById;
+        ListExceptions::instance()->restartExceptions();
+        ListExceptions::instance()->attach($searchDepartmentById);
     }
 
     public function handle(UpdateNameDepartmentCommand $updateNameDepartmentCommand): array
     {
-        try {
-            $department = $this->searchDepartmentById->execute(
-                $updateNameDepartmentCommand->department()
-            );
-        } catch (NotFoundDepartmentsException $notFoundDepartmentsException) {
-            return ['ko' => $notFoundDepartmentsException->getMessage()];
+        $department = $this->searchDepartmentById->execute(
+            $updateNameDepartmentCommand->department()
+        );
+        if (ListExceptions::instance()->checkForExceptions()) {
+            return ListExceptions::instance()->firstException();
         }
         $this->departmentRepository->updateNameDepartment(
             $department,
             $updateNameDepartmentCommand->name()
         );
 
-        return ['ok' => 200];
+        return [
+            'data' => 'Se ha actualizado el nombre del departamento con éxito',
+            'code' => 200
+        ];
     }
 }

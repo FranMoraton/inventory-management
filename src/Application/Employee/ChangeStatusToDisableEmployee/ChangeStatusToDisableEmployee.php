@@ -5,6 +5,7 @@ namespace Inventory\Management\Application\Employee\ChangeStatusToDisableEmploye
 use Inventory\Management\Domain\Model\Entity\Employee\EmployeeRepositoryInterface;
 use Inventory\Management\Domain\Model\Entity\Employee\NotFoundEmployeesException;
 use Inventory\Management\Domain\Service\Employee\SearchEmployeeByNif;
+use Inventory\Management\Domain\Service\Util\Observer\ListExceptions;
 
 class ChangeStatusToDisableEmployee
 {
@@ -17,19 +18,23 @@ class ChangeStatusToDisableEmployee
     ) {
         $this->employeeRepository = $employeeRepository;
         $this->searchEmployeeByNif = $searchEmployeeByNif;
+        ListExceptions::instance()->restartExceptions();
+        ListExceptions::instance()->attach($searchEmployeeByNif);
     }
 
     public function handle(ChangeStatusToDisableEmployeeCommand $disableEmployeeCommand): array
     {
-        try {
-            $employee = $this->searchEmployeeByNif->execute(
-                $disableEmployeeCommand->nif()
-            );
-        } catch (NotFoundEmployeesException $notFoundEmployeesException) {
-            return ['ko' => $notFoundEmployeesException->getMessage()];
+        $employee = $this->searchEmployeeByNif->execute(
+            $disableEmployeeCommand->nif()
+        );
+        if (ListExceptions::instance()->checkForExceptions()) {
+            return ListExceptions::instance()->firstException();
         }
         $this->employeeRepository->changeStatusToDisableEmployee($employee);
 
-        return ['ok' => 200];
+        return [
+            'data' => 'Se ha deshabilitado el trabajador con éxito',
+            'code' => 200
+        ];
     }
 }

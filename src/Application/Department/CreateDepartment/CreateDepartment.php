@@ -4,8 +4,8 @@ namespace Inventory\Management\Application\Department\CreateDepartment;
 
 use Inventory\Management\Domain\Model\Entity\Department\Department;
 use Inventory\Management\Domain\Model\Entity\Department\DepartmentRepositoryInterface;
-use Inventory\Management\Domain\Model\Entity\Department\FoundNameDepartmentException;
 use Inventory\Management\Domain\Service\Department\CheckNotExistNameDepartment;
+use Inventory\Management\Domain\Service\Util\Observer\ListExceptions;
 
 class CreateDepartment
 {
@@ -18,22 +18,26 @@ class CreateDepartment
     ) {
         $this->departmentRepository = $departmentRepository;
         $this->checkNotExistNameDepartment = $checkNotExistNameDepartment;
+        ListExceptions::instance()->restartExceptions();
+        ListExceptions::instance()->attach($checkNotExistNameDepartment);
     }
 
     public function handle(CreateDepartmentCommand $createDepartmentCommand): array
     {
-        try {
-            $this->checkNotExistNameDepartment->execute(
-                $createDepartmentCommand->name()
-            );
-        } catch (FoundNameDepartmentException $foundNameDepartmentException) {
-            return ['ko' => $foundNameDepartmentException->getMessage()];
+        $this->checkNotExistNameDepartment->execute(
+            $createDepartmentCommand->name()
+        );
+        if (ListExceptions::instance()->checkForExceptions()) {
+            return ListExceptions::instance()->firstException();
         }
         $department = new Department(
             $createDepartmentCommand->name()
         );
         $this->departmentRepository->createDepartment($department);
 
-        return ['ok' => 200];
+        return [
+            'data' => 'Se ha creado el departamento con éxito',
+            'code' => 200
+        ];
     }
 }

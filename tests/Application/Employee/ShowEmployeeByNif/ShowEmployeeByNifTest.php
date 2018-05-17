@@ -36,7 +36,13 @@ class ShowEmployeeByNifTest extends TestCase
         $searchEmployeeByNif = new SearchEmployeeByNif($this->employeeRepository);
         $showEmployeeByNif = new ShowEmployeeByNif($this->showEmployeeByNifTransform, $searchEmployeeByNif);
         $result = $showEmployeeByNif->handle($this->showEmployeeByNifCommand);
-        $this->assertEquals(['ko' => 'No se ha encontrado ningún trabajador'], $result);
+        $this->assertEquals(
+            [
+                'data' => 'No se ha encontrado ningún trabajador',
+                'code' => 404
+            ],
+            $result
+        );
     }
 
     /**
@@ -69,9 +75,11 @@ class ShowEmployeeByNifTest extends TestCase
         $result = $showEmployeeByNif->handle($this->showEmployeeByNifCommand);
         $this->assertArraySubset(
             [
-                'id' => 1,
-                'nif' => '77685346D',
-                'name' => 'Javier'
+                'data' => [
+                    'id' => 1,
+                    'nif' => '77685346D',
+                    'name' => 'Javier'
+                ]
             ],
             $result
         );

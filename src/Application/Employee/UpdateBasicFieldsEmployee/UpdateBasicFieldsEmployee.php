@@ -8,6 +8,7 @@ use Inventory\Management\Domain\Model\Entity\Employee\NotFoundEmployeesException
 use Inventory\Management\Domain\Service\Employee\CheckNotExistTelephoneEmployee;
 use Inventory\Management\Domain\Service\Util\EncryptPassword;
 use Inventory\Management\Domain\Service\Employee\SearchEmployeeByNif;
+use Inventory\Management\Domain\Service\Util\Observer\ListExceptions;
 
 class UpdateBasicFieldsEmployee
 {
@@ -26,24 +27,22 @@ class UpdateBasicFieldsEmployee
         $this->searchEmployeeByNif = $searchEmployeeByNif;
         $this->checkNotExistTelephoneEmployee = $checkNotExistTelephoneEmployee;
         $this->encryptPassword = $encryptPassword;
+        ListExceptions::instance()->restartExceptions();
+        ListExceptions::instance()->attach($searchEmployeeByNif);
+        ListExceptions::instance()->attach($checkNotExistTelephoneEmployee);
     }
 
     public function handle(UpdateBasicFieldsEmployeeCommand $updateBasicFieldsEmployeeCommand): array
     {
-        try {
-            $this->checkNotExistTelephoneEmployee->execute(
-                $updateBasicFieldsEmployeeCommand->telephone(),
-                $updateBasicFieldsEmployeeCommand->nif()
-            );
-        } catch (FoundTelephoneEmployeeException $foundTelephoneEmployeeException) {
-            return ['ko' => $foundTelephoneEmployeeException->getMessage()];
-        }
-        try {
-            $employee = $this->searchEmployeeByNif->execute(
-                $updateBasicFieldsEmployeeCommand->nif()
-            );
-        } catch (NotFoundEmployeesException $notFoundEmployeesException) {
-            return ['ko' => $notFoundEmployeesException->getMessage()];
+        $this->checkNotExistTelephoneEmployee->execute(
+            $updateBasicFieldsEmployeeCommand->telephone(),
+            $updateBasicFieldsEmployeeCommand->nif()
+        );
+        $employee = $this->searchEmployeeByNif->execute(
+            $updateBasicFieldsEmployeeCommand->nif()
+        );
+        if (ListExceptions::instance()->checkForExceptions()) {
+            return ListExceptions::instance()->firstException();
         }
         $passwordHash = $this->encryptPassword->execute(
             $updateBasicFieldsEmployeeCommand->password()
@@ -55,6 +54,9 @@ class UpdateBasicFieldsEmployee
             $updateBasicFieldsEmployeeCommand->telephone()
         );
 
-        return ['ok' => 200];
+        return [
+            'data' => 'Se ha actualizado el trabajador con éxito',
+            'code' => 200
+        ];
     }
 }

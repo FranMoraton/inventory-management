@@ -19,10 +19,6 @@ class SearchEmployeeByNif implements Observer
         $this->employeeRepository = $employeeRepository;
     }
 
-    /**
-     * @param string $nifEmployee
-     * @return Employee
-     */
     public function execute(string $nifEmployee): ?Employee
     {
         $resultEmployee = $this->employeeRepository->findEmployeeByNif(

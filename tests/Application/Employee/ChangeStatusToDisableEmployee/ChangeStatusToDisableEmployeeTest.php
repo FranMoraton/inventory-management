@@ -38,7 +38,13 @@ class ChangeStatusToDisableEmployeeTest extends TestCase
             $this->searchEmployeeByNif
         );
         $result = $changeStatusEmployee->handle($this->changeStatusEmployeeCommand);
-        $this->assertEquals(['ko' => 'No se ha encontrado ningún trabajador'], $result);
+        $this->assertEquals(
+            [
+                'data' => 'No se ha encontrado ningún trabajador',
+                'code' => 404
+            ],
+            $result
+        );
     }
 
     /**
@@ -75,6 +81,12 @@ class ChangeStatusToDisableEmployeeTest extends TestCase
             $this->searchEmployeeByNif
         );
         $result = $changeStatusEmployee->handle($this->changeStatusEmployeeCommand);
-        $this->assertEquals(['ok' => 200], $result);
+        $this->assertEquals(
+            [
+                'data' => 'Se ha deshabilitado el trabajador con éxito',
+                'code' => 200
+            ],
+            $result
+        );
     }
 }

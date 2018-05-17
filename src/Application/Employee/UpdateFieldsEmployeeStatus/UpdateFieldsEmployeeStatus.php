@@ -9,6 +9,7 @@ use Inventory\Management\Domain\Model\Entity\Employee\NotFoundEmployeesException
 use Inventory\Management\Domain\Service\Department\SearchDepartmentById;
 use Inventory\Management\Domain\Service\Department\SearchSubDepartmentById;
 use Inventory\Management\Domain\Service\Employee\SearchEmployeeByNif;
+use Inventory\Management\Domain\Service\Util\Observer\ListExceptions;
 
 class UpdateFieldsEmployeeStatus
 {
@@ -27,30 +28,25 @@ class UpdateFieldsEmployeeStatus
         $this->searchEmployeeByNif = $searchEmployeeByNif;
         $this->searchDepartmentById = $searchDepartmentById;
         $this->searchSubDepartmentById = $searchSubDepartmentById;
+        ListExceptions::instance()->restartExceptions();
+        ListExceptions::instance()->attach($searchEmployeeByNif);
+        ListExceptions::instance()->attach($searchDepartmentById);
+        ListExceptions::instance()->attach($searchSubDepartmentById);
     }
 
     public function handle(UpdateFieldsEmployeeStatusCommand $updateFieldsEmployeeStatusCommand): array
     {
-        try {
-            $department = $this->searchDepartmentById->execute(
-                $updateFieldsEmployeeStatusCommand->department()
-            );
-        } catch (NotFoundDepartmentsException $notFoundDepartmentsException) {
-            return ['ko' => $notFoundDepartmentsException->getMessage()];
-        }
-        try {
-            $subDepartment = $this->searchSubDepartmentById->execute(
-                $updateFieldsEmployeeStatusCommand->subDepartment()
-            );
-        } catch (NotFoundSubDepartmentsException $notFoundSubDepartmentsException) {
-            return ['ko' => $notFoundSubDepartmentsException->getMessage()];
-        }
-        try {
-            $employee = $this->searchEmployeeByNif->execute(
-                $updateFieldsEmployeeStatusCommand->nif()
-            );
-        } catch (NotFoundEmployeesException $notFoundEmployeesException) {
-            return ['ko' => $notFoundEmployeesException->getMessage()];
+        $department = $this->searchDepartmentById->execute(
+            $updateFieldsEmployeeStatusCommand->department()
+        );
+        $subDepartment = $this->searchSubDepartmentById->execute(
+            $updateFieldsEmployeeStatusCommand->subDepartment()
+        );
+        $employee = $this->searchEmployeeByNif->execute(
+            $updateFieldsEmployeeStatusCommand->nif()
+        );
+        if (ListExceptions::instance()->checkForExceptions()) {
+            return ListExceptions::instance()->firstException();
         }
         $this->employeeRepository->updateFieldsEmployeeStatus(
             $employee,
@@ -63,6 +59,9 @@ class UpdateFieldsEmployeeStatus
             $subDepartment
         );
 
-        return ['ok' => 200];
+        return [
+            'data' => 'Se ha actualizado el estado del trabajador con éxito',
+            'code' => 200
+        ];
     }
 }

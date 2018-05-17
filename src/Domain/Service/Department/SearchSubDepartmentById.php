@@ -5,28 +5,38 @@ namespace Inventory\Management\Domain\Service\Department;
 use Inventory\Management\Domain\Model\Entity\Department\NotFoundSubDepartmentsException;
 use Inventory\Management\Domain\Model\Entity\Department\SubDepartment;
 use Inventory\Management\Domain\Model\Entity\Department\SubDepartmentRepositoryInterface;
+use Inventory\Management\Domain\Service\Util\Observer\ListExceptions;
+use Inventory\Management\Domain\Service\Util\Observer\Observer;
 
-class SearchSubDepartmentById
+class SearchSubDepartmentById implements Observer
 {
+    private $stateException;
     private $subDepartmentRepository;
 
     public function __construct(SubDepartmentRepositoryInterface $subDepartmentRepository)
     {
+        $this->stateException = false;
         $this->subDepartmentRepository = $subDepartmentRepository;
     }
 
-    /**
-     * @param int $subDepartment
-     * @return SubDepartment
-     * @throws NotFoundSubDepartmentsException
-     */
-    public function execute(int $subDepartment): SubDepartment
+    public function execute(int $subDepartment): ?SubDepartment
     {
         $subDepartment = $this->subDepartmentRepository->findSubDepartmentById($subDepartment);
         if (null === $subDepartment) {
-            throw new NotFoundSubDepartmentsException();
+            $this->stateException = true;
+            ListExceptions::instance()->notify();
         }
 
         return $subDepartment;
+    }
+
+    /**
+     * @throws NotFoundSubDepartmentsException
+     */
+    public function update()
+    {
+        if ($this->stateException) {
+            throw new NotFoundSubDepartmentsException();
+        }
     }
 }

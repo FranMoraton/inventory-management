@@ -4,11 +4,11 @@ namespace Inventory\Management\Infrastructure\Controller\Employee;
 
 use Inventory\Management\Application\Employee\ChangeStatusToDisableEmployee\ChangeStatusToDisableEmployee;
 use Inventory\Management\Application\Employee\ChangeStatusToDisableEmployee\ChangeStatusToDisableEmployeeCommand;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class ChangeStatusToDisableEmployeeController extends Controller
+class ChangeStatusToDisableEmployeeController
 {
     public function changeStatusToDisableEmployee(
         Request $request,
@@ -19,6 +19,9 @@ class ChangeStatusToDisableEmployeeController extends Controller
         );
         $response = $changeStatusToDisableEmployee->handle($changeStatusToDisableEmployeeCommand);
 
-        return $this->json($response);
+        return new JsonResponse(
+            $response['data'],
+            $response['code']
+        );
     }
 }

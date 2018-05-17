@@ -7,6 +7,7 @@ class FoundNameSubDepartmentException extends \Exception
     public function __construct()
     {
         $message = 'El subdepartamento ya existe';
-        parent::__construct($message);
+        $code = 409;
+        parent::__construct($message, $code);
     }
 }

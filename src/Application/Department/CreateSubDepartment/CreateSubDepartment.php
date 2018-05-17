@@ -2,12 +2,11 @@
 
 namespace Inventory\Management\Application\Department\CreateSubDepartment;
 
-use Inventory\Management\Domain\Model\Entity\Department\FoundNameSubDepartmentException;
-use Inventory\Management\Domain\Model\Entity\Department\NotFoundDepartmentsException;
 use Inventory\Management\Domain\Model\Entity\Department\SubDepartment;
 use Inventory\Management\Domain\Model\Entity\Department\SubDepartmentRepositoryInterface;
 use Inventory\Management\Domain\Service\Department\CheckNotExistNameSubDepartment;
 use Inventory\Management\Domain\Service\Department\SearchDepartmentById;
+use Inventory\Management\Domain\Service\Util\Observer\ListExceptions;
 
 class CreateSubDepartment
 {
@@ -23,23 +22,21 @@ class CreateSubDepartment
         $this->subDepartmentRepository = $subDepartmentRepository;
         $this->searchDepartmentById = $searchDepartmentById;
         $this->checkNotExistNameSubDepartment = $checkNotExistNameSubDepartment;
+        ListExceptions::instance()->restartExceptions();
+        ListExceptions::instance()->attach($checkNotExistNameSubDepartment);
+        ListExceptions::instance()->attach($searchDepartmentById);
     }
 
     public function handle(CreateSubDepartmentCommand $createSubDepartmentCommand): array
     {
-        try {
-            $this->checkNotExistNameSubDepartment->execute(
-                $createSubDepartmentCommand->name()
-            );
-        } catch (FoundNameSubDepartmentException $foundNameSubDepartmentException) {
-            return ['ko' => $foundNameSubDepartmentException->getMessage()];
-        }
-        try {
-            $department = $this->searchDepartmentById->execute(
-                $createSubDepartmentCommand->department()
-            );
-        } catch (NotFoundDepartmentsException $notFoundDepartmentsException) {
-            return ['ko' => $notFoundDepartmentsException->getMessage()];
+        $this->checkNotExistNameSubDepartment->execute(
+            $createSubDepartmentCommand->name()
+        );
+        $department = $this->searchDepartmentById->execute(
+            $createSubDepartmentCommand->department()
+        );
+        if (ListExceptions::instance()->checkForExceptions()) {
+            return ListExceptions::instance()->firstException();
         }
         $subDepartment = new SubDepartment(
             $department,
@@ -47,6 +44,9 @@ class CreateSubDepartment
         );
         $this->subDepartmentRepository->createSubDepartment($subDepartment);
 
-        return ['ok' => 200];
+        return [
+            'data' => 'Se ha creado el subdepartamento con éxito',
+            'code' => 200
+        ];
     }
 }

@@ -7,6 +7,7 @@ class NotFoundDepartmentsException extends \Exception
     public function __construct()
     {
         $message = 'No se ha encontrado ningún departamento';
-        parent::__construct($message);
+        $code = 404;
+        parent::__construct($message, $code);
     }
 }

@@ -4,11 +4,11 @@ namespace Inventory\Management\Infrastructure\Controller\Department;
 
 use Inventory\Management\Application\Department\CreateSubDepartment\CreateSubDepartment;
 use Inventory\Management\Application\Department\CreateSubDepartment\CreateSubDepartmentCommand;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class CreateSubDepartmentController extends Controller
+class CreateSubDepartmentController
 {
     public function createSubDepartment(Request $request, CreateSubDepartment $createSubDepartment): Response
     {
@@ -18,6 +18,9 @@ class CreateSubDepartmentController extends Controller
         );
         $response = $createSubDepartment->handle($createSubDepartmentCommand);
 
-        return $this->json($response);
+        return new JsonResponse(
+            $response['data'],
+            $response['code']
+        );
     }
 }

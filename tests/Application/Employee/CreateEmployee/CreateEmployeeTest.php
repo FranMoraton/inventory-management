@@ -42,9 +42,6 @@ class CreateEmployeeTest extends TestCase
         $this->subDepartmentRepository = $this->createMock(SubDepartmentRepository::class);
         $this->employeeStatusRepository = $this->createMock(EmployeeStatusRepository::class);
         $this->employeeRepository = $this->createMock(EmployeeRepository::class);
-        $this->employeeRepository->method('checkNotExistsTelephoneEmployee')
-            ->with('649356871')
-            ->willReturn(null);
         $this->encryptPassword = $this->createMock(EncryptPassword::class);
         $this->checkNotExistTelephoneEmployee = new CheckNotExistTelephoneEmployee($this->employeeRepository);
         $this->createEmployeeCommand = new CreateEmployeeCommand(
@@ -114,7 +111,13 @@ class CreateEmployeeTest extends TestCase
             $this->encryptPassword
         );
         $result = $createEmployee->handle($this->createEmployeeCommand);
-        $this->assertEquals(['ko' => 'No se ha encontrado ningún subdepartamento'], $result);
+        $this->assertEquals(
+            [
+                'data' => 'No se ha encontrado ningún subdepartamento',
+                'code' => 404
+            ],
+            $result
+        );
     }
 
     /**
@@ -140,7 +143,13 @@ class CreateEmployeeTest extends TestCase
             $this->encryptPassword
         );
         $result = $createEmployee->handle($this->createEmployeeCommand);
-        $this->assertEquals(['ko' => 'El NIF introducido ya existe'], $result);
+        $this->assertEquals(
+            [
+                'data' => 'El NIF introducido ya existe',
+                'code' => 409
+            ],
+            $result
+        );
     }
 
     /**
@@ -166,7 +175,13 @@ class CreateEmployeeTest extends TestCase
             $this->encryptPassword
         );
         $result = $createEmployee->handle($this->createEmployeeCommand);
-        $this->assertEquals(['ko' => 'El número de la seguridad social introducido ya existe'], $result);
+        $this->assertEquals(
+            [
+                'data' => 'El número de la seguridad social introducido ya existe',
+                'code' => 409
+            ],
+            $result
+        );
     }
 
     /**
@@ -175,15 +190,13 @@ class CreateEmployeeTest extends TestCase
     public function create_employee_then_telephone_found_exception(): void
     {
         $telephone = '649356871';
-        $this->employeeRepository = $this->createMock(EmployeeRepository::class);
+        $nif = '76852436D';
         $this->employeeRepository->method('checkNotExistsTelephoneEmployee')
-            ->with($telephone)
+            ->with($telephone, $nif)
             ->willReturn($this->employee);
-        $this->checkNotExistTelephoneEmployee = new CheckNotExistTelephoneEmployee($this->employeeRepository);
         $checkNotExistsUniqueFields = new CheckNotExistsUniqueFields(
             $this->employeeRepository,
-            $this->employeeStatusRepository,
-            $this->checkNotExistTelephoneEmployee
+            $this->employeeStatusRepository
         );
         $searchSubDepartmentById = new SearchSubDepartmentById($this->subDepartmentRepository);
         $createEmployee = new CreateEmployee(
@@ -194,7 +207,13 @@ class CreateEmployeeTest extends TestCase
             $this->encryptPassword
         );
         $result = $createEmployee->handle($this->createEmployeeCommand);
-        $this->assertEquals(['ko' => 'El teléfono introducido ya existe'], $result);
+        $this->assertEquals(
+            [
+                'data' => 'El teléfono introducido ya existe',
+                'code' => 409
+            ],
+            $result
+        );
     }
 
     /**
@@ -221,7 +240,13 @@ class CreateEmployeeTest extends TestCase
             $this->encryptPassword
         );
         $result = $createEmployee->handle($this->createEmployeeCommand);
-        $this->assertEquals(['ko' => 'El código de trabajador introducido ya existe'], $result);
+        $this->assertEquals(
+            [
+                'data' => 'El código de trabajador introducido ya existe',
+                'code' => 409
+            ],
+            $result
+        );
     }
 
     /**
@@ -275,6 +300,12 @@ class CreateEmployeeTest extends TestCase
             $this->encryptPassword
         );
         $result = $createEmployee->handle($this->createEmployeeCommand);
-        $this->assertEquals(['ok' => 200], $result);
+        $this->assertEquals(
+            [
+                'data' => 'Se ha creado el trabajador con éxito',
+                'code' => 200
+            ],
+            $result
+        );
     }
 }

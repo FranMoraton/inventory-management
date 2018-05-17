@@ -2,7 +2,6 @@
 
 namespace Inventory\Management\Application\Employee\ShowEmployeeByNif;
 
-use Inventory\Management\Domain\Model\Entity\Employee\NotFoundEmployeesException;
 use Inventory\Management\Domain\Service\Employee\SearchEmployeeByNif;
 use Inventory\Management\Domain\Service\Util\Observer\ListExceptions;
 
@@ -18,7 +17,7 @@ class ShowEmployeeByNif
         $this->showEmployeeByNifTransform = $showEmployeeByNifTransform;
         $this->searchEmployeeByNif = $searchEmployeeByNif;
         ListExceptions::instance()->restartExceptions();
-        ListExceptions::instance()->attach($this->searchEmployeeByNif);
+        ListExceptions::instance()->attach($searchEmployeeByNif);
     }
 
     public function handle(ShowEmployeeByNifCommand $showEmployeeByNifCommand)
@@ -26,8 +25,8 @@ class ShowEmployeeByNif
         $employee = $this->searchEmployeeByNif->execute(
             $showEmployeeByNifCommand->nif()
         );
-        if (0 !== count(ListExceptions::instance()->showExceptions())) {
-            return ListExceptions::instance()->showExceptions()[0];
+        if (ListExceptions::instance()->checkForExceptions()) {
+            return ListExceptions::instance()->firstException();
         }
 
         return [

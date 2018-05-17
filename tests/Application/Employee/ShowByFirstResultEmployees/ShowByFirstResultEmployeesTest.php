@@ -28,21 +28,6 @@ class ShowByFirstResultEmployeesTest extends TestCase
     /**
      * @test
      */
-    public function given_employees_when_request_by_first_result_then_not_found_exception(): void
-    {
-        $this->employeeRepository->method('showByFirstResultEmployees')
-            ->willReturn([]);
-        $showByFirstResultEmployees = new ShowByFirstResultEmployees(
-            $this->employeeRepository,
-            $this->showByFirstResultEmployeesTransform
-        );
-        $result = $showByFirstResultEmployees->handle($this->showByFirstResultEmployeesCommand);
-        $this->assertEquals(['ko' => 'No se han encontrado trabajadores'], $result);
-    }
-
-    /**
-     * @test
-     */
     public function given_employees_when_request_by_first_result_then_show(): void
     {
         $employeeStatus = $this->createMock(EmployeeStatus::class);
@@ -72,10 +57,12 @@ class ShowByFirstResultEmployeesTest extends TestCase
         $result = $showByFirstResultEmployees->handle($this->showByFirstResultEmployeesCommand);
         $this->assertArraySubset(
             [
-                0 => [
-                    'id' => 1,
-                    'nif' => '77685346D',
-                    'name' => 'Javier'
+                'data' => [
+                    0 => [
+                        'id' => 1,
+                        'nif' => '77685346D',
+                        'name' => 'Javier'
+                    ]
                 ]
             ],
             $result

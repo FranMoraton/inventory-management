@@ -20,11 +20,10 @@ class ShowDepartments
     public function handle(): array
     {
         $listDepartments = $this->departmentRepository->showAllDepartments();
-        if (0 === count($listDepartments)) {
-            return ['ko' => 'No se han encontrado departamentos'];
-        }
 
-        return $this->showDepartmentsTransform
-            ->transform($listDepartments);
+        return [
+            'data' => $this->showDepartmentsTransform->transform($listDepartments),
+            'code' => 200
+        ];
     }
 }

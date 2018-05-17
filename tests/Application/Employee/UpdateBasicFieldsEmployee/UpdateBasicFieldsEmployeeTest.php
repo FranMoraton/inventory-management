@@ -37,10 +37,14 @@ class UpdateBasicFieldsEmployeeTest extends TestCase
      */
     public function given_employee_when_nif_is_or_not_encountered_then_telephone_found_exception(): void
     {
+        $nif = '78965423D';
         $telephone = '689354127';
         $employee = $this->createMock(Employee::class);
+        $this->employeeRepository->method('findEmployeeByNif')
+            ->with($nif)
+            ->willReturn($employee);
         $this->employeeRepository->method('checkNotExistsTelephoneEmployee')
-            ->with($telephone)
+            ->with($telephone, $nif)
             ->willReturn($employee);
         $searchEmployeeByNif = new SearchEmployeeByNif($this->employeeRepository);
         $checkNotExistTelephoneEmployee = new CheckNotExistTelephoneEmployee($this->employeeRepository);
@@ -51,7 +55,13 @@ class UpdateBasicFieldsEmployeeTest extends TestCase
             $this->encryptPassword
         );
         $result = $updateBasicFieldsEmployee->handle($this->updateBasicFieldsEmployeeCommand);
-        $this->assertEquals(['ko' => 'El teléfono introducido ya existe'], $result);
+        $this->assertEquals(
+            [
+                'data' => 'El teléfono introducido ya existe',
+                'code' => 409
+            ],
+            $result
+        );
     }
 
     /**
@@ -72,7 +82,13 @@ class UpdateBasicFieldsEmployeeTest extends TestCase
             $this->encryptPassword
         );
         $result = $updateBasicFieldsEmployee->handle($this->updateBasicFieldsEmployeeCommand);
-        $this->assertEquals(['ko' => 'No se ha encontrado ningún trabajador'], $result);
+        $this->assertEquals(
+            [
+                'data' => 'No se ha encontrado ningún trabajador',
+                'code' => 404
+            ],
+            $result
+        );
     }
 
     /**
@@ -116,6 +132,12 @@ class UpdateBasicFieldsEmployeeTest extends TestCase
             $this->encryptPassword
         );
         $result = $updateBasicFieldsEmployee->handle($this->updateBasicFieldsEmployeeCommand);
-        $this->assertEquals(['ok' => 200], $result);
+        $this->assertEquals(
+            [
+                'data' => 'Se ha actualizado el trabajador con éxito',
+                'code' => 200
+            ],
+            $result
+        );
     }
 }

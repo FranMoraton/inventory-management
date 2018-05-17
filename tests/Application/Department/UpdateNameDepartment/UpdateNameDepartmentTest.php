@@ -35,7 +35,13 @@ class UpdateNameDepartmentTest extends TestCase
             ->willReturn(null);
         $updateNameDepartment = new UpdateNameDepartment($this->departmentRepository, $this->searchDepartmentById);
         $result = $updateNameDepartment->handle($this->updateNameDepartmentCommand);
-        $this->assertEquals(['ko' => 'No se ha encontrado ningún departamento'], $result);
+        $this->assertEquals(
+            [
+                'data' => 'No se ha encontrado ningún departamento',
+                'code' => 404
+            ],
+            $result
+        );
     }
 
     /**
@@ -58,6 +64,12 @@ class UpdateNameDepartmentTest extends TestCase
             ->willReturn($department);
         $updateNameDepartment = new UpdateNameDepartment($this->departmentRepository, $this->searchDepartmentById);
         $result = $updateNameDepartment->handle($this->updateNameDepartmentCommand);
-        $this->assertEquals(['ok' => 200], $result);
+        $this->assertEquals(
+            [
+                'data' => 'Se ha actualizado el nombre del departamento con éxito',
+                'code' => 200
+            ],
+            $result
+        );
     }
 }

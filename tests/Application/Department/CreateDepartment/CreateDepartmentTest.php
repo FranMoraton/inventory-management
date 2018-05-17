@@ -39,7 +39,13 @@ class CreateDepartmentTest extends TestCase
         $checkNotExistNameDepartment = new CheckNotExistNameDepartment($this->departmentRepository);
         $createDepartment = new CreateDepartment($this->departmentRepository, $checkNotExistNameDepartment);
         $result = $createDepartment->handle($this->createDepartmentCommand);
-        $this->assertEquals(['ko' => 'El departamento ya existe'], $result);
+        $this->assertEquals(
+            [
+                'data' => 'El departamento ya existe',
+                'code' => 409
+            ],
+            $result
+        );
     }
 
     /**
@@ -50,6 +56,12 @@ class CreateDepartmentTest extends TestCase
         $checkNotExistNameDepartment = new CheckNotExistNameDepartment($this->departmentRepository);
         $createDepartment = new CreateDepartment($this->departmentRepository, $checkNotExistNameDepartment);
         $result = $createDepartment->handle($this->createDepartmentCommand);
-        $this->assertEquals(['ok' => 200], $result);
+        $this->assertEquals(
+            [
+                'data' => 'Se ha creado el departamento con éxito',
+                'code' => 200
+            ],
+            $result
+        );
     }
 }

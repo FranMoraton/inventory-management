@@ -31,9 +31,14 @@ class ListExceptions implements Observable
         $this->exceptions = [];
     }
 
-    public function showExceptions()
+    public function checkForExceptions()
     {
-        return $this->exceptions;
+        return 0 !== count($this->exceptions);
+    }
+
+    public function firstException()
+    {
+        return $this->exceptions[0];
     }
 
     public function attach(Observer $observer)

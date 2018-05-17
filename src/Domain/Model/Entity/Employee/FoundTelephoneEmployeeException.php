@@ -7,6 +7,7 @@ class FoundTelephoneEmployeeException extends \Exception
     public function __construct()
     {
         $message = 'El teléfono introducido ya existe';
-        parent::__construct($message);
+        $code = 409;
+        parent::__construct($message, $code);
     }
 }

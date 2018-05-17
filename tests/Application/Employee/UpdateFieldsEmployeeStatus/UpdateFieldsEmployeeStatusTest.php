@@ -51,9 +51,14 @@ class UpdateFieldsEmployeeStatusTest extends TestCase
     public function given_employee_status_when_nif_is_or_not_encountered_then_department_not_found_exception(): void
     {
         $idDepartment = 1;
+        $nif = '75693124D';
         $this->departmentRepository->method('findDepartmentById')
             ->with($idDepartment)
             ->willReturn(null);
+        $employee = $this->createMock(Employee::class);
+        $this->employeeRepository->method('findEmployeeByNif')
+            ->with($nif)
+            ->willReturn($employee);
         $searchEmployeeByNif = new SearchEmployeeByNif($this->employeeRepository);
         $searchDepartmentById = new SearchDepartmentById($this->departmentRepository);
         $searchSubDepartmentById = new SearchSubDepartmentById($this->subDepartmentRepository);
@@ -64,7 +69,13 @@ class UpdateFieldsEmployeeStatusTest extends TestCase
             $searchSubDepartmentById
         );
         $result = $updateFieldsEmployeeStatus->handle($this->updateFieldsEmployeeStatusCommand);
-        $this->assertEquals(['ko' => 'No se ha encontrado ningún departamento'], $result);
+        $this->assertEquals(
+            [
+                'data' => 'No se ha encontrado ningún departamento',
+                'code' => 404
+            ],
+            $result
+        );
     }
 
     /**
@@ -74,6 +85,7 @@ class UpdateFieldsEmployeeStatusTest extends TestCase
     {
         $idDepartment = 1;
         $idSubDepartment = 1;
+        $nif = '75693124D';
         $department = $this->createMock(Department::class);
         $this->departmentRepository->method('findDepartmentById')
             ->with($idDepartment)
@@ -81,6 +93,10 @@ class UpdateFieldsEmployeeStatusTest extends TestCase
         $this->subDepartmentRepository->method('findSubDepartmentById')
             ->with($idSubDepartment)
             ->willReturn(null);
+        $employee = $this->createMock(Employee::class);
+        $this->employeeRepository->method('findEmployeeByNif')
+            ->with($nif)
+            ->willReturn($employee);
         $searchEmployeeByNif = new SearchEmployeeByNif($this->employeeRepository);
         $searchDepartmentById = new SearchDepartmentById($this->departmentRepository);
         $searchSubDepartmentById = new SearchSubDepartmentById($this->subDepartmentRepository);
@@ -91,7 +107,13 @@ class UpdateFieldsEmployeeStatusTest extends TestCase
             $searchSubDepartmentById
         );
         $result = $updateFieldsEmployeeStatus->handle($this->updateFieldsEmployeeStatusCommand);
-        $this->assertEquals(['ko' => 'No se ha encontrado ningún subdepartamento'], $result);
+        $this->assertEquals(
+            [
+                'data' => 'No se ha encontrado ningún subdepartamento',
+                'code' => 404
+            ],
+            $result
+        );
     }
 
     /**
@@ -123,7 +145,13 @@ class UpdateFieldsEmployeeStatusTest extends TestCase
             $searchSubDepartmentById
         );
         $result = $updateFieldsEmployeeStatus->handle($this->updateFieldsEmployeeStatusCommand);
-        $this->assertEquals(['ko' => 'No se ha encontrado ningún trabajador'], $result);
+        $this->assertEquals(
+            [
+                'data' => 'No se ha encontrado ningún trabajador',
+                'code' => 404
+            ],
+            $result
+        );
     }
 
     /**
@@ -173,6 +201,12 @@ class UpdateFieldsEmployeeStatusTest extends TestCase
             $searchSubDepartmentById
         );
         $result = $updateFieldsEmployeeStatus->handle($this->updateFieldsEmployeeStatusCommand);
-        $this->assertEquals(['ok' => 200], $result);
+        $this->assertEquals(
+            [
+                'data' => 'Se ha actualizado el estado del trabajador con éxito',
+                'code' => 200
+            ],
+            $result
+        );
     }
 }
