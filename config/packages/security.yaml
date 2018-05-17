@@ -2,8 +2,13 @@ security:
     encoders:
         Inventory\Management\Domain\Model\Entity\Employee\Employee:
             algorithm: bcrypt
+        Inventory\Management\Domain\Model\Entity\Admin\Admin:
+            algorithm: bcrypt
     providers:
         in_memory: { memory: ~ }
+        admins_provider:
+            entity:
+                class: Inventory\Management\Domain\Model\Entity\Admin\Admin
         employees_provider:
             entity:
                 class: Inventory\Management\Domain\Model\Entity\Employee\Employee
@@ -11,11 +16,23 @@ security:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
+        admin:
+            pattern: ^/admin
+            http_basic: ~
+            provider: admins_provider
+            logout:
+                path:   /admin/logout
+                target: /admin/login
         main:
-            anonymous: ~
-            pattern: ^/
+            pattern: ^/employee
             http_basic: ~
             provider: employees_provider
+            form_login:
+                login_path: login_employee
+                check_path: login_employee
+            logout:
+                path:   /employee/logout
+                target: /employee/login
 
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used

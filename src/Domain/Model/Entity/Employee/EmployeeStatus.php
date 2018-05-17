@@ -111,19 +111,9 @@ class EmployeeStatus
         return $this->firstContractDate;
     }
 
-    public function setFirstContractDate($firstContractDate): void
-    {
-        $this->firstContractDate = $firstContractDate;
-    }
-
     public function getSeniorityDate(): \DateTime
     {
         return $this->seniorityDate;
-    }
-
-    public function setSeniorityDate($seniorityDate): void
-    {
-        $this->seniorityDate = $seniorityDate;
     }
 
     public function getExpirationContractDate(): ?\DateTime

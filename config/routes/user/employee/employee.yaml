@@ -1,6 +1,5 @@
 login_employee:
     path: /login
-    controller: Inventory\Management\Infrastructure\Controller\Employee\CheckLoginEmployeeController::checkLoginEmployee
 
 search_employee_user:
     path: /{nif}

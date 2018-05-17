@@ -74,11 +74,6 @@ class Employee implements UserInterface, \Serializable
         return $this->employeeStatus;
     }
 
-    public function setEmployeeStatus(EmployeeStatus $employeeStatus): void
-    {
-        $this->employeeStatus = $employeeStatus;
-    }
-
     public function getImage(): string
     {
         return $this->image;
@@ -92,11 +87,6 @@ class Employee implements UserInterface, \Serializable
     public function getNif(): string
     {
         return $this->nif;
-    }
-
-    public function setNif(string $nif): void
-    {
-        $this->nif = $nif;
     }
 
     public function getPassword(): string
@@ -122,11 +112,6 @@ class Employee implements UserInterface, \Serializable
     public function getInSsNumber(): string
     {
         return $this->inSsNumber;
-    }
-
-    public function setInSsNumber(string $inSsNumber): void
-    {
-        $this->inSsNumber = $inSsNumber;
     }
 
     public function getTelephone(): string
