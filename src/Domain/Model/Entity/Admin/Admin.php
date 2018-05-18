@@ -68,7 +68,7 @@ class Admin implements UserInterface, \Serializable
     {
         list (
             $this->id,
-            $this->nif,
+            $this->username,
             $this->password
         ) = unserialize(
             $serialized,

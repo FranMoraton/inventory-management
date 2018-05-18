@@ -1,14 +1,14 @@
 <?php
 
-namespace Inventory\Management\Infrastructure\Controller\Employee;
+namespace Inventory\Management\Infrastructure\Controller\Admin;
 
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
-class CheckLoginEmployeeController
+class CheckLoginAdminController
 {
-    public function checkLoginEmployee(AuthenticationUtils $authUtils): Response
+    public function checkLoginAdmin(AuthenticationUtils $authUtils): Response
     {
         $error = $authUtils->getLastAuthenticationError();
         $lastUser = $authUtils->getLastUsername();

@@ -1,3 +1,7 @@
+admin_admin:
+    resource: ./routes/admin/admin.yaml
+    prefix: /admin
+
 admin_department:
     resource: ./routes/admin/department/department.yaml
     prefix: /admin/department
