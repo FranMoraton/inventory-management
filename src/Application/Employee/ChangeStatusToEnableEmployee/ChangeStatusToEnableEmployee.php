@@ -4,8 +4,9 @@ namespace Inventory\Management\Application\Employee\ChangeStatusToEnableEmployee
 
 use Inventory\Management\Domain\Model\Entity\Employee\EmployeeRepositoryInterface;
 use Inventory\Management\Domain\Model\Entity\Employee\NotFoundEmployeesException;
+use Inventory\Management\Domain\Model\HttpResponses\HttpResponses;
 use Inventory\Management\Domain\Service\Employee\SearchEmployeeByNif;
-use Inventory\Management\Domain\Service\Util\Observer\ListExceptions;
+use Inventory\Management\Domain\Util\Observer\ListExceptions;
 
 class ChangeStatusToEnableEmployee
 {
@@ -34,7 +35,7 @@ class ChangeStatusToEnableEmployee
 
         return [
             'data' => 'Se ha habilitado el trabajador con éxito',
-            'code' => 200
+            'code' => HttpResponses::OK
         ];
     }
 }

@@ -5,8 +5,8 @@ namespace Inventory\Management\Domain\Service\Department;
 use Inventory\Management\Domain\Model\Entity\Department\NotFoundSubDepartmentsException;
 use Inventory\Management\Domain\Model\Entity\Department\SubDepartment;
 use Inventory\Management\Domain\Model\Entity\Department\SubDepartmentRepositoryInterface;
-use Inventory\Management\Domain\Service\Util\Observer\ListExceptions;
-use Inventory\Management\Domain\Service\Util\Observer\Observer;
+use Inventory\Management\Domain\Util\Observer\ListExceptions;
+use Inventory\Management\Domain\Util\Observer\Observer;
 
 class SearchSubDepartmentById implements Observer
 {

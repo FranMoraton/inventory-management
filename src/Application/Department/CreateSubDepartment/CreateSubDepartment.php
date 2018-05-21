@@ -4,9 +4,10 @@ namespace Inventory\Management\Application\Department\CreateSubDepartment;
 
 use Inventory\Management\Domain\Model\Entity\Department\SubDepartment;
 use Inventory\Management\Domain\Model\Entity\Department\SubDepartmentRepositoryInterface;
+use Inventory\Management\Domain\Model\HttpResponses\HttpResponses;
 use Inventory\Management\Domain\Service\Department\CheckNotExistNameSubDepartment;
 use Inventory\Management\Domain\Service\Department\SearchDepartmentById;
-use Inventory\Management\Domain\Service\Util\Observer\ListExceptions;
+use Inventory\Management\Domain\Util\Observer\ListExceptions;
 
 class CreateSubDepartment
 {
@@ -46,7 +47,7 @@ class CreateSubDepartment
 
         return [
             'data' => 'Se ha creado el subdepartamento con éxito',
-            'code' => 200
+            'code' => HttpResponses::OK_CREATED
         ];
     }
 }

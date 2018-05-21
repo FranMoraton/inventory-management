@@ -1,6 +1,6 @@
 <?php
 
-namespace Inventory\Management\Domain\Service\Util\Observer;
+namespace Inventory\Management\Domain\Util\Observer;
 
 interface Observer
 {

@@ -2,14 +2,12 @@
 
 namespace Inventory\Management\Application\Employee\UpdateFieldsEmployeeStatus;
 
-use Inventory\Management\Domain\Model\Entity\Department\NotFoundDepartmentsException;
-use Inventory\Management\Domain\Model\Entity\Department\NotFoundSubDepartmentsException;
 use Inventory\Management\Domain\Model\Entity\Employee\EmployeeRepositoryInterface;
-use Inventory\Management\Domain\Model\Entity\Employee\NotFoundEmployeesException;
+use Inventory\Management\Domain\Model\HttpResponses\HttpResponses;
 use Inventory\Management\Domain\Service\Department\SearchDepartmentById;
 use Inventory\Management\Domain\Service\Department\SearchSubDepartmentById;
 use Inventory\Management\Domain\Service\Employee\SearchEmployeeByNif;
-use Inventory\Management\Domain\Service\Util\Observer\ListExceptions;
+use Inventory\Management\Domain\Util\Observer\ListExceptions;
 
 class UpdateFieldsEmployeeStatus
 {
@@ -61,7 +59,7 @@ class UpdateFieldsEmployeeStatus
 
         return [
             'data' => 'Se ha actualizado el estado del trabajador con éxito',
-            'code' => 200
+            'code' => HttpResponses::OK
         ];
     }
 }

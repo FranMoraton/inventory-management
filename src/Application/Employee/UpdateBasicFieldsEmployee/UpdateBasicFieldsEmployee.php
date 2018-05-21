@@ -3,12 +3,11 @@
 namespace Inventory\Management\Application\Employee\UpdateBasicFieldsEmployee;
 
 use Inventory\Management\Domain\Model\Entity\Employee\EmployeeRepositoryInterface;
-use Inventory\Management\Domain\Model\Entity\Employee\FoundTelephoneEmployeeException;
-use Inventory\Management\Domain\Model\Entity\Employee\NotFoundEmployeesException;
+use Inventory\Management\Domain\Model\HttpResponses\HttpResponses;
 use Inventory\Management\Domain\Service\Employee\CheckNotExistTelephoneEmployee;
 use Inventory\Management\Domain\Service\Util\EncryptPassword;
 use Inventory\Management\Domain\Service\Employee\SearchEmployeeByNif;
-use Inventory\Management\Domain\Service\Util\Observer\ListExceptions;
+use Inventory\Management\Domain\Util\Observer\ListExceptions;
 
 class UpdateBasicFieldsEmployee
 {
@@ -56,7 +55,7 @@ class UpdateBasicFieldsEmployee
 
         return [
             'data' => 'Se ha actualizado el trabajador con éxito',
-            'code' => 200
+            'code' => HttpResponses::OK
         ];
     }
 }

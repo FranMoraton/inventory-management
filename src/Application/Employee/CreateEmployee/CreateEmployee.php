@@ -2,19 +2,15 @@
 
 namespace Inventory\Management\Application\Employee\CreateEmployee;
 
-use Inventory\Management\Domain\Model\Entity\Department\NotFoundSubDepartmentsException;
 use Inventory\Management\Domain\Model\Entity\Employee\Employee;
 use Inventory\Management\Domain\Model\Entity\Employee\EmployeeRepositoryInterface;
 use Inventory\Management\Domain\Model\Entity\Employee\EmployeeStatus;
 use Inventory\Management\Domain\Model\Entity\Employee\EmployeeStatusRepositoryInterface;
-use Inventory\Management\Domain\Model\Entity\Employee\FoundCodeEmployeeStatusException;
-use Inventory\Management\Domain\Model\Entity\Employee\FoundInSsNumberEmployeeException;
-use Inventory\Management\Domain\Model\Entity\Employee\FoundNifEmployeeException;
-use Inventory\Management\Domain\Model\Entity\Employee\FoundTelephoneEmployeeException;
+use Inventory\Management\Domain\Model\HttpResponses\HttpResponses;
 use Inventory\Management\Domain\Service\Department\SearchSubDepartmentById;
 use Inventory\Management\Domain\Service\Employee\CheckNotExistsUniqueFields;
 use Inventory\Management\Domain\Service\Util\EncryptPassword;
-use Inventory\Management\Domain\Service\Util\Observer\ListExceptions;
+use Inventory\Management\Domain\Util\Observer\ListExceptions;
 
 class CreateEmployee
 {
@@ -79,7 +75,7 @@ class CreateEmployee
 
         return [
             'data' => 'Se ha creado el trabajador con éxito',
-            'code' => 200
+            'code' => HttpResponses::OK_CREATED
         ];
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace Inventory\Management\Domain\Service\Util\Observer;
+namespace Inventory\Management\Domain\Util\Observer;
 
 class ListExceptions implements Observable
 {
@@ -44,6 +44,14 @@ class ListExceptions implements Observable
     public function attach(Observer $observer)
     {
         $this->observers[] = $observer;
+    }
+
+    public function detach(Observer $observer)
+    {
+        $key = spl_object_hash($observer);
+        if (null !== $key) {
+            unset($this->observers[$key]);
+        }
     }
 
     public function notify()

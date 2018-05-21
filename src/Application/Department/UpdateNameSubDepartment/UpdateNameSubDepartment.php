@@ -3,8 +3,9 @@
 namespace Inventory\Management\Application\Department\UpdateNameSubDepartment;
 
 use Inventory\Management\Domain\Model\Entity\Department\SubDepartmentRepositoryInterface;
+use Inventory\Management\Domain\Model\HttpResponses\HttpResponses;
 use Inventory\Management\Domain\Service\Department\SearchSubDepartmentById;
-use Inventory\Management\Domain\Service\Util\Observer\ListExceptions;
+use Inventory\Management\Domain\Util\Observer\ListExceptions;
 
 class UpdateNameSubDepartment
 {
@@ -36,7 +37,7 @@ class UpdateNameSubDepartment
 
         return [
             'data' => 'Se ha actualizado el nombre del subdepartamento con éxito',
-            'code' => 200
+            'code' => HttpResponses::OK
         ];
     }
 }

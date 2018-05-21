@@ -1,14 +1,14 @@
 <?php
 
-namespace Inventory\Management\Domain\Model\Entity\Employee;
+namespace Inventory\Management\Domain\Model\JwtToken;
 
 use Inventory\Management\Domain\Model\HttpResponses\HttpResponses;
 
-class NotFoundPasswordEmployeeException extends \Exception
+class InvalidTokenException extends \Exception
 {
     public function __construct()
     {
-        $message = 'La contraseña introducida no es correcta';
+        $message = 'No se ha iniciado una sesión';
         $code = HttpResponses::NOT_FOUND;
         parent::__construct($message, $code);
     }

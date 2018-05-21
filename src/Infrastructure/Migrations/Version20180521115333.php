@@ -8,14 +8,15 @@ use Doctrine\DBAL\Schema\Schema;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-class Version20180514101826 extends AbstractMigration
+class Version20180521115333 extends AbstractMigration
 {
     public function up(Schema $schema)
     {
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('ALTER TABLE employee_status ADD disabled_employee TINYINT(1) NOT NULL');
+        $this->addSql('ALTER TABLE admin CHANGE token token VARCHAR(350) DEFAULT NULL');
+        $this->addSql('ALTER TABLE employee CHANGE token token VARCHAR(350) DEFAULT NULL');
     }
 
     public function down(Schema $schema)
@@ -23,6 +24,7 @@ class Version20180514101826 extends AbstractMigration
         // this down() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('ALTER TABLE employee_status DROP disabled_employee');
+        $this->addSql('ALTER TABLE admin CHANGE token token VARCHAR(200) DEFAULT NULL COLLATE utf8mb4_unicode_ci');
+        $this->addSql('ALTER TABLE employee CHANGE token token VARCHAR(200) DEFAULT NULL COLLATE utf8mb4_unicode_ci');
     }
 }

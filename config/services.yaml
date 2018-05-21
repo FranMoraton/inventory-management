@@ -50,3 +50,7 @@ services:
         arguments:
             - '@Doctrine\Common\Persistence\ManagerRegistry'
             - Inventory\Management\Domain\Model\Entity\Employee\EmployeeStatus
+
+    Inventory\Management\Infrastructure\Util\JwtToken\JwtTokenUtil:
+        arguments:
+            - '@Symfony\Component\HttpFoundation\RequestStack'

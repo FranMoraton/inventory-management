@@ -3,6 +3,7 @@
 namespace Inventory\Management\Application\Department\showDepartments;
 
 use Inventory\Management\Domain\Model\Entity\Department\DepartmentRepositoryInterface;
+use Inventory\Management\Domain\Model\HttpResponses\HttpResponses;
 
 class ShowDepartments
 {
@@ -23,7 +24,7 @@ class ShowDepartments
 
         return [
             'data' => $this->showDepartmentsTransform->transform($listDepartments),
-            'code' => 200
+            'code' => HttpResponses::OK
         ];
     }
 }

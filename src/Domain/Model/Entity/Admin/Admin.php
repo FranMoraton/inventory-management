@@ -3,13 +3,12 @@
 namespace Inventory\Management\Domain\Model\Entity\Admin;
 
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * @ORM\Entity(repositoryClass="Inventory\Management\Infrastructure\Repository\Admin\AdminRepository")
  * @ORM\Table(name="admin")
  */
-class Admin implements UserInterface, \Serializable
+class Admin
 {
     /**
      * @ORM\Id()
@@ -33,6 +32,11 @@ class Admin implements UserInterface, \Serializable
      */
     private $disabledAdmin;
 
+    /**
+     * @ORM\Column(type="string", length=350, nullable=true)
+     */
+    private $token;
+
     public function getId()
     {
         return $this->id;
@@ -53,41 +57,13 @@ class Admin implements UserInterface, \Serializable
         return $this->disabledAdmin;
     }
 
-    public function serialize()
+    public function getToken(): string
     {
-        return serialize(
-            array(
-                $this->id,
-                $this->username,
-                $this->password
-            )
-        );
+        return $this->token;
     }
 
-    public function unserialize($serialized)
+    public function setToken(string $token)
     {
-        list (
-            $this->id,
-            $this->username,
-            $this->password
-        ) = unserialize(
-            $serialized,
-            ['allowed_classes' => false]
-        );
-    }
-
-    public function getRoles()
-    {
-        return array('ROLE_ADMIN');
-    }
-
-    public function getSalt()
-    {
-        return null;
-    }
-
-    public function eraseCredentials()
-    {
-        // TODO: Implement eraseCredentials() method.
+        $this->token = $token;
     }
 }

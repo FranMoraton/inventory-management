@@ -28,6 +28,7 @@ interface EmployeeRepositoryInterface
         Department $department,
         SubDepartment $subDepartment
     ): Employee;
+    public function updateTokenEmployee(Employee $employee, string $token): Employee;
     public function findEmployeeByNif(string $nif): ?Employee;
     public function showByFirstResultEmployees(int $initialResult): array;
     public function checkNotExistsInSsNumberEmployee(string $inSsNumber): ?Employee;

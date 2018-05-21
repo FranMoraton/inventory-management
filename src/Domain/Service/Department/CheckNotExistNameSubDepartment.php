@@ -4,8 +4,8 @@ namespace Inventory\Management\Domain\Service\Department;
 
 use Inventory\Management\Domain\Model\Entity\Department\FoundNameSubDepartmentException;
 use Inventory\Management\Domain\Model\Entity\Department\SubDepartmentRepositoryInterface;
-use Inventory\Management\Domain\Service\Util\Observer\ListExceptions;
-use Inventory\Management\Domain\Service\Util\Observer\Observer;
+use Inventory\Management\Domain\Util\Observer\ListExceptions;
+use Inventory\Management\Domain\Util\Observer\Observer;
 
 class CheckNotExistNameSubDepartment implements Observer
 {

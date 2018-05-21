@@ -2,40 +2,56 @@
 
 namespace Inventory\Management\Application\Employee\CheckLoginEmployee;
 
-use Inventory\Management\Domain\Model\Entity\Employee\NotFoundEmployeesException;
-use Inventory\Management\Domain\Model\Entity\Employee\NotFoundPasswordEmployeeException;
+use Inventory\Management\Application\Util\JwtToken\CreateToken;
+use Inventory\Management\Domain\Model\Entity\Employee\EmployeeRepositoryInterface;
+use Inventory\Management\Domain\Model\HttpResponses\HttpResponses;
 use Inventory\Management\Domain\Service\Util\CheckDecryptPassword;
 use Inventory\Management\Domain\Service\Employee\SearchEmployeeByNif;
+use Inventory\Management\Domain\Util\Observer\ListExceptions;
 
 class CheckLoginEmployee
 {
+    private $employeeRepository;
     private $searchEmployeeByNif;
     private $checkDecryptPassword;
+    private $createToken;
 
-    public function __construct(SearchEmployeeByNif $searchEmployeeByNif, CheckDecryptPassword $checkDecryptPassword)
-    {
+    public function __construct(
+        EmployeeRepositoryInterface $employeeRepository,
+        SearchEmployeeByNif $searchEmployeeByNif,
+        CheckDecryptPassword $checkDecryptPassword,
+        CreateToken $createToken
+    ) {
+        $this->employeeRepository = $employeeRepository;
         $this->searchEmployeeByNif = $searchEmployeeByNif;
         $this->checkDecryptPassword = $checkDecryptPassword;
+        $this->createToken = $createToken;
+        ListExceptions::instance()->restartExceptions();
+        ListExceptions::instance()->attach($searchEmployeeByNif);
+        ListExceptions::instance()->attach($checkDecryptPassword);
     }
 
     public function handle(CheckLoginEmployeeCommand $checkLoginEmployeeCommand): array
     {
-        try {
-            $resultEmployee = $this->searchEmployeeByNif->execute(
-                $checkLoginEmployeeCommand->nif()
-            );
-        } catch (NotFoundEmployeesException $notFoundEmployeesException) {
-            return ['ko' => $notFoundEmployeesException->getMessage()];
+        $employee = $this->searchEmployeeByNif->execute(
+            $checkLoginEmployeeCommand->nif()
+        );
+        $this->checkDecryptPassword->execute(
+            $checkLoginEmployeeCommand->password(),
+            null !== $employee ? $employee->getPassword() : ''
+        );
+        if (ListExceptions::instance()->checkForExceptions()) {
+            return ListExceptions::instance()->firstException();
         }
-        try {
-            $this->checkDecryptPassword->execute(
-                $checkLoginEmployeeCommand->password(),
-                $resultEmployee->getPassword()
-            );
-        } catch (NotFoundPasswordEmployeeException $notFoundPasswordEmployeeException) {
-            return ['ko' => $notFoundPasswordEmployeeException->getMessage()];
-        }
+        $token = $this->createToken->handle([
+            'id' => $employee->getId(),
+            'nif' => $employee->getNif()
+        ]);
+        $this->employeeRepository->updateTokenEmployee($employee, $token);
 
-        return ['ok' => 200];
+        return [
+            'data' => 'Los datos introducidos son correctos',
+            'code' => HttpResponses::OK
+        ];
     }
 }

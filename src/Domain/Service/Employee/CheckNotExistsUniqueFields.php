@@ -8,8 +8,8 @@ use Inventory\Management\Domain\Model\Entity\Employee\FoundCodeEmployeeStatusExc
 use Inventory\Management\Domain\Model\Entity\Employee\FoundInSsNumberEmployeeException;
 use Inventory\Management\Domain\Model\Entity\Employee\FoundNifEmployeeException;
 use Inventory\Management\Domain\Model\Entity\Employee\FoundTelephoneEmployeeException;
-use Inventory\Management\Domain\Service\Util\Observer\ListExceptions;
-use Inventory\Management\Domain\Service\Util\Observer\Observer;
+use Inventory\Management\Domain\Util\Observer\ListExceptions;
+use Inventory\Management\Domain\Util\Observer\Observer;
 
 class CheckNotExistsUniqueFields implements Observer
 {

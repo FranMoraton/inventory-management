@@ -4,8 +4,9 @@ namespace Inventory\Management\Application\Department\CreateDepartment;
 
 use Inventory\Management\Domain\Model\Entity\Department\Department;
 use Inventory\Management\Domain\Model\Entity\Department\DepartmentRepositoryInterface;
+use Inventory\Management\Domain\Model\HttpResponses\HttpResponses;
 use Inventory\Management\Domain\Service\Department\CheckNotExistNameDepartment;
-use Inventory\Management\Domain\Service\Util\Observer\ListExceptions;
+use Inventory\Management\Domain\Util\Observer\ListExceptions;
 
 class CreateDepartment
 {
@@ -37,7 +38,7 @@ class CreateDepartment
 
         return [
             'data' => 'Se ha creado el departamento con éxito',
-            'code' => 200
+            'code' => HttpResponses::OK_CREATED
         ];
     }
 }

@@ -3,6 +3,7 @@
 namespace Inventory\Management\Application\Employee\ShowByFirstResultEmployees;
 
 use Inventory\Management\Domain\Model\Entity\Employee\EmployeeRepositoryInterface;
+use Inventory\Management\Domain\Model\HttpResponses\HttpResponses;
 
 class ShowByFirstResultEmployees
 {
@@ -25,7 +26,7 @@ class ShowByFirstResultEmployees
 
         return [
             'data' => $this->showEmployeesTransform->transform($listEmployees),
-            'code' => 200
+            'code' => HttpResponses::OK
         ];
     }
 }

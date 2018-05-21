@@ -2,21 +2,25 @@
 
 namespace Inventory\Management\Infrastructure\Controller\Employee;
 
+use Inventory\Management\Application\Employee\CheckLoginEmployee\CheckLoginEmployee;
+use Inventory\Management\Application\Employee\CheckLoginEmployee\CheckLoginEmployeeCommand;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 class CheckLoginEmployeeController
 {
-    public function checkLoginEmployee(AuthenticationUtils $authUtils): Response
+    public function checkLoginEmployee(Request $request, CheckLoginEmployee $checkLoginEmployee): Response
     {
-        $error = $authUtils->getLastAuthenticationError();
-        $lastUser = $authUtils->getLastUsername();
-        $list = [
-            'error' => $error,
-            'lastUser' => $lastUser
-        ];
+        $checkLoginEmployeeCommand = new CheckLoginEmployeeCommand(
+            $request->query->get('nif'),
+            $request->query->get('password')
+        );
+        $response = $checkLoginEmployee->handle($checkLoginEmployeeCommand);
 
-        return new JsonResponse($list, 200);
+        return new JsonResponse(
+            $response['data'],
+            $response['code']
+        );
     }
 }

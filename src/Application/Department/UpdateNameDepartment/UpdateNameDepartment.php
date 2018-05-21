@@ -3,8 +3,9 @@
 namespace Inventory\Management\Application\Department\UpdateNameDepartment;
 
 use Inventory\Management\Domain\Model\Entity\Department\DepartmentRepositoryInterface;
+use Inventory\Management\Domain\Model\HttpResponses\HttpResponses;
 use Inventory\Management\Domain\Service\Department\SearchDepartmentById;
-use Inventory\Management\Domain\Service\Util\Observer\ListExceptions;
+use Inventory\Management\Domain\Util\Observer\ListExceptions;
 
 class UpdateNameDepartment
 {
@@ -36,7 +37,7 @@ class UpdateNameDepartment
 
         return [
             'data' => 'Se ha actualizado el nombre del departamento con éxito',
-            'code' => 200
+            'code' => HttpResponses::OK
         ];
     }
 }

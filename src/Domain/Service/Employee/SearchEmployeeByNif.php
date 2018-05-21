@@ -5,8 +5,8 @@ namespace Inventory\Management\Domain\Service\Employee;
 use Inventory\Management\Domain\Model\Entity\Employee\Employee;
 use Inventory\Management\Domain\Model\Entity\Employee\EmployeeRepositoryInterface;
 use Inventory\Management\Domain\Model\Entity\Employee\NotFoundEmployeesException;
-use Inventory\Management\Domain\Service\Util\Observer\ListExceptions;
-use Inventory\Management\Domain\Service\Util\Observer\Observer;
+use Inventory\Management\Domain\Util\Observer\ListExceptions;
+use Inventory\Management\Domain\Util\Observer\Observer;
 
 class SearchEmployeeByNif implements Observer
 {

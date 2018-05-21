@@ -3,13 +3,12 @@
 namespace Inventory\Management\Domain\Model\Entity\Employee;
 
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * @ORM\Entity(repositoryClass="Inventory\Management\Infrastructure\Repository\Employee\EmployeeRepository")
  * @ORM\Table(name="employee")
  */
-class Employee implements UserInterface, \Serializable
+class Employee
 {
     /**
      * @ORM\Id()
@@ -52,6 +51,11 @@ class Employee implements UserInterface, \Serializable
      * @ORM\Column(type="string", length=12, nullable=false, unique=true)
      */
     private $telephone;
+
+    /**
+     * @ORM\Column(type="string", length=350, nullable=true)
+     */
+    private $token;
 
     public function __construct($employeeStatus, $image, $nif, $password, $name, $inSsNumber, $telephone)
     {
@@ -124,46 +128,13 @@ class Employee implements UserInterface, \Serializable
         $this->telephone = $telephone;
     }
 
-    public function serialize()
+    public function getToken(): string
     {
-        return serialize(
-            array(
-                $this->id,
-                $this->nif,
-                $this->password
-            )
-        );
+        return $this->token;
     }
 
-    public function unserialize($serialized)
+    public function setToken(string $token)
     {
-        list (
-            $this->id,
-            $this->nif,
-            $this->password
-        ) = unserialize(
-            $serialized,
-            ['allowed_classes' => false]
-        );
-    }
-
-    public function getRoles()
-    {
-        return array('ROLE_USER');
-    }
-
-    public function getSalt()
-    {
-        return null;
-    }
-
-    public function getUsername()
-    {
-        return $this->nif;
-    }
-
-    public function eraseCredentials()
-    {
-        // TODO: Implement eraseCredentials() method.
+        $this->token = $token;
     }
 }

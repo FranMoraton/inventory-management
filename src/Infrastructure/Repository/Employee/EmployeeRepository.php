@@ -3,17 +3,12 @@
 namespace Inventory\Management\Infrastructure\Repository\Employee;
 
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Inventory\Management\Application\Employee\UpdateBasicFieldsEmployee\UpdateBasicFieldsEmployeeCommand;
-use Inventory\Management\Application\Employee\UpdateFieldsEmployeeStatus\UpdateFieldsEmployeeStatus;
-use Inventory\Management\Application\Employee\UpdateFieldsEmployeeStatus\UpdateFieldsEmployeeStatusCommand;
 use Inventory\Management\Domain\Model\Entity\Department\Department;
 use Inventory\Management\Domain\Model\Entity\Department\SubDepartment;
 use Inventory\Management\Domain\Model\Entity\Employee\Employee;
 use Inventory\Management\Domain\Model\Entity\Employee\EmployeeRepositoryInterface;
-use Symfony\Bridge\Doctrine\Security\User\UserLoaderInterface;
-use Symfony\Component\Security\Core\User\UserInterface;
 
-class EmployeeRepository extends ServiceEntityRepository implements EmployeeRepositoryInterface, UserLoaderInterface
+class EmployeeRepository extends ServiceEntityRepository implements EmployeeRepositoryInterface
 {
     private const MAX_RESULTS_QUERY = 20;
 
@@ -123,9 +118,23 @@ class EmployeeRepository extends ServiceEntityRepository implements EmployeeRepo
     }
 
     /**
+     * @param Employee $employee
+     * @param string $token
+     * @return Employee
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function updateTokenEmployee(Employee $employee, string $token): Employee
+    {
+        $employee->setToken($token);
+        $this->getEntityManager()->flush();
+
+        return $employee;
+    }
+
+    /**
      * @param string $nif
      * @return Employee|null
-     * @throws \Doctrine\ORM\NonUniqueResultException
      */
     public function findEmployeeByNif(string $nif): ?Employee
     {
@@ -171,22 +180,5 @@ class EmployeeRepository extends ServiceEntityRepository implements EmployeeRepo
         $employee = $query->getOneOrNullResult();
 
         return $employee;
-    }
-
-    /**
-     * @param string $username
-     * @return mixed|null|UserInterface
-     * @throws \Doctrine\ORM\NonUniqueResultException
-     */
-    public function loadUserByUsername($username)
-    {
-        return $this->createQueryBuilder('em')
-            ->innerJoin('em.employeeStatus', 'ems')
-            ->andWhere('em.nif = :nif')
-            ->andWhere('ems.disabledEmployee = :disabledEmployee')
-            ->setParameter('nif', $username)
-            ->setParameter('disabledEmployee', false)
-            ->getQuery()
-            ->getOneOrNullResult();
     }
 }
