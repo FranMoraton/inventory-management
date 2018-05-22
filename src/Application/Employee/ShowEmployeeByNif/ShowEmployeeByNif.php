@@ -2,44 +2,40 @@
 
 namespace Inventory\Management\Application\Employee\ShowEmployeeByNif;
 
-use Inventory\Management\Application\Util\JwtToken\CheckToken;
+use Inventory\Management\Application\Util\Role\RoleAdmin;
 use Inventory\Management\Domain\Model\HttpResponses\HttpResponses;
 use Inventory\Management\Domain\Service\Employee\SearchEmployeeByNif;
-use Inventory\Management\Domain\Util\Observer\ListExceptions;
+use Inventory\Management\Domain\Service\JwtToken\CheckToken;
 
-class ShowEmployeeByNif
+class ShowEmployeeByNif extends RoleAdmin
 {
     private $showEmployeeByNifTransform;
     private $searchEmployeeByNif;
-    private $checkToken;
 
     public function __construct(
         ShowEmployeeByNifTransformInterface $showEmployeeByNifTransform,
         SearchEmployeeByNif $searchEmployeeByNif,
         CheckToken $checkToken
     ) {
+        parent::__construct($checkToken);
         $this->showEmployeeByNifTransform = $showEmployeeByNifTransform;
         $this->searchEmployeeByNif = $searchEmployeeByNif;
-        $this->checkToken = $checkToken;
-        ListExceptions::instance()->restartExceptions();
-        ListExceptions::instance()->attach($checkToken);
-        ListExceptions::instance()->attach($searchEmployeeByNif);
     }
 
+    /**
+     * @param ShowEmployeeByNifCommand $showEmployeeByNifCommand
+     * @return array
+     * @throws \Inventory\Management\Domain\Model\Entity\Employee\NotFoundEmployeesException
+     * @throws \Inventory\Management\Domain\Model\JwtToken\InvalidRoleTokenException
+     * @throws \Inventory\Management\Domain\Model\JwtToken\InvalidTokenException
+     * @throws \Inventory\Management\Domain\Model\JwtToken\InvalidUserTokenException
+     */
     public function handle(ShowEmployeeByNifCommand $showEmployeeByNifCommand)
     {
-        $exceptionsToken = $this->checkToken->handle(
-            $showEmployeeByNifCommand->token()
-        );
-        if (0 !== count($exceptionsToken)) {
-            return $exceptionsToken;
-        }
+        $this->checkToken();
         $employee = $this->searchEmployeeByNif->execute(
             $showEmployeeByNifCommand->nif()
         );
-        if (ListExceptions::instance()->checkForExceptions()) {
-            return ListExceptions::instance()->firstException();
-        }
 
         return [
             'data' => $this->showEmployeeByNifTransform->transform($employee),

@@ -2,35 +2,42 @@
 
 namespace Inventory\Management\Application\Department\CreateDepartment;
 
+use Inventory\Management\Application\Util\Role\RoleAdmin;
 use Inventory\Management\Domain\Model\Entity\Department\Department;
 use Inventory\Management\Domain\Model\Entity\Department\DepartmentRepositoryInterface;
 use Inventory\Management\Domain\Model\HttpResponses\HttpResponses;
 use Inventory\Management\Domain\Service\Department\CheckNotExistNameDepartment;
-use Inventory\Management\Domain\Util\Observer\ListExceptions;
+use Inventory\Management\Domain\Service\JwtToken\CheckToken;
 
-class CreateDepartment
+class CreateDepartment extends RoleAdmin
 {
     private $departmentRepository;
     private $checkNotExistNameDepartment;
 
     public function __construct(
         DepartmentRepositoryInterface $departmentRepository,
-        CheckNotExistNameDepartment $checkNotExistNameDepartment
+        CheckNotExistNameDepartment $checkNotExistNameDepartment,
+        CheckToken $checkToken
     ) {
+        parent::__construct($checkToken);
         $this->departmentRepository = $departmentRepository;
         $this->checkNotExistNameDepartment = $checkNotExistNameDepartment;
-        ListExceptions::instance()->restartExceptions();
-        ListExceptions::instance()->attach($checkNotExistNameDepartment);
     }
 
+    /**
+     * @param CreateDepartmentCommand $createDepartmentCommand
+     * @return array
+     * @throws \Inventory\Management\Domain\Model\Entity\Department\FoundNameDepartmentException
+     * @throws \Inventory\Management\Domain\Model\JwtToken\InvalidRoleTokenException
+     * @throws \Inventory\Management\Domain\Model\JwtToken\InvalidTokenException
+     * @throws \Inventory\Management\Domain\Model\JwtToken\InvalidUserTokenException
+     */
     public function handle(CreateDepartmentCommand $createDepartmentCommand): array
     {
+        $this->checkToken();
         $this->checkNotExistNameDepartment->execute(
             $createDepartmentCommand->name()
         );
-        if (ListExceptions::instance()->checkForExceptions()) {
-            return ListExceptions::instance()->firstException();
-        }
         $department = new Department(
             $createDepartmentCommand->name()
         );

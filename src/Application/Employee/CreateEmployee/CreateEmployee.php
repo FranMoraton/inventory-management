@@ -2,6 +2,7 @@
 
 namespace Inventory\Management\Application\Employee\CreateEmployee;
 
+use Inventory\Management\Application\Util\Role\RoleAdmin;
 use Inventory\Management\Domain\Model\Entity\Employee\Employee;
 use Inventory\Management\Domain\Model\Entity\Employee\EmployeeRepositoryInterface;
 use Inventory\Management\Domain\Model\Entity\Employee\EmployeeStatus;
@@ -9,10 +10,10 @@ use Inventory\Management\Domain\Model\Entity\Employee\EmployeeStatusRepositoryIn
 use Inventory\Management\Domain\Model\HttpResponses\HttpResponses;
 use Inventory\Management\Domain\Service\Department\SearchSubDepartmentById;
 use Inventory\Management\Domain\Service\Employee\CheckNotExistsUniqueFields;
-use Inventory\Management\Domain\Service\Util\EncryptPassword;
-use Inventory\Management\Domain\Util\Observer\ListExceptions;
+use Inventory\Management\Domain\Service\JwtToken\CheckToken;
+use Inventory\Management\Domain\Service\PasswordHash\EncryptPassword;
 
-class CreateEmployee
+class CreateEmployee extends RoleAdmin
 {
     private $employeeRepository;
     private $employeeStatusRepository;
@@ -25,20 +26,32 @@ class CreateEmployee
         EmployeeStatusRepositoryInterface $employeeStatusRepository,
         SearchSubDepartmentById $searchSubDepartmentById,
         CheckNotExistsUniqueFields $checkNotExistsUniqueFields,
-        EncryptPassword $encryptPassword
+        EncryptPassword $encryptPassword,
+        CheckToken $checkToken
     ) {
+        parent::__construct($checkToken);
         $this->employeeRepository = $employeeRepository;
         $this->employeeStatusRepository = $employeeStatusRepository;
         $this->searchSubDepartmentById = $searchSubDepartmentById;
         $this->checkNotExistsUniqueFields = $checkNotExistsUniqueFields;
         $this->encryptPassword = $encryptPassword;
-        ListExceptions::instance()->restartExceptions();
-        ListExceptions::instance()->attach($checkNotExistsUniqueFields);
-        ListExceptions::instance()->attach($searchSubDepartmentById);
     }
 
+    /**
+     * @param CreateEmployeeCommand $createEmployeeCommand
+     * @return array
+     * @throws \Inventory\Management\Domain\Model\Entity\Department\NotFoundSubDepartmentsException
+     * @throws \Inventory\Management\Domain\Model\Entity\Employee\FoundCodeEmployeeStatusException
+     * @throws \Inventory\Management\Domain\Model\Entity\Employee\FoundInSsNumberEmployeeException
+     * @throws \Inventory\Management\Domain\Model\Entity\Employee\FoundNifEmployeeException
+     * @throws \Inventory\Management\Domain\Model\Entity\Employee\FoundTelephoneEmployeeException
+     * @throws \Inventory\Management\Domain\Model\JwtToken\InvalidRoleTokenException
+     * @throws \Inventory\Management\Domain\Model\JwtToken\InvalidTokenException
+     * @throws \Inventory\Management\Domain\Model\JwtToken\InvalidUserTokenException
+     */
     public function handle(CreateEmployeeCommand $createEmployeeCommand): array
     {
+        $this->checkToken();
         $this->checkNotExistsUniqueFields->execute(
             $createEmployeeCommand->nif(),
             $createEmployeeCommand->inSsNumber(),
@@ -48,9 +61,6 @@ class CreateEmployee
         $subDepartment = $this->searchSubDepartmentById->execute(
             $createEmployeeCommand->subDepartment()
         );
-        if (ListExceptions::instance()->checkForExceptions()) {
-            return ListExceptions::instance()->firstException();
-        }
         $employeeStatus = new EmployeeStatus(
             $createEmployeeCommand->codeEmployee(),
             new \DateTime($createEmployeeCommand->firstContractDate()),

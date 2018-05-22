@@ -135,11 +135,19 @@ class EmployeeRepository extends ServiceEntityRepository implements EmployeeRepo
     /**
      * @param string $nif
      * @return Employee|null
+     * @throws \Doctrine\ORM\NonUniqueResultException
      */
     public function findEmployeeByNif(string $nif): ?Employee
     {
         /* @var Employee $employee */
-        $employee = $this->findOneBy(['nif' => $nif]);
+        $employee = $this->createQueryBuilder('em')
+            ->innerJoin('em.employeeStatus', 'ems')
+            ->andWhere('em.nif = :nif')
+            ->andWhere('ems.disabledEmployee = :disabledEmployee')
+            ->setParameter('nif', $nif)
+            ->setParameter('disabledEmployee', false)
+            ->getQuery()
+            ->getOneOrNullResult();
 
         return $employee;
     }

@@ -4,11 +4,11 @@ namespace Inventory\Management\Domain\Model\JwtToken;
 
 use Inventory\Management\Domain\Model\HttpResponses\HttpResponses;
 
-class ExpiredTokenException extends \Exception
+class InvalidRoleTokenException extends \Exception
 {
     public function __construct()
     {
-        $message = 'La sesión ha caducado';
+        $message = 'No puedes acceder a esta información';
         $code = HttpResponses::UNAUTHORIZED;
         parent::__construct($message, $code);
     }

@@ -2,14 +2,15 @@
 
 namespace Inventory\Management\Application\Employee\UpdateBasicFieldsEmployee;
 
+use Inventory\Management\Application\Util\Role\RoleEmployee;
 use Inventory\Management\Domain\Model\Entity\Employee\EmployeeRepositoryInterface;
 use Inventory\Management\Domain\Model\HttpResponses\HttpResponses;
 use Inventory\Management\Domain\Service\Employee\CheckNotExistTelephoneEmployee;
-use Inventory\Management\Domain\Service\Util\EncryptPassword;
+use Inventory\Management\Domain\Service\JwtToken\CheckToken;
+use Inventory\Management\Domain\Service\PasswordHash\EncryptPassword;
 use Inventory\Management\Domain\Service\Employee\SearchEmployeeByNif;
-use Inventory\Management\Domain\Util\Observer\ListExceptions;
 
-class UpdateBasicFieldsEmployee
+class UpdateBasicFieldsEmployee extends RoleEmployee
 {
     private $employeeRepository;
     private $searchEmployeeByNif;
@@ -20,19 +21,28 @@ class UpdateBasicFieldsEmployee
         EmployeeRepositoryInterface $employeeRepository,
         SearchEmployeeByNif $searchEmployeeByNif,
         CheckNotExistTelephoneEmployee $checkNotExistTelephoneEmployee,
-        EncryptPassword $encryptPassword
+        EncryptPassword $encryptPassword,
+        CheckToken $checkToken
     ) {
+        parent::__construct($checkToken);
         $this->employeeRepository = $employeeRepository;
         $this->searchEmployeeByNif = $searchEmployeeByNif;
         $this->checkNotExistTelephoneEmployee = $checkNotExistTelephoneEmployee;
         $this->encryptPassword = $encryptPassword;
-        ListExceptions::instance()->restartExceptions();
-        ListExceptions::instance()->attach($searchEmployeeByNif);
-        ListExceptions::instance()->attach($checkNotExistTelephoneEmployee);
     }
 
+    /**
+     * @param UpdateBasicFieldsEmployeeCommand $updateBasicFieldsEmployeeCommand
+     * @return array
+     * @throws \Inventory\Management\Domain\Model\Entity\Employee\FoundTelephoneEmployeeException
+     * @throws \Inventory\Management\Domain\Model\Entity\Employee\NotFoundEmployeesException
+     * @throws \Inventory\Management\Domain\Model\JwtToken\InvalidRoleTokenException
+     * @throws \Inventory\Management\Domain\Model\JwtToken\InvalidTokenException
+     * @throws \Inventory\Management\Domain\Model\JwtToken\InvalidUserTokenException
+     */
     public function handle(UpdateBasicFieldsEmployeeCommand $updateBasicFieldsEmployeeCommand): array
     {
+        $this->checkToken();
         $this->checkNotExistTelephoneEmployee->execute(
             $updateBasicFieldsEmployeeCommand->telephone(),
             $updateBasicFieldsEmployeeCommand->nif()
@@ -40,9 +50,6 @@ class UpdateBasicFieldsEmployee
         $employee = $this->searchEmployeeByNif->execute(
             $updateBasicFieldsEmployeeCommand->nif()
         );
-        if (ListExceptions::instance()->checkForExceptions()) {
-            return ListExceptions::instance()->firstException();
-        }
         $passwordHash = $this->encryptPassword->execute(
             $updateBasicFieldsEmployeeCommand->password()
         );

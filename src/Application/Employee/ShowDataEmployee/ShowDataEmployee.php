@@ -1,46 +1,43 @@
 <?php
 
-namespace Inventory\Management\Application\Employee\ChangeStatusToEnableEmployee;
+namespace Inventory\Management\Application\Employee\ShowDataEmployee;
 
-use Inventory\Management\Application\Util\Role\RoleAdmin;
-use Inventory\Management\Domain\Model\Entity\Employee\EmployeeRepositoryInterface;
+use Inventory\Management\Application\Util\Role\RoleEmployee;
 use Inventory\Management\Domain\Model\HttpResponses\HttpResponses;
 use Inventory\Management\Domain\Service\Employee\SearchEmployeeByNif;
 use Inventory\Management\Domain\Service\JwtToken\CheckToken;
 
-class ChangeStatusToEnableEmployee extends RoleAdmin
+class ShowDataEmployee extends RoleEmployee
 {
-    private $employeeRepository;
+    private $showDataEmployeeTransform;
     private $searchEmployeeByNif;
 
     public function __construct(
-        EmployeeRepositoryInterface $employeeRepository,
+        ShowDataEmployeeTransformInterface $showDataEmployeeTransform,
         SearchEmployeeByNif $searchEmployeeByNif,
         CheckToken $checkToken
     ) {
         parent::__construct($checkToken);
-        $this->employeeRepository = $employeeRepository;
+        $this->showDataEmployeeTransform = $showDataEmployeeTransform;
         $this->searchEmployeeByNif = $searchEmployeeByNif;
     }
 
     /**
-     * @param ChangeStatusToEnableEmployeeCommand $enableEmployeeCommand
      * @return array
      * @throws \Inventory\Management\Domain\Model\Entity\Employee\NotFoundEmployeesException
      * @throws \Inventory\Management\Domain\Model\JwtToken\InvalidRoleTokenException
      * @throws \Inventory\Management\Domain\Model\JwtToken\InvalidTokenException
      * @throws \Inventory\Management\Domain\Model\JwtToken\InvalidUserTokenException
      */
-    public function handle(ChangeStatusToEnableEmployeeCommand $enableEmployeeCommand): array
+    public function handle()
     {
-        $this->checkToken();
+        $dataToken = $this->checkToken();
         $employee = $this->searchEmployeeByNif->execute(
-            $enableEmployeeCommand->nif()
+            $dataToken->nif
         );
-        $this->employeeRepository->changeStatusToEnableEmployee($employee);
 
         return [
-            'data' => 'Se ha habilitado el trabajador con éxito',
+            'data' => $this->showDataEmployeeTransform->transform($employee),
             'code' => HttpResponses::OK
         ];
     }

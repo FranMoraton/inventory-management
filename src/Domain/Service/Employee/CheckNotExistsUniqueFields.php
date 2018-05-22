@@ -8,15 +8,9 @@ use Inventory\Management\Domain\Model\Entity\Employee\FoundCodeEmployeeStatusExc
 use Inventory\Management\Domain\Model\Entity\Employee\FoundInSsNumberEmployeeException;
 use Inventory\Management\Domain\Model\Entity\Employee\FoundNifEmployeeException;
 use Inventory\Management\Domain\Model\Entity\Employee\FoundTelephoneEmployeeException;
-use Inventory\Management\Domain\Util\Observer\ListExceptions;
-use Inventory\Management\Domain\Util\Observer\Observer;
 
-class CheckNotExistsUniqueFields implements Observer
+class CheckNotExistsUniqueFields
 {
-    private $stateExceptionNif;
-    private $stateExceptionInSsNumber;
-    private $stateExceptionTelephone;
-    private $stateExceptionCode;
     private $employeeRepository;
     private $employeeStatusRepository;
 
@@ -24,14 +18,20 @@ class CheckNotExistsUniqueFields implements Observer
         EmployeeRepositoryInterface $employeeRepository,
         EmployeeStatusRepositoryInterface $employeeStatusRepository
     ) {
-        $this->stateExceptionNif = false;
-        $this->stateExceptionInSsNumber = false;
-        $this->stateExceptionTelephone = false;
-        $this->stateExceptionCode = false;
         $this->employeeRepository = $employeeRepository;
         $this->employeeStatusRepository = $employeeStatusRepository;
     }
 
+    /**
+     * @param string $nif
+     * @param string $inSsNumber
+     * @param string $telephone
+     * @param string $codeEmployee
+     * @throws FoundCodeEmployeeStatusException
+     * @throws FoundInSsNumberEmployeeException
+     * @throws FoundNifEmployeeException
+     * @throws FoundTelephoneEmployeeException
+     */
     public function execute(
         string $nif,
         string $inSsNumber,
@@ -40,40 +40,19 @@ class CheckNotExistsUniqueFields implements Observer
     ): void {
         $nifEmployee = $this->employeeRepository->findEmployeeByNif($nif);
         if (null !== $nifEmployee) {
-            $this->stateExceptionNif = true;
+            throw new FoundNifEmployeeException();
         }
         $inSsNumberEmployee = $this->employeeRepository->checkNotExistsInSsNumberEmployee($inSsNumber);
         if (null !== $inSsNumberEmployee) {
-            $this->stateExceptionInSsNumber = true;
+            throw new FoundInSsNumberEmployeeException();
         }
         $telephoneEmployee = $this->employeeRepository->checkNotExistsTelephoneEmployee($telephone, $nif);
         if (null !== $telephoneEmployee) {
-            $this->stateExceptionTelephone = true;
+            throw new FoundTelephoneEmployeeException();
         }
         $codeEmployeeStatus = $this->employeeStatusRepository->checkNotExistsCodeEmployeeStatus($codeEmployee);
         if (null !== $codeEmployeeStatus) {
-            $this->stateExceptionCode = true;
-        }
-        ListExceptions::instance()->notify();
-    }
-
-    /**
-     * @throws FoundCodeEmployeeStatusException
-     * @throws FoundInSsNumberEmployeeException
-     * @throws FoundNifEmployeeException
-     * @throws FoundTelephoneEmployeeException
-     */
-    public function update()
-    {
-        switch (true) {
-            case $this->stateExceptionNif:
-                throw new FoundNifEmployeeException();
-            case $this->stateExceptionInSsNumber:
-                throw new FoundInSsNumberEmployeeException();
-            case $this->stateExceptionTelephone:
-                throw new FoundTelephoneEmployeeException();
-            case $this->stateExceptionCode:
-                throw new FoundCodeEmployeeStatusException();
+            throw new FoundCodeEmployeeStatusException();
         }
     }
 }

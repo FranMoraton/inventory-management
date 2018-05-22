@@ -2,14 +2,15 @@
 
 namespace Inventory\Management\Application\Employee\UpdateFieldsEmployeeStatus;
 
+use Inventory\Management\Application\Util\Role\RoleAdmin;
 use Inventory\Management\Domain\Model\Entity\Employee\EmployeeRepositoryInterface;
 use Inventory\Management\Domain\Model\HttpResponses\HttpResponses;
 use Inventory\Management\Domain\Service\Department\SearchDepartmentById;
 use Inventory\Management\Domain\Service\Department\SearchSubDepartmentById;
 use Inventory\Management\Domain\Service\Employee\SearchEmployeeByNif;
-use Inventory\Management\Domain\Util\Observer\ListExceptions;
+use Inventory\Management\Domain\Service\JwtToken\CheckToken;
 
-class UpdateFieldsEmployeeStatus
+class UpdateFieldsEmployeeStatus extends RoleAdmin
 {
     private $employeeRepository;
     private $searchEmployeeByNif;
@@ -20,20 +21,29 @@ class UpdateFieldsEmployeeStatus
         EmployeeRepositoryInterface $employeeRepository,
         SearchEmployeeByNif $searchEmployeeByNif,
         SearchDepartmentById $searchDepartmentById,
-        SearchSubDepartmentById $searchSubDepartmentById
+        SearchSubDepartmentById $searchSubDepartmentById,
+        CheckToken $checkToken
     ) {
+        parent::__construct($checkToken);
         $this->employeeRepository = $employeeRepository;
         $this->searchEmployeeByNif = $searchEmployeeByNif;
         $this->searchDepartmentById = $searchDepartmentById;
         $this->searchSubDepartmentById = $searchSubDepartmentById;
-        ListExceptions::instance()->restartExceptions();
-        ListExceptions::instance()->attach($searchEmployeeByNif);
-        ListExceptions::instance()->attach($searchDepartmentById);
-        ListExceptions::instance()->attach($searchSubDepartmentById);
     }
 
+    /**
+     * @param UpdateFieldsEmployeeStatusCommand $updateFieldsEmployeeStatusCommand
+     * @return array
+     * @throws \Inventory\Management\Domain\Model\Entity\Department\NotFoundDepartmentsException
+     * @throws \Inventory\Management\Domain\Model\Entity\Department\NotFoundSubDepartmentsException
+     * @throws \Inventory\Management\Domain\Model\Entity\Employee\NotFoundEmployeesException
+     * @throws \Inventory\Management\Domain\Model\JwtToken\InvalidRoleTokenException
+     * @throws \Inventory\Management\Domain\Model\JwtToken\InvalidTokenException
+     * @throws \Inventory\Management\Domain\Model\JwtToken\InvalidUserTokenException
+     */
     public function handle(UpdateFieldsEmployeeStatusCommand $updateFieldsEmployeeStatusCommand): array
     {
+        $this->checkToken();
         $department = $this->searchDepartmentById->execute(
             $updateFieldsEmployeeStatusCommand->department()
         );
@@ -43,9 +53,6 @@ class UpdateFieldsEmployeeStatus
         $employee = $this->searchEmployeeByNif->execute(
             $updateFieldsEmployeeStatusCommand->nif()
         );
-        if (ListExceptions::instance()->checkForExceptions()) {
-            return ListExceptions::instance()->firstException();
-        }
         $this->employeeRepository->updateFieldsEmployeeStatus(
             $employee,
             $updateFieldsEmployeeStatusCommand->image(),

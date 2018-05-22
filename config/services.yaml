@@ -26,6 +26,17 @@ services:
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
 
+    # add onKernelException for return a json response with custom message error
+    Inventory\Management\Infrastructure\Event\ExceptionListener:
+        tags:
+            - { name: kernel.event_listener, event: kernel.exception, method: onKernelException }
+
+    # token utility class
+    Inventory\Management\Infrastructure\Util\JwtToken\JwtTokenUtil:
+        arguments:
+            - '@Symfony\Component\HttpFoundation\RequestStack'
+
+    # repositories
     Inventory\Management\Infrastructure\Repository\Admin\AdminRepository:
         arguments:
             - '@Doctrine\Common\Persistence\ManagerRegistry'
@@ -50,7 +61,3 @@ services:
         arguments:
             - '@Doctrine\Common\Persistence\ManagerRegistry'
             - Inventory\Management\Domain\Model\Entity\Employee\EmployeeStatus
-
-    Inventory\Management\Infrastructure\Util\JwtToken\JwtTokenUtil:
-        arguments:
-            - '@Symfony\Component\HttpFoundation\RequestStack'

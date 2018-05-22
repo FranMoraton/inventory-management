@@ -2,34 +2,41 @@
 
 namespace Inventory\Management\Application\Department\UpdateNameSubDepartment;
 
+use Inventory\Management\Application\Util\Role\RoleAdmin;
 use Inventory\Management\Domain\Model\Entity\Department\SubDepartmentRepositoryInterface;
 use Inventory\Management\Domain\Model\HttpResponses\HttpResponses;
 use Inventory\Management\Domain\Service\Department\SearchSubDepartmentById;
-use Inventory\Management\Domain\Util\Observer\ListExceptions;
+use Inventory\Management\Domain\Service\JwtToken\CheckToken;
 
-class UpdateNameSubDepartment
+class UpdateNameSubDepartment extends RoleAdmin
 {
     private $subDepartmentRepository;
     private $searchSubDepartmentById;
 
     public function __construct(
         SubDepartmentRepositoryInterface $subDepartmentRepository,
-        SearchSubDepartmentById $searchSubDepartmentById
+        SearchSubDepartmentById $searchSubDepartmentById,
+        CheckToken $checkToken
     ) {
+        parent::__construct($checkToken);
         $this->subDepartmentRepository = $subDepartmentRepository;
         $this->searchSubDepartmentById = $searchSubDepartmentById;
-        ListExceptions::instance()->restartExceptions();
-        ListExceptions::instance()->attach($searchSubDepartmentById);
     }
 
+    /**
+     * @param UpdateNameSubDepartmentCommand $updateNameSubDepartmentCommand
+     * @return array
+     * @throws \Inventory\Management\Domain\Model\Entity\Department\NotFoundSubDepartmentsException
+     * @throws \Inventory\Management\Domain\Model\JwtToken\InvalidRoleTokenException
+     * @throws \Inventory\Management\Domain\Model\JwtToken\InvalidTokenException
+     * @throws \Inventory\Management\Domain\Model\JwtToken\InvalidUserTokenException
+     */
     public function handle(UpdateNameSubDepartmentCommand $updateNameSubDepartmentCommand)
     {
+        $this->checkToken();
         $subDepartment = $this->searchSubDepartmentById->execute(
             $updateNameSubDepartmentCommand->subDepartment()
         );
-        if (ListExceptions::instance()->checkForExceptions()) {
-            return ListExceptions::instance()->firstException();
-        }
         $this->subDepartmentRepository->updateNameSubDepartment(
             $subDepartment,
             $updateNameSubDepartmentCommand->name()

@@ -2,12 +2,12 @@
 
 namespace Inventory\Management\Application\Employee\CheckLoginEmployee;
 
-use Inventory\Management\Application\Util\JwtToken\CreateToken;
 use Inventory\Management\Domain\Model\Entity\Employee\EmployeeRepositoryInterface;
 use Inventory\Management\Domain\Model\HttpResponses\HttpResponses;
-use Inventory\Management\Domain\Service\Util\CheckDecryptPassword;
+use Inventory\Management\Domain\Model\JwtToken\Roles;
+use Inventory\Management\Domain\Service\PasswordHash\CheckDecryptPassword;
 use Inventory\Management\Domain\Service\Employee\SearchEmployeeByNif;
-use Inventory\Management\Domain\Util\Observer\ListExceptions;
+use Inventory\Management\Domain\Service\JwtToken\CreateToken;
 
 class CheckLoginEmployee
 {
@@ -26,11 +26,14 @@ class CheckLoginEmployee
         $this->searchEmployeeByNif = $searchEmployeeByNif;
         $this->checkDecryptPassword = $checkDecryptPassword;
         $this->createToken = $createToken;
-        ListExceptions::instance()->restartExceptions();
-        ListExceptions::instance()->attach($searchEmployeeByNif);
-        ListExceptions::instance()->attach($checkDecryptPassword);
     }
 
+    /**
+     * @param CheckLoginEmployeeCommand $checkLoginEmployeeCommand
+     * @return array
+     * @throws \Inventory\Management\Domain\Model\Entity\Employee\NotFoundEmployeesException
+     * @throws \Inventory\Management\Domain\Model\PasswordHash\IncorrectPasswordException
+     */
     public function handle(CheckLoginEmployeeCommand $checkLoginEmployeeCommand): array
     {
         $employee = $this->searchEmployeeByNif->execute(
@@ -40,17 +43,17 @@ class CheckLoginEmployee
             $checkLoginEmployeeCommand->password(),
             null !== $employee ? $employee->getPassword() : ''
         );
-        if (ListExceptions::instance()->checkForExceptions()) {
-            return ListExceptions::instance()->firstException();
-        }
-        $token = $this->createToken->handle([
-            'id' => $employee->getId(),
-            'nif' => $employee->getNif()
-        ]);
+        $token = $this->createToken->execute(
+            Roles::ROLE_EMPLOYEE,
+            [
+                'id' => $employee->getId(),
+                'nif' => $employee->getNif()
+            ]
+        );
         $this->employeeRepository->updateTokenEmployee($employee, $token);
 
         return [
-            'data' => 'Los datos introducidos son correctos',
+            'data' => $token,
             'code' => HttpResponses::OK
         ];
     }

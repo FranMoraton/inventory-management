@@ -2,34 +2,41 @@
 
 namespace Inventory\Management\Application\Employee\ChangeStatusToDisableEmployee;
 
+use Inventory\Management\Application\Util\Role\RoleAdmin;
 use Inventory\Management\Domain\Model\Entity\Employee\EmployeeRepositoryInterface;
 use Inventory\Management\Domain\Model\HttpResponses\HttpResponses;
 use Inventory\Management\Domain\Service\Employee\SearchEmployeeByNif;
-use Inventory\Management\Domain\Util\Observer\ListExceptions;
+use Inventory\Management\Domain\Service\JwtToken\CheckToken;
 
-class ChangeStatusToDisableEmployee
+class ChangeStatusToDisableEmployee extends RoleAdmin
 {
     private $employeeRepository;
     private $searchEmployeeByNif;
 
     public function __construct(
         EmployeeRepositoryInterface $employeeRepository,
-        SearchEmployeeByNif $searchEmployeeByNif
+        SearchEmployeeByNif $searchEmployeeByNif,
+        CheckToken $checkToken
     ) {
+        parent::__construct($checkToken);
         $this->employeeRepository = $employeeRepository;
         $this->searchEmployeeByNif = $searchEmployeeByNif;
-        ListExceptions::instance()->restartExceptions();
-        ListExceptions::instance()->attach($searchEmployeeByNif);
     }
 
+    /**
+     * @param ChangeStatusToDisableEmployeeCommand $disableEmployeeCommand
+     * @return array
+     * @throws \Inventory\Management\Domain\Model\Entity\Employee\NotFoundEmployeesException
+     * @throws \Inventory\Management\Domain\Model\JwtToken\InvalidRoleTokenException
+     * @throws \Inventory\Management\Domain\Model\JwtToken\InvalidTokenException
+     * @throws \Inventory\Management\Domain\Model\JwtToken\InvalidUserTokenException
+     */
     public function handle(ChangeStatusToDisableEmployeeCommand $disableEmployeeCommand): array
     {
+        $this->checkToken();
         $employee = $this->searchEmployeeByNif->execute(
             $disableEmployeeCommand->nif()
         );
-        if (ListExceptions::instance()->checkForExceptions()) {
-            return ListExceptions::instance()->firstException();
-        }
         $this->employeeRepository->changeStatusToDisableEmployee($employee);
 
         return [
