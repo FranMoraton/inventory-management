@@ -9,7 +9,6 @@ class ShowDataEmployeeTransform implements ShowDataEmployeeTransformInterface
     public function transform(Employee $employee)
     {
         $listEmployee = [
-            'id' => $employee->getId(),
             'name' => $employee->getName(),
             'inSsNumber' => $employee->getInSsNumber(),
             'telephone' => $employee->getTelephone()

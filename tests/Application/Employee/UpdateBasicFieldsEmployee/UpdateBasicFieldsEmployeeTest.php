@@ -5,9 +5,14 @@ namespace Inventory\Management\Tests\Application\Employee\UpdateBasicFieldsEmplo
 use Inventory\Management\Application\Employee\UpdateBasicFieldsEmployee\UpdateBasicFieldsEmployee;
 use Inventory\Management\Application\Employee\UpdateBasicFieldsEmployee\UpdateBasicFieldsEmployeeCommand;
 use Inventory\Management\Domain\Model\Entity\Employee\Employee;
+use Inventory\Management\Domain\Model\Entity\Employee\FoundTelephoneEmployeeException;
+use Inventory\Management\Domain\Model\Entity\Employee\NotFoundEmployeesException;
+use Inventory\Management\Domain\Model\JwtToken\Roles;
 use Inventory\Management\Domain\Service\Employee\CheckNotExistTelephoneEmployee;
-use Inventory\Management\Domain\Service\Util\EncryptPassword;
+use Inventory\Management\Domain\Service\JwtToken\CheckToken;
+use Inventory\Management\Domain\Service\PasswordHash\EncryptPassword;
 use Inventory\Management\Domain\Service\Employee\SearchEmployeeByNif;
+use Inventory\Management\Infrastructure\JwtToken\JwtTokenClass;
 use Inventory\Management\Infrastructure\Repository\Employee\EmployeeRepository;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -18,14 +23,23 @@ class UpdateBasicFieldsEmployeeTest extends TestCase
     private $employeeRepository;
     /* @var MockObject $encryptPassword */
     private $encryptPassword;
+    /* @var MockObject $jwtTokenClass */
+    private $jwtTokenClass;
+    private $checkToken;
     private $updateBasicFieldsEmployeeCommand;
 
     public function setUp(): void
     {
         $this->employeeRepository = $this->createMock(EmployeeRepository::class);
         $this->encryptPassword = $this->createMock(EncryptPassword::class);
+        $dataToken = ['nif' => '78965423D'];
+        $dataTokenDecode = json_decode(json_encode($dataToken));
+        $this->jwtTokenClass = $this->createMock(JwtTokenClass::class);
+        $this->jwtTokenClass->method('checkToken')
+            ->with(Roles::ROLE_EMPLOYEE)
+            ->willReturn($dataTokenDecode);
+        $this->checkToken = new CheckToken($this->jwtTokenClass);
         $this->updateBasicFieldsEmployeeCommand = new UpdateBasicFieldsEmployeeCommand(
-            '78965423D',
             'Javier',
             '1234',
             '689354127'
@@ -52,16 +66,11 @@ class UpdateBasicFieldsEmployeeTest extends TestCase
             $this->employeeRepository,
             $searchEmployeeByNif,
             $checkNotExistTelephoneEmployee,
-            $this->encryptPassword
+            $this->encryptPassword,
+            $this->checkToken
         );
-        $result = $updateBasicFieldsEmployee->handle($this->updateBasicFieldsEmployeeCommand);
-        $this->assertEquals(
-            [
-                'data' => 'El teléfono introducido ya existe',
-                'code' => 409
-            ],
-            $result
-        );
+        $this->expectException(FoundTelephoneEmployeeException::class);
+        $updateBasicFieldsEmployee->handle($this->updateBasicFieldsEmployeeCommand);
     }
 
     /**
@@ -79,16 +88,11 @@ class UpdateBasicFieldsEmployeeTest extends TestCase
             $this->employeeRepository,
             $searchEmployeeByNif,
             $checkNotExistTelephoneEmployee,
-            $this->encryptPassword
+            $this->encryptPassword,
+            $this->checkToken
         );
-        $result = $updateBasicFieldsEmployee->handle($this->updateBasicFieldsEmployeeCommand);
-        $this->assertEquals(
-            [
-                'data' => 'No se ha encontrado ningún trabajador',
-                'code' => 404
-            ],
-            $result
-        );
+        $this->expectException(NotFoundEmployeesException::class);
+        $updateBasicFieldsEmployee->handle($this->updateBasicFieldsEmployeeCommand);
     }
 
     /**
@@ -129,7 +133,8 @@ class UpdateBasicFieldsEmployeeTest extends TestCase
             $this->employeeRepository,
             $searchEmployeeByNif,
             $checkNotExistTelephoneEmployee,
-            $this->encryptPassword
+            $this->encryptPassword,
+            $this->checkToken
         );
         $result = $updateBasicFieldsEmployee->handle($this->updateBasicFieldsEmployeeCommand);
         $this->assertEquals(

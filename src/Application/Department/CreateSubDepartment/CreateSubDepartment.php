@@ -33,9 +33,6 @@ class CreateSubDepartment extends RoleAdmin
      * @return array
      * @throws \Inventory\Management\Domain\Model\Entity\Department\FoundNameSubDepartmentException
      * @throws \Inventory\Management\Domain\Model\Entity\Department\NotFoundDepartmentsException
-     * @throws \Inventory\Management\Domain\Model\JwtToken\InvalidRoleTokenException
-     * @throws \Inventory\Management\Domain\Model\JwtToken\InvalidTokenException
-     * @throws \Inventory\Management\Domain\Model\JwtToken\InvalidUserTokenException
      */
     public function handle(CreateSubDepartmentCommand $createSubDepartmentCommand): array
     {

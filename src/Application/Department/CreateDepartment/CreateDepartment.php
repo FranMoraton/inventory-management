@@ -28,9 +28,6 @@ class CreateDepartment extends RoleAdmin
      * @param CreateDepartmentCommand $createDepartmentCommand
      * @return array
      * @throws \Inventory\Management\Domain\Model\Entity\Department\FoundNameDepartmentException
-     * @throws \Inventory\Management\Domain\Model\JwtToken\InvalidRoleTokenException
-     * @throws \Inventory\Management\Domain\Model\JwtToken\InvalidTokenException
-     * @throws \Inventory\Management\Domain\Model\JwtToken\InvalidUserTokenException
      */
     public function handle(CreateDepartmentCommand $createDepartmentCommand): array
     {

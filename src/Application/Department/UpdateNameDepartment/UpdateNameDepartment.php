@@ -27,9 +27,6 @@ class UpdateNameDepartment extends RoleAdmin
      * @param UpdateNameDepartmentCommand $updateNameDepartmentCommand
      * @return array
      * @throws \Inventory\Management\Domain\Model\Entity\Department\NotFoundDepartmentsException
-     * @throws \Inventory\Management\Domain\Model\JwtToken\InvalidRoleTokenException
-     * @throws \Inventory\Management\Domain\Model\JwtToken\InvalidTokenException
-     * @throws \Inventory\Management\Domain\Model\JwtToken\InvalidUserTokenException
      */
     public function handle(UpdateNameDepartmentCommand $updateNameDepartmentCommand): array
     {

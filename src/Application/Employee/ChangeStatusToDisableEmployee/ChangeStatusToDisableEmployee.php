@@ -27,9 +27,6 @@ class ChangeStatusToDisableEmployee extends RoleAdmin
      * @param ChangeStatusToDisableEmployeeCommand $disableEmployeeCommand
      * @return array
      * @throws \Inventory\Management\Domain\Model\Entity\Employee\NotFoundEmployeesException
-     * @throws \Inventory\Management\Domain\Model\JwtToken\InvalidRoleTokenException
-     * @throws \Inventory\Management\Domain\Model\JwtToken\InvalidTokenException
-     * @throws \Inventory\Management\Domain\Model\JwtToken\InvalidUserTokenException
      */
     public function handle(ChangeStatusToDisableEmployeeCommand $disableEmployeeCommand): array
     {

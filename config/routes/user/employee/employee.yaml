@@ -7,9 +7,9 @@ logout_employee:
     controller: Inventory\Management\Infrastructure\Controller\Employee\CheckLogoutEmployeeController::checkLogoutEmployee
 
 search_employee_user:
-    path: /{nif}
-    controller: Inventory\Management\Infrastructure\Controller\Employee\ShowEmployeeByNifController::showEmployeeByNif
+    path: /data
+    controller: Inventory\Management\Infrastructure\Controller\Employee\ShowDataEmployeeController::showDataEmployee
 
 update_basic_employee:
-    path: /{nif}/update
+    path: /update
     controller: Inventory\Management\Infrastructure\Controller\Employee\UpdateBasicFieldsEmployeeController::updateBasicFieldsEmployee

@@ -5,13 +5,20 @@ namespace Inventory\Management\Tests\Application\Employee\CreateEmployee;
 use Inventory\Management\Application\Employee\CreateEmployee\CreateEmployee;
 use Inventory\Management\Application\Employee\CreateEmployee\CreateEmployeeCommand;
 use Inventory\Management\Domain\Model\Entity\Department\Department;
+use Inventory\Management\Domain\Model\Entity\Department\NotFoundSubDepartmentsException;
 use Inventory\Management\Domain\Model\Entity\Department\SubDepartment;
 use Inventory\Management\Domain\Model\Entity\Employee\Employee;
 use Inventory\Management\Domain\Model\Entity\Employee\EmployeeStatus;
+use Inventory\Management\Domain\Model\Entity\Employee\FoundCodeEmployeeStatusException;
+use Inventory\Management\Domain\Model\Entity\Employee\FoundInSsNumberEmployeeException;
+use Inventory\Management\Domain\Model\Entity\Employee\FoundNifEmployeeException;
+use Inventory\Management\Domain\Model\Entity\Employee\FoundTelephoneEmployeeException;
 use Inventory\Management\Domain\Service\Department\SearchSubDepartmentById;
 use Inventory\Management\Domain\Service\Employee\CheckNotExistsUniqueFields;
 use Inventory\Management\Domain\Service\Employee\CheckNotExistTelephoneEmployee;
-use Inventory\Management\Domain\Service\Util\EncryptPassword;
+use Inventory\Management\Domain\Service\JwtToken\CheckToken;
+use Inventory\Management\Domain\Service\PasswordHash\EncryptPassword;
+use Inventory\Management\Infrastructure\JwtToken\JwtTokenClass;
 use Inventory\Management\Infrastructure\Repository\Department\SubDepartmentRepository;
 use Inventory\Management\Infrastructure\Repository\Employee\EmployeeRepository;
 use Inventory\Management\Infrastructure\Repository\Employee\EmployeeStatusRepository;
@@ -34,6 +41,9 @@ class CreateEmployeeTest extends TestCase
     private $subDepartment;
     /* @var MockObject $employee */
     private $employee;
+    /* @var MockObject $jwtTokenClass */
+    private $jwtTokenClass;
+    private $checkToken;
     private $createEmployeeCommand;
     private $checkNotExistTelephoneEmployee;
 
@@ -44,6 +54,8 @@ class CreateEmployeeTest extends TestCase
         $this->employeeRepository = $this->createMock(EmployeeRepository::class);
         $this->encryptPassword = $this->createMock(EncryptPassword::class);
         $this->checkNotExistTelephoneEmployee = new CheckNotExistTelephoneEmployee($this->employeeRepository);
+        $this->jwtTokenClass = $this->createMock(JwtTokenClass::class);
+        $this->checkToken = new CheckToken($this->jwtTokenClass);
         $this->createEmployeeCommand = new CreateEmployeeCommand(
             'image.jpg',
             '76852436D',
@@ -108,16 +120,11 @@ class CreateEmployeeTest extends TestCase
             $this->employeeStatusRepository,
             $searchSubDepartmentById,
             $checkNotExistsUniqueFields,
-            $this->encryptPassword
+            $this->encryptPassword,
+            $this->checkToken
         );
-        $result = $createEmployee->handle($this->createEmployeeCommand);
-        $this->assertEquals(
-            [
-                'data' => 'No se ha encontrado ningún subdepartamento',
-                'code' => 404
-            ],
-            $result
-        );
+        $this->expectException(NotFoundSubDepartmentsException::class);
+        $createEmployee->handle($this->createEmployeeCommand);
     }
 
     /**
@@ -140,16 +147,11 @@ class CreateEmployeeTest extends TestCase
             $this->employeeStatusRepository,
             $searchSubDepartmentById,
             $checkNotExistsUniqueFields,
-            $this->encryptPassword
+            $this->encryptPassword,
+            $this->checkToken
         );
-        $result = $createEmployee->handle($this->createEmployeeCommand);
-        $this->assertEquals(
-            [
-                'data' => 'El NIF introducido ya existe',
-                'code' => 409
-            ],
-            $result
-        );
+        $this->expectException(FoundNifEmployeeException::class);
+        $createEmployee->handle($this->createEmployeeCommand);
     }
 
     /**
@@ -172,16 +174,11 @@ class CreateEmployeeTest extends TestCase
             $this->employeeStatusRepository,
             $searchSubDepartmentById,
             $checkNotExistsUniqueFields,
-            $this->encryptPassword
+            $this->encryptPassword,
+            $this->checkToken
         );
-        $result = $createEmployee->handle($this->createEmployeeCommand);
-        $this->assertEquals(
-            [
-                'data' => 'El número de la seguridad social introducido ya existe',
-                'code' => 409
-            ],
-            $result
-        );
+        $this->expectException(FoundInSsNumberEmployeeException::class);
+         $createEmployee->handle($this->createEmployeeCommand);
     }
 
     /**
@@ -204,16 +201,11 @@ class CreateEmployeeTest extends TestCase
             $this->employeeStatusRepository,
             $searchSubDepartmentById,
             $checkNotExistsUniqueFields,
-            $this->encryptPassword
+            $this->encryptPassword,
+            $this->checkToken
         );
-        $result = $createEmployee->handle($this->createEmployeeCommand);
-        $this->assertEquals(
-            [
-                'data' => 'El teléfono introducido ya existe',
-                'code' => 409
-            ],
-            $result
-        );
+        $this->expectException(FoundTelephoneEmployeeException::class);
+        $createEmployee->handle($this->createEmployeeCommand);
     }
 
     /**
@@ -237,16 +229,11 @@ class CreateEmployeeTest extends TestCase
             $this->employeeStatusRepository,
             $searchSubDepartmentById,
             $checkNotExistsUniqueFields,
-            $this->encryptPassword
+            $this->encryptPassword,
+            $this->checkToken
         );
-        $result = $createEmployee->handle($this->createEmployeeCommand);
-        $this->assertEquals(
-            [
-                'data' => 'El código de trabajador introducido ya existe',
-                'code' => 409
-            ],
-            $result
-        );
+        $this->expectException(FoundCodeEmployeeStatusException::class);
+        $createEmployee->handle($this->createEmployeeCommand);
     }
 
     /**
@@ -297,13 +284,14 @@ class CreateEmployeeTest extends TestCase
             $this->employeeStatusRepository,
             $searchSubDepartmentById,
             $checkNotExistsUniqueFields,
-            $this->encryptPassword
+            $this->encryptPassword,
+            $this->checkToken
         );
         $result = $createEmployee->handle($this->createEmployeeCommand);
         $this->assertEquals(
             [
                 'data' => 'Se ha creado el trabajador con éxito',
-                'code' => 200
+                'code' => 201
             ],
             $result
         );

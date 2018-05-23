@@ -45,9 +45,6 @@ class CreateEmployee extends RoleAdmin
      * @throws \Inventory\Management\Domain\Model\Entity\Employee\FoundInSsNumberEmployeeException
      * @throws \Inventory\Management\Domain\Model\Entity\Employee\FoundNifEmployeeException
      * @throws \Inventory\Management\Domain\Model\Entity\Employee\FoundTelephoneEmployeeException
-     * @throws \Inventory\Management\Domain\Model\JwtToken\InvalidRoleTokenException
-     * @throws \Inventory\Management\Domain\Model\JwtToken\InvalidTokenException
-     * @throws \Inventory\Management\Domain\Model\JwtToken\InvalidUserTokenException
      */
     public function handle(CreateEmployeeCommand $createEmployeeCommand): array
     {

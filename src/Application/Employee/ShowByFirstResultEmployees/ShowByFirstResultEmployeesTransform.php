@@ -6,7 +6,7 @@ use Inventory\Management\Domain\Model\Entity\Employee\Employee;
 
 class ShowByFirstResultEmployeesTransform implements ShowByFirstResultEmployeesTransformInterface
 {
-    private const ATOM = "Y-m-d\TH:i:sP";
+    private const ATOM = "d-m-Y";
 
     /**
      * @param array|Employee[] $employees

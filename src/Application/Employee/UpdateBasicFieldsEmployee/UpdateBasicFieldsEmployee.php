@@ -36,19 +36,16 @@ class UpdateBasicFieldsEmployee extends RoleEmployee
      * @return array
      * @throws \Inventory\Management\Domain\Model\Entity\Employee\FoundTelephoneEmployeeException
      * @throws \Inventory\Management\Domain\Model\Entity\Employee\NotFoundEmployeesException
-     * @throws \Inventory\Management\Domain\Model\JwtToken\InvalidRoleTokenException
-     * @throws \Inventory\Management\Domain\Model\JwtToken\InvalidTokenException
-     * @throws \Inventory\Management\Domain\Model\JwtToken\InvalidUserTokenException
      */
     public function handle(UpdateBasicFieldsEmployeeCommand $updateBasicFieldsEmployeeCommand): array
     {
-        $this->checkToken();
+        $dataToken = $this->checkToken();
         $this->checkNotExistTelephoneEmployee->execute(
             $updateBasicFieldsEmployeeCommand->telephone(),
-            $updateBasicFieldsEmployeeCommand->nif()
+            $dataToken->nif
         );
         $employee = $this->searchEmployeeByNif->execute(
-            $updateBasicFieldsEmployeeCommand->nif()
+            $dataToken->nif
         );
         $passwordHash = $this->encryptPassword->execute(
             $updateBasicFieldsEmployeeCommand->password()

@@ -26,9 +26,6 @@ class ShowEmployeeByNif extends RoleAdmin
      * @param ShowEmployeeByNifCommand $showEmployeeByNifCommand
      * @return array
      * @throws \Inventory\Management\Domain\Model\Entity\Employee\NotFoundEmployeesException
-     * @throws \Inventory\Management\Domain\Model\JwtToken\InvalidRoleTokenException
-     * @throws \Inventory\Management\Domain\Model\JwtToken\InvalidTokenException
-     * @throws \Inventory\Management\Domain\Model\JwtToken\InvalidUserTokenException
      */
     public function handle(ShowEmployeeByNifCommand $showEmployeeByNifCommand)
     {

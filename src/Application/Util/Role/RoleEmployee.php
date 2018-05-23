@@ -14,11 +14,6 @@ class RoleEmployee
         $this->checkToken = $checkToken;
     }
 
-    /**
-     * @throws \Inventory\Management\Domain\Model\JwtToken\InvalidRoleTokenException
-     * @throws \Inventory\Management\Domain\Model\JwtToken\InvalidTokenException
-     * @throws \Inventory\Management\Domain\Model\JwtToken\InvalidUserTokenException
-     */
     public function checkToken()
     {
         return $this->checkToken->execute($this->role());

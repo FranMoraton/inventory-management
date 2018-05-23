@@ -22,18 +22,13 @@ class ShowByFirstResultEmployees extends RoleAdmin
         $this->showEmployeesTransform = $showEmployeesTransform;
     }
 
-    /**
-     * @param ShowByFirstResultEmployeesCommand $showEmployeesCommand
-     * @return array
-     * @throws \Inventory\Management\Domain\Model\JwtToken\InvalidRoleTokenException
-     * @throws \Inventory\Management\Domain\Model\JwtToken\InvalidTokenException
-     * @throws \Inventory\Management\Domain\Model\JwtToken\InvalidUserTokenException
-     */
     public function handle(ShowByFirstResultEmployeesCommand $showEmployeesCommand): array
     {
         $this->checkToken();
-        $listEmployees = $this->employeeRepository->showByFirstResultEmployees(
-            $showEmployeesCommand->firstResultPosition()
+        $listEmployees = $this->employeeRepository->showByFirstResultFilterEmployees(
+            $showEmployeesCommand->firstResultPosition(),
+            $showEmployeesCommand->name(),
+            $showEmployeesCommand->code()
         );
 
         return [

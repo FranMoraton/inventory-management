@@ -4,8 +4,11 @@ namespace Inventory\Management\Tests\Application\Department\UpdateNameSubDepartm
 
 use Inventory\Management\Application\Department\UpdateNameSubDepartment\UpdateNameSubDepartment;
 use Inventory\Management\Application\Department\UpdateNameSubDepartment\UpdateNameSubDepartmentCommand;
+use Inventory\Management\Domain\Model\Entity\Department\NotFoundSubDepartmentsException;
 use Inventory\Management\Domain\Model\Entity\Department\SubDepartment;
 use Inventory\Management\Domain\Service\Department\SearchSubDepartmentById;
+use Inventory\Management\Domain\Service\JwtToken\CheckToken;
+use Inventory\Management\Infrastructure\JwtToken\JwtTokenClass;
 use Inventory\Management\Infrastructure\Repository\Department\SubDepartmentRepository;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -14,6 +17,9 @@ class UpdateNameSubDepartmentTest extends TestCase
 {
     /* @var MockObject $subDepartmentRepository */
     private $subDepartmentRepository;
+    /* @var MockObject $jwtTokenClass */
+    private $jwtTokenClass;
+    private $checkToken;
     private $searchSubDepartmentById;
     private $updateNameSubDepartmentCommand;
 
@@ -21,6 +27,8 @@ class UpdateNameSubDepartmentTest extends TestCase
     {
         $this->subDepartmentRepository = $this->createMock(SubDepartmentRepository::class);
         $this->searchSubDepartmentById = new SearchSubDepartmentById($this->subDepartmentRepository);
+        $this->jwtTokenClass = $this->createMock(JwtTokenClass::class);
+        $this->checkToken = new CheckToken($this->jwtTokenClass);
         $this->updateNameSubDepartmentCommand = new UpdateNameSubDepartmentCommand(1, 'Technology');
     }
 
@@ -33,15 +41,13 @@ class UpdateNameSubDepartmentTest extends TestCase
         $this->subDepartmentRepository->method('findSubDepartmentById')
             ->with($idSubDepartment)
             ->willReturn(null);
-        $updateNameSubDepartment = new UpdateNameSubDepartment($this->subDepartmentRepository, $this->searchSubDepartmentById);
-        $result = $updateNameSubDepartment->handle($this->updateNameSubDepartmentCommand);
-        $this->assertEquals(
-            [
-                'data' => 'No se ha encontrado ningún subdepartamento',
-                'code' => 404
-            ],
-            $result
+        $updateNameSubDepartment = new UpdateNameSubDepartment(
+            $this->subDepartmentRepository,
+            $this->searchSubDepartmentById,
+            $this->checkToken
         );
+        $this->expectException(NotFoundSubDepartmentsException::class);
+        $updateNameSubDepartment->handle($this->updateNameSubDepartmentCommand);
     }
 
     /**
@@ -62,7 +68,11 @@ class UpdateNameSubDepartmentTest extends TestCase
         $this->subDepartmentRepository->method('createSubDepartment')
             ->with($subDepartment)
             ->willReturn($subDepartment);
-        $updateNameSubDepartment = new UpdateNameSubDepartment($this->subDepartmentRepository, $this->searchSubDepartmentById);
+        $updateNameSubDepartment = new UpdateNameSubDepartment(
+            $this->subDepartmentRepository,
+            $this->searchSubDepartmentById,
+            $this->checkToken
+        );
         $result = $updateNameSubDepartment->handle($this->updateNameSubDepartmentCommand);
         $this->assertEquals(
             [

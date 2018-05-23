@@ -6,7 +6,10 @@ use Inventory\Management\Application\Employee\ChangeStatusToEnableEmployee\Chang
 use Inventory\Management\Application\Employee\ChangeStatusToEnableEmployee\ChangeStatusToEnableEmployeeCommand;
 use Inventory\Management\Domain\Model\Entity\Employee\Employee;
 use Inventory\Management\Domain\Model\Entity\Employee\EmployeeStatus;
+use Inventory\Management\Domain\Model\Entity\Employee\NotFoundEmployeesException;
 use Inventory\Management\Domain\Service\Employee\SearchEmployeeByNif;
+use Inventory\Management\Domain\Service\JwtToken\CheckToken;
+use Inventory\Management\Infrastructure\JwtToken\JwtTokenClass;
 use Inventory\Management\Infrastructure\Repository\Employee\EmployeeRepository;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -15,6 +18,9 @@ class ChangeStatusToEnableEmployeeTest extends TestCase
 {
     /* @var MockObject $employeeRepository */
     private $employeeRepository;
+    /* @var MockObject $jwtTokenClass */
+    private $jwtTokenClass;
+    private $checkToken;
     private $searchEmployeeByNif;
     private $changeStatusEmployeeCommand;
 
@@ -22,6 +28,8 @@ class ChangeStatusToEnableEmployeeTest extends TestCase
     {
         $this->employeeRepository = $this->createMock(EmployeeRepository::class);
         $this->searchEmployeeByNif = new SearchEmployeeByNif($this->employeeRepository);
+        $this->jwtTokenClass = $this->createMock(JwtTokenClass::class);
+        $this->checkToken = new CheckToken($this->jwtTokenClass);
         $this->changeStatusEmployeeCommand = new ChangeStatusToEnableEmployeeCommand('45678324F');
     }
 
@@ -33,15 +41,13 @@ class ChangeStatusToEnableEmployeeTest extends TestCase
         $this->employeeRepository->method('findEmployeeByNif')
             ->with('45678324F')
             ->willReturn(null);
-        $changeStatusEmployee = new ChangeStatusToEnableEmployee($this->employeeRepository, $this->searchEmployeeByNif);
-        $result = $changeStatusEmployee->handle($this->changeStatusEmployeeCommand);
-        $this->assertEquals(
-            [
-                'data' => 'No se ha encontrado ningún trabajador',
-                'code' => 404
-            ],
-            $result
+        $changeStatusEmployee = new ChangeStatusToEnableEmployee(
+            $this->employeeRepository,
+            $this->searchEmployeeByNif,
+            $this->checkToken
         );
+        $this->expectException(NotFoundEmployeesException::class);
+        $changeStatusEmployee->handle($this->changeStatusEmployeeCommand);
     }
 
     /**
@@ -73,7 +79,11 @@ class ChangeStatusToEnableEmployeeTest extends TestCase
         $this->employeeRepository->method('changeStatusToDisableEmployee')
             ->with($employee)
             ->willReturn($employee);
-        $changeStatusEmployee = new ChangeStatusToEnableEmployee($this->employeeRepository, $this->searchEmployeeByNif);
+        $changeStatusEmployee = new ChangeStatusToEnableEmployee(
+            $this->employeeRepository,
+            $this->searchEmployeeByNif,
+            $this->checkToken
+        );
         $result = $changeStatusEmployee->handle($this->changeStatusEmployeeCommand);
         $this->assertEquals(
             [

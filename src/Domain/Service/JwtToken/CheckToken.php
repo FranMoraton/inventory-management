@@ -2,24 +2,17 @@
 
 namespace Inventory\Management\Domain\Service\JwtToken;
 
-use Inventory\Management\Infrastructure\JwtToken\JwtTokenClass;
+use Inventory\Management\Domain\Model\JwtToken\JwtTokenClassInterface;
 
 class CheckToken
 {
     private $jwtTokenClass;
 
-    public function __construct(JwtTokenClass $jwtTokenClass)
+    public function __construct(JwtTokenClassInterface $jwtTokenClass)
     {
         $this->jwtTokenClass = $jwtTokenClass;
     }
-
-    /**
-     * @param string $role
-     * @return mixed
-     * @throws \Inventory\Management\Domain\Model\JwtToken\InvalidRoleTokenException
-     * @throws \Inventory\Management\Domain\Model\JwtToken\InvalidTokenException
-     * @throws \Inventory\Management\Domain\Model\JwtToken\InvalidUserTokenException
-     */
+    
     public function execute(string $role)
     {
         $data = $this->jwtTokenClass->checkToken($role);

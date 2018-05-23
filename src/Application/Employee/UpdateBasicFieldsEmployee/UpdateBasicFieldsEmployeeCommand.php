@@ -4,22 +4,15 @@ namespace Inventory\Management\Application\Employee\UpdateBasicFieldsEmployee;
 
 class UpdateBasicFieldsEmployeeCommand
 {
-    private $nif;
     private $name;
     private $password;
     private $telephone;
 
-    public function __construct($nif, $name, $password, $telephone)
+    public function __construct($name, $password, $telephone)
     {
-        $this->nif = $nif;
         $this->name = $name;
         $this->password = $password;
         $this->telephone = $telephone;
-    }
-
-    public function nif(): string
-    {
-        return $this->nif;
     }
 
     public function name(): string

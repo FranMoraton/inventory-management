@@ -5,12 +5,17 @@ namespace Inventory\Management\Tests\Application\Employee\UpdateFieldsEmployeeSt
 use Inventory\Management\Application\Employee\UpdateFieldsEmployeeStatus\UpdateFieldsEmployeeStatus;
 use Inventory\Management\Application\Employee\UpdateFieldsEmployeeStatus\UpdateFieldsEmployeeStatusCommand;
 use Inventory\Management\Domain\Model\Entity\Department\Department;
+use Inventory\Management\Domain\Model\Entity\Department\NotFoundDepartmentsException;
+use Inventory\Management\Domain\Model\Entity\Department\NotFoundSubDepartmentsException;
 use Inventory\Management\Domain\Model\Entity\Department\SubDepartment;
 use Inventory\Management\Domain\Model\Entity\Employee\Employee;
 use Inventory\Management\Domain\Model\Entity\Employee\EmployeeStatus;
+use Inventory\Management\Domain\Model\Entity\Employee\NotFoundEmployeesException;
 use Inventory\Management\Domain\Service\Department\SearchDepartmentById;
 use Inventory\Management\Domain\Service\Department\SearchSubDepartmentById;
 use Inventory\Management\Domain\Service\Employee\SearchEmployeeByNif;
+use Inventory\Management\Domain\Service\JwtToken\CheckToken;
+use Inventory\Management\Infrastructure\JwtToken\JwtTokenClass;
 use Inventory\Management\Infrastructure\Repository\Department\DepartmentRepository;
 use Inventory\Management\Infrastructure\Repository\Department\SubDepartmentRepository;
 use Inventory\Management\Infrastructure\Repository\Employee\EmployeeRepository;
@@ -25,7 +30,9 @@ class UpdateFieldsEmployeeStatusTest extends TestCase
     private $departmentRepository;
     /* @var MockObject $subDepartmentRepository */
     private $subDepartmentRepository;
-    /* @var UpdateFieldsEmployeeStatusCommand $updateFieldsEmployeeStatusCommand */
+    /* @var MockObject $jwtTokenClass */
+    private $jwtTokenClass;
+    private $checkToken;
     private $updateFieldsEmployeeStatusCommand;
 
     public function setUp(): void
@@ -33,6 +40,8 @@ class UpdateFieldsEmployeeStatusTest extends TestCase
         $this->employeeRepository = $this->createMock(EmployeeRepository::class);
         $this->departmentRepository = $this->createMock(DepartmentRepository::class);
         $this->subDepartmentRepository = $this->createMock(SubDepartmentRepository::class);
+        $this->jwtTokenClass = $this->createMock(JwtTokenClass::class);
+        $this->checkToken = new CheckToken($this->jwtTokenClass);
         $this->updateFieldsEmployeeStatusCommand = new UpdateFieldsEmployeeStatusCommand(
             '75693124D',
             'image.jpg',
@@ -66,16 +75,11 @@ class UpdateFieldsEmployeeStatusTest extends TestCase
             $this->employeeRepository,
             $searchEmployeeByNif,
             $searchDepartmentById,
-            $searchSubDepartmentById
+            $searchSubDepartmentById,
+            $this->checkToken
         );
-        $result = $updateFieldsEmployeeStatus->handle($this->updateFieldsEmployeeStatusCommand);
-        $this->assertEquals(
-            [
-                'data' => 'No se ha encontrado ningún departamento',
-                'code' => 404
-            ],
-            $result
-        );
+        $this->expectException(NotFoundDepartmentsException::class);
+        $updateFieldsEmployeeStatus->handle($this->updateFieldsEmployeeStatusCommand);
     }
 
     /**
@@ -104,16 +108,11 @@ class UpdateFieldsEmployeeStatusTest extends TestCase
             $this->employeeRepository,
             $searchEmployeeByNif,
             $searchDepartmentById,
-            $searchSubDepartmentById
+            $searchSubDepartmentById,
+            $this->checkToken
         );
-        $result = $updateFieldsEmployeeStatus->handle($this->updateFieldsEmployeeStatusCommand);
-        $this->assertEquals(
-            [
-                'data' => 'No se ha encontrado ningún subdepartamento',
-                'code' => 404
-            ],
-            $result
-        );
+        $this->expectException(NotFoundSubDepartmentsException::class);
+        $updateFieldsEmployeeStatus->handle($this->updateFieldsEmployeeStatusCommand);
     }
 
     /**
@@ -142,16 +141,11 @@ class UpdateFieldsEmployeeStatusTest extends TestCase
             $this->employeeRepository,
             $searchEmployeeByNif,
             $searchDepartmentById,
-            $searchSubDepartmentById
+            $searchSubDepartmentById,
+            $this->checkToken
         );
-        $result = $updateFieldsEmployeeStatus->handle($this->updateFieldsEmployeeStatusCommand);
-        $this->assertEquals(
-            [
-                'data' => 'No se ha encontrado ningún trabajador',
-                'code' => 404
-            ],
-            $result
-        );
+        $this->expectException(NotFoundEmployeesException::class);
+        $updateFieldsEmployeeStatus->handle($this->updateFieldsEmployeeStatusCommand);
     }
 
     /**
@@ -198,7 +192,8 @@ class UpdateFieldsEmployeeStatusTest extends TestCase
             $this->employeeRepository,
             $searchEmployeeByNif,
             $searchDepartmentById,
-            $searchSubDepartmentById
+            $searchSubDepartmentById,
+            $this->checkToken
         );
         $result = $updateFieldsEmployeeStatus->handle($this->updateFieldsEmployeeStatusCommand);
         $this->assertEquals(

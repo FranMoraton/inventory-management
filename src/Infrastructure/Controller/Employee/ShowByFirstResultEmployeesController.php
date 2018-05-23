@@ -15,7 +15,11 @@ class ShowByFirstResultEmployeesController
         ShowByFirstResultEmployees $showByFirstResultEmployees
     ): Response {
         $showByFirstResultEmployeesCommand = new ShowByFirstResultEmployeesCommand(
-            $request->attributes->get('firstresultposition')
+            $request->attributes->get('firstresultposition'),
+            $request->query->get('name'),
+            $request->query->get('code'),
+            $request->query->get('department'),
+            $request->query->get('subdepartment')
         );
         $response = $showByFirstResultEmployees->handle($showByFirstResultEmployeesCommand);
 

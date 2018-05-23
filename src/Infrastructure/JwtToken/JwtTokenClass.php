@@ -7,9 +7,10 @@ use Inventory\Management\Domain\Model\JwtToken\InvalidRoleTokenException;
 use Inventory\Management\Domain\Model\JwtToken\InvalidTokenException;
 use Inventory\Management\Domain\Model\JwtToken\InvalidUserTokenException;
 use Inventory\Management\Domain\Model\JwtToken\JwtToken;
+use Inventory\Management\Domain\Model\JwtToken\JwtTokenClassInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 
-class JwtTokenClass
+class JwtTokenClass implements JwtTokenClassInterface
 {
     private $requestStack;
 

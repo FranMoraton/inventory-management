@@ -37,9 +37,6 @@ class UpdateFieldsEmployeeStatus extends RoleAdmin
      * @throws \Inventory\Management\Domain\Model\Entity\Department\NotFoundDepartmentsException
      * @throws \Inventory\Management\Domain\Model\Entity\Department\NotFoundSubDepartmentsException
      * @throws \Inventory\Management\Domain\Model\Entity\Employee\NotFoundEmployeesException
-     * @throws \Inventory\Management\Domain\Model\JwtToken\InvalidRoleTokenException
-     * @throws \Inventory\Management\Domain\Model\JwtToken\InvalidTokenException
-     * @throws \Inventory\Management\Domain\Model\JwtToken\InvalidUserTokenException
      */
     public function handle(UpdateFieldsEmployeeStatusCommand $updateFieldsEmployeeStatusCommand): array
     {

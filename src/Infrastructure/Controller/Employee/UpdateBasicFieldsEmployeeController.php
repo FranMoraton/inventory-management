@@ -15,7 +15,6 @@ class UpdateBasicFieldsEmployeeController
         UpdateBasicFieldsEmployee $updateBasicFieldsEmployee
     ): Response {
         $updateBasicFieldsEmployeeCommand = new UpdateBasicFieldsEmployeeCommand(
-            $request->attributes->get('nif'),
             $request->query->get('name'),
             $request->query->get('password'),
             $request->query->get('telephone')

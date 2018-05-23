@@ -3,10 +3,15 @@
 namespace Inventory\Management\Infrastructure\Repository\Employee;
 
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query;
 use Inventory\Management\Domain\Model\Entity\Department\Department;
 use Inventory\Management\Domain\Model\Entity\Department\SubDepartment;
 use Inventory\Management\Domain\Model\Entity\Employee\Employee;
 use Inventory\Management\Domain\Model\Entity\Employee\EmployeeRepositoryInterface;
+use Inventory\Management\Infrastructure\Specification\AndX;
+use Inventory\Management\Infrastructure\Specification\AsArray;
+use Inventory\Management\Infrastructure\Specification\Employee\FilterEmployeeByCode;
+use Inventory\Management\Infrastructure\Specification\Employee\FilterEmployeeByName;
 
 class EmployeeRepository extends ServiceEntityRepository implements EmployeeRepositoryInterface
 {
@@ -152,14 +157,21 @@ class EmployeeRepository extends ServiceEntityRepository implements EmployeeRepo
         return $employee;
     }
 
-    public function showByFirstResultEmployees(int $initialResult): array
+    public function showByFirstResultFilterEmployees(int $initialResult, $name, $code): array
     {
         $query = $this->createQueryBuilder('em')
+            ->innerJoin('em.employeeStatus', 'ems')
             ->setFirstResult($initialResult)
-            ->setMaxResults(self::MAX_RESULTS_QUERY)
-            ->getQuery();
+            ->setMaxResults(self::MAX_RESULTS_QUERY);
+        $specification = new AsArray(
+            new AndX(
+                new FilterEmployeeByName($name),
+                new FilterEmployeeByCode($code)
+            )
+        );
+        $specification->match($query);
 
-        return $query->execute();
+        return $query->getQuery()->execute();
     }
 
     public function checkNotExistsInSsNumberEmployee(string $inSsNumber): ?Employee
