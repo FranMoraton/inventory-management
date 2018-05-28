@@ -31,6 +31,11 @@ services:
         tags:
             - { name: kernel.event_listener, event: kernel.exception, method: onKernelException }
 
+    # add onKernelController for add content to request and files attributes on PUT OR POST
+    Inventory\Management\Infrastructure\Event\ControllerListener:
+        tags:
+            - { name: kernel.event_listener, event: kernel.controller, method: onKernelController }
+
     # token utility class
     Inventory\Management\Infrastructure\Util\JwtToken\JwtTokenUtil:
         arguments:

@@ -1,7 +1,3 @@
 login_admin:
     path: /login
     controller: Inventory\Management\Infrastructure\Controller\Admin\CheckLoginAdminController::checkLoginAdmin
-
-logout_admin:
-    path: /logout
-    controller: Inventory\Management\Infrastructure\Controller\Admin\CheckLogoutAdminController::checkLogoutAdmin
