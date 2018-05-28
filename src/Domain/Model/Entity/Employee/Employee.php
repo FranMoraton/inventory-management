@@ -10,6 +10,8 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Employee
 {
+    const URL_IMAGE = 'employee/';
+
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -51,11 +53,6 @@ class Employee
      * @ORM\Column(type="string", length=12, nullable=false, unique=true)
      */
     private $telephone;
-
-    /**
-     * @ORM\Column(type="string", length=350, nullable=true)
-     */
-    private $token;
 
     public function __construct($employeeStatus, $image, $nif, $password, $name, $inSsNumber, $telephone)
     {
@@ -126,15 +123,5 @@ class Employee
     public function setTelephone(string $telephone): void
     {
         $this->telephone = $telephone;
-    }
-
-    public function getToken(): string
-    {
-        return $this->token;
-    }
-
-    public function setToken(string $token)
-    {
-        $this->token = $token;
     }
 }

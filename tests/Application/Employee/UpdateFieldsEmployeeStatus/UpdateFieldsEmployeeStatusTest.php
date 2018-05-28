@@ -14,6 +14,7 @@ use Inventory\Management\Domain\Model\Entity\Employee\NotFoundEmployeesException
 use Inventory\Management\Domain\Service\Department\SearchDepartmentById;
 use Inventory\Management\Domain\Service\Department\SearchSubDepartmentById;
 use Inventory\Management\Domain\Service\Employee\SearchEmployeeByNif;
+use Inventory\Management\Domain\Service\File\UploadPhoto;
 use Inventory\Management\Domain\Service\JwtToken\CheckToken;
 use Inventory\Management\Infrastructure\JwtToken\JwtTokenClass;
 use Inventory\Management\Infrastructure\Repository\Department\DepartmentRepository;
@@ -32,6 +33,8 @@ class UpdateFieldsEmployeeStatusTest extends TestCase
     private $subDepartmentRepository;
     /* @var MockObject $jwtTokenClass */
     private $jwtTokenClass;
+    /* @var MockObject $uploadPhoto */
+    private $uploadPhoto;
     private $checkToken;
     private $updateFieldsEmployeeStatusCommand;
 
@@ -44,7 +47,7 @@ class UpdateFieldsEmployeeStatusTest extends TestCase
         $this->checkToken = new CheckToken($this->jwtTokenClass);
         $this->updateFieldsEmployeeStatusCommand = new UpdateFieldsEmployeeStatusCommand(
             '75693124D',
-            'image.jpg',
+            ['type'],
             '15-05-2018',
             '15-05-2018',
             2,
@@ -52,6 +55,10 @@ class UpdateFieldsEmployeeStatusTest extends TestCase
             1,
             1
         );
+        $this->uploadPhoto = $this->createMock(UploadPhoto::class);
+        $this->uploadPhoto->method('execute')
+            ->with(['type'], Employee::URL_IMAGE)
+            ->willReturn('image.jpg');
     }
 
     /**
@@ -76,6 +83,7 @@ class UpdateFieldsEmployeeStatusTest extends TestCase
             $searchEmployeeByNif,
             $searchDepartmentById,
             $searchSubDepartmentById,
+            $this->uploadPhoto,
             $this->checkToken
         );
         $this->expectException(NotFoundDepartmentsException::class);
@@ -109,6 +117,7 @@ class UpdateFieldsEmployeeStatusTest extends TestCase
             $searchEmployeeByNif,
             $searchDepartmentById,
             $searchSubDepartmentById,
+            $this->uploadPhoto,
             $this->checkToken
         );
         $this->expectException(NotFoundSubDepartmentsException::class);
@@ -142,6 +151,7 @@ class UpdateFieldsEmployeeStatusTest extends TestCase
             $searchEmployeeByNif,
             $searchDepartmentById,
             $searchSubDepartmentById,
+            $this->uploadPhoto,
             $this->checkToken
         );
         $this->expectException(NotFoundEmployeesException::class);
@@ -193,6 +203,7 @@ class UpdateFieldsEmployeeStatusTest extends TestCase
             $searchEmployeeByNif,
             $searchDepartmentById,
             $searchSubDepartmentById,
+            $this->uploadPhoto,
             $this->checkToken
         );
         $result = $updateFieldsEmployeeStatus->handle($this->updateFieldsEmployeeStatusCommand);

@@ -28,9 +28,14 @@ interface EmployeeRepositoryInterface
         Department $department,
         SubDepartment $subDepartment
     ): Employee;
-    public function updateTokenEmployee(Employee $employee, string $token): Employee;
     public function findEmployeeByNif(string $nif): ?Employee;
-    public function showByFirstResultFilterEmployees(int $initialResult, $name, $code): array;
+    public function showByFirstResultFilterEmployees(
+        int $initialResult,
+        $name,
+        $code,
+        $department,
+        $subDepartment
+    ): array;
     public function checkNotExistsInSsNumberEmployee(string $inSsNumber): ?Employee;
     public function checkNotExistsTelephoneEmployee(string $telephone, string $nif): ?Employee;
 }

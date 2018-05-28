@@ -57,7 +57,7 @@ class CreateEmployeeCommand
         $this->subDepartment = $subDepartment;
     }
 
-    public function image(): string
+    public function image()
     {
         return $this->image;
     }

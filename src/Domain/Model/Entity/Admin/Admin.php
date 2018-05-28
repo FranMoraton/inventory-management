@@ -32,11 +32,6 @@ class Admin
      */
     private $disabledAdmin;
 
-    /**
-     * @ORM\Column(type="string", length=350, nullable=true)
-     */
-    private $token;
-
     public function getId()
     {
         return $this->id;
@@ -55,15 +50,5 @@ class Admin
     public function getDisabledAdmin()
     {
         return $this->disabledAdmin;
-    }
-
-    public function getToken(): string
-    {
-        return $this->token;
-    }
-
-    public function setToken(string $token)
-    {
-        $this->token = $token;
     }
 }

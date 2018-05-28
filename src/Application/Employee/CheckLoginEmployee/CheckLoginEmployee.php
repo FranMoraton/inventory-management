@@ -50,7 +50,6 @@ class CheckLoginEmployee
                 'nif' => $employee->getNif()
             ]
         );
-        $this->employeeRepository->updateTokenEmployee($employee, $token);
 
         return [
             'data' => $token,

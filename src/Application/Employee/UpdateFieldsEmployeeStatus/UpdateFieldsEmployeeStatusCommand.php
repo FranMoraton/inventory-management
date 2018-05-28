@@ -38,7 +38,7 @@ class UpdateFieldsEmployeeStatusCommand
         return $this->nif;
     }
 
-    public function image(): string
+    public function image()
     {
         return $this->image;
     }

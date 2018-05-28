@@ -11,7 +11,9 @@ use Inventory\Management\Domain\Model\Entity\Employee\EmployeeRepositoryInterfac
 use Inventory\Management\Infrastructure\Specification\AndX;
 use Inventory\Management\Infrastructure\Specification\AsArray;
 use Inventory\Management\Infrastructure\Specification\Employee\FilterEmployeeByCode;
+use Inventory\Management\Infrastructure\Specification\Employee\FilterEmployeeByDepartment;
 use Inventory\Management\Infrastructure\Specification\Employee\FilterEmployeeByName;
+use Inventory\Management\Infrastructure\Specification\Employee\FilterEmployeeBySubDepartment;
 
 class EmployeeRepository extends ServiceEntityRepository implements EmployeeRepositoryInterface
 {
@@ -123,21 +125,6 @@ class EmployeeRepository extends ServiceEntityRepository implements EmployeeRepo
     }
 
     /**
-     * @param Employee $employee
-     * @param string $token
-     * @return Employee
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     */
-    public function updateTokenEmployee(Employee $employee, string $token): Employee
-    {
-        $employee->setToken($token);
-        $this->getEntityManager()->flush();
-
-        return $employee;
-    }
-
-    /**
      * @param string $nif
      * @return Employee|null
      * @throws \Doctrine\ORM\NonUniqueResultException
@@ -157,8 +144,13 @@ class EmployeeRepository extends ServiceEntityRepository implements EmployeeRepo
         return $employee;
     }
 
-    public function showByFirstResultFilterEmployees(int $initialResult, $name, $code): array
-    {
+    public function showByFirstResultFilterEmployees(
+        int $initialResult,
+        $name,
+        $code,
+        $department,
+        $subDepartment
+    ): array {
         $query = $this->createQueryBuilder('em')
             ->innerJoin('em.employeeStatus', 'ems')
             ->setFirstResult($initialResult)
@@ -166,7 +158,9 @@ class EmployeeRepository extends ServiceEntityRepository implements EmployeeRepo
         $specification = new AsArray(
             new AndX(
                 new FilterEmployeeByName($name),
-                new FilterEmployeeByCode($code)
+                new FilterEmployeeByCode($code),
+                new FilterEmployeeByDepartment($department),
+                new FilterEmployeeBySubDepartment($subDepartment)
             )
         );
         $specification->match($query);

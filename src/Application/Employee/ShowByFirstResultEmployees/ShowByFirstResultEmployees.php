@@ -28,7 +28,9 @@ class ShowByFirstResultEmployees extends RoleAdmin
         $listEmployees = $this->employeeRepository->showByFirstResultFilterEmployees(
             $showEmployeesCommand->firstResultPosition(),
             $showEmployeesCommand->name(),
-            $showEmployeesCommand->code()
+            $showEmployeesCommand->code(),
+            $showEmployeesCommand->department(),
+            $showEmployeesCommand->subDepartment()
         );
 
         return [

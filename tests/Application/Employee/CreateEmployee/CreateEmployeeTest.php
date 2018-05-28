@@ -16,6 +16,7 @@ use Inventory\Management\Domain\Model\Entity\Employee\FoundTelephoneEmployeeExce
 use Inventory\Management\Domain\Service\Department\SearchSubDepartmentById;
 use Inventory\Management\Domain\Service\Employee\CheckNotExistsUniqueFields;
 use Inventory\Management\Domain\Service\Employee\CheckNotExistTelephoneEmployee;
+use Inventory\Management\Domain\Service\File\UploadPhoto;
 use Inventory\Management\Domain\Service\JwtToken\CheckToken;
 use Inventory\Management\Domain\Service\PasswordHash\EncryptPassword;
 use Inventory\Management\Infrastructure\JwtToken\JwtTokenClass;
@@ -43,6 +44,8 @@ class CreateEmployeeTest extends TestCase
     private $employee;
     /* @var MockObject $jwtTokenClass */
     private $jwtTokenClass;
+    /* @var MockObject $uploadPhoto */
+    private $uploadPhoto;
     private $checkToken;
     private $createEmployeeCommand;
     private $checkNotExistTelephoneEmployee;
@@ -57,7 +60,7 @@ class CreateEmployeeTest extends TestCase
         $this->jwtTokenClass = $this->createMock(JwtTokenClass::class);
         $this->checkToken = new CheckToken($this->jwtTokenClass);
         $this->createEmployeeCommand = new CreateEmployeeCommand(
-            'image.jpg',
+            ['type'],
             '76852436D',
             '1234',
             'Name',
@@ -98,6 +101,10 @@ class CreateEmployeeTest extends TestCase
             ->willReturn('649356871');
         $this->employee->method('getEmployeeStatus')
             ->willReturn($employeeStatus);
+        $this->uploadPhoto = $this->createMock(UploadPhoto::class);
+        $this->uploadPhoto->method('execute')
+            ->with(['type'], Employee::URL_IMAGE)
+            ->willReturn('image.jpg');
     }
 
     /**
@@ -121,6 +128,7 @@ class CreateEmployeeTest extends TestCase
             $searchSubDepartmentById,
             $checkNotExistsUniqueFields,
             $this->encryptPassword,
+            $this->uploadPhoto,
             $this->checkToken
         );
         $this->expectException(NotFoundSubDepartmentsException::class);
@@ -148,6 +156,7 @@ class CreateEmployeeTest extends TestCase
             $searchSubDepartmentById,
             $checkNotExistsUniqueFields,
             $this->encryptPassword,
+            $this->uploadPhoto,
             $this->checkToken
         );
         $this->expectException(FoundNifEmployeeException::class);
@@ -175,6 +184,7 @@ class CreateEmployeeTest extends TestCase
             $searchSubDepartmentById,
             $checkNotExistsUniqueFields,
             $this->encryptPassword,
+            $this->uploadPhoto,
             $this->checkToken
         );
         $this->expectException(FoundInSsNumberEmployeeException::class);
@@ -202,6 +212,7 @@ class CreateEmployeeTest extends TestCase
             $searchSubDepartmentById,
             $checkNotExistsUniqueFields,
             $this->encryptPassword,
+            $this->uploadPhoto,
             $this->checkToken
         );
         $this->expectException(FoundTelephoneEmployeeException::class);
@@ -230,6 +241,7 @@ class CreateEmployeeTest extends TestCase
             $searchSubDepartmentById,
             $checkNotExistsUniqueFields,
             $this->encryptPassword,
+            $this->uploadPhoto,
             $this->checkToken
         );
         $this->expectException(FoundCodeEmployeeStatusException::class);
@@ -285,6 +297,7 @@ class CreateEmployeeTest extends TestCase
             $searchSubDepartmentById,
             $checkNotExistsUniqueFields,
             $this->encryptPassword,
+            $this->uploadPhoto,
             $this->checkToken
         );
         $result = $createEmployee->handle($this->createEmployeeCommand);

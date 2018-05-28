@@ -3,11 +3,13 @@
 namespace Inventory\Management\Application\Employee\UpdateFieldsEmployeeStatus;
 
 use Inventory\Management\Application\Util\Role\RoleAdmin;
+use Inventory\Management\Domain\Model\Entity\Employee\Employee;
 use Inventory\Management\Domain\Model\Entity\Employee\EmployeeRepositoryInterface;
 use Inventory\Management\Domain\Model\HttpResponses\HttpResponses;
 use Inventory\Management\Domain\Service\Department\SearchDepartmentById;
 use Inventory\Management\Domain\Service\Department\SearchSubDepartmentById;
 use Inventory\Management\Domain\Service\Employee\SearchEmployeeByNif;
+use Inventory\Management\Domain\Service\File\UploadPhoto;
 use Inventory\Management\Domain\Service\JwtToken\CheckToken;
 
 class UpdateFieldsEmployeeStatus extends RoleAdmin
@@ -16,12 +18,14 @@ class UpdateFieldsEmployeeStatus extends RoleAdmin
     private $searchEmployeeByNif;
     private $searchDepartmentById;
     private $searchSubDepartmentById;
+    private $uploadPhoto;
 
     public function __construct(
         EmployeeRepositoryInterface $employeeRepository,
         SearchEmployeeByNif $searchEmployeeByNif,
         SearchDepartmentById $searchDepartmentById,
         SearchSubDepartmentById $searchSubDepartmentById,
+        UploadPhoto $uploadPhoto,
         CheckToken $checkToken
     ) {
         parent::__construct($checkToken);
@@ -29,6 +33,7 @@ class UpdateFieldsEmployeeStatus extends RoleAdmin
         $this->searchEmployeeByNif = $searchEmployeeByNif;
         $this->searchDepartmentById = $searchDepartmentById;
         $this->searchSubDepartmentById = $searchSubDepartmentById;
+        $this->uploadPhoto = $uploadPhoto;
     }
 
     /**
@@ -50,9 +55,13 @@ class UpdateFieldsEmployeeStatus extends RoleAdmin
         $employee = $this->searchEmployeeByNif->execute(
             $updateFieldsEmployeeStatusCommand->nif()
         );
+        $imageName = $this->uploadPhoto->execute(
+            $updateFieldsEmployeeStatusCommand->image(),
+            Employee::URL_IMAGE
+        );
         $this->employeeRepository->updateFieldsEmployeeStatus(
             $employee,
-            $updateFieldsEmployeeStatusCommand->image(),
+            $imageName,
             new \DateTime($updateFieldsEmployeeStatusCommand->expirationContractDate()),
             new \DateTime($updateFieldsEmployeeStatusCommand->possibleRenewal()),
             $updateFieldsEmployeeStatusCommand->availableHolidays(),

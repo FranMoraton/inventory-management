@@ -6,6 +6,7 @@
         "ext-iconv": "*",
         "beberlei/assert": "^2.9",
         "firebase/php-jwt": "^5.0",
+        "nelmio/cors-bundle": "^1.5",
         "symfony/console": "^4.0",
         "symfony/flex": "^1.0",
         "symfony/framework-bundle": "^4.0",

@@ -50,7 +50,6 @@ class CheckLoginAdmin
                 'username' => $admin->getUsername()
             ]
         );
-        $this->adminRepository->updateTokenAdmin($admin, $token);
 
         return [
             'data' => $token,
