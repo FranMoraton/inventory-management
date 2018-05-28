@@ -30,7 +30,6 @@ class ChangeStatusToEnableEmployee extends RoleAdmin
      */
     public function handle(ChangeStatusToEnableEmployeeCommand $enableEmployeeCommand): array
     {
-        $this->checkToken();
         $employee = $this->searchEmployeeByNif->execute(
             $enableEmployeeCommand->nif()
         );

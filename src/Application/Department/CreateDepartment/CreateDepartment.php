@@ -31,7 +31,6 @@ class CreateDepartment extends RoleAdmin
      */
     public function handle(CreateDepartmentCommand $createDepartmentCommand): array
     {
-        $this->checkToken();
         $this->checkNotExistNameDepartment->execute(
             $createDepartmentCommand->name()
         );

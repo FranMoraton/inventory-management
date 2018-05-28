@@ -28,9 +28,8 @@ class ShowDataEmployee extends RoleEmployee
      */
     public function handle()
     {
-        $dataToken = $this->checkToken();
         $employee = $this->searchEmployeeByNif->execute(
-            $dataToken->nif
+            $this->dataToken()->nif
         );
 
         return [

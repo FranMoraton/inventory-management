@@ -24,7 +24,6 @@ class ShowByFirstResultEmployees extends RoleAdmin
 
     public function handle(ShowByFirstResultEmployeesCommand $showEmployeesCommand): array
     {
-        $this->checkToken();
         $listEmployees = $this->employeeRepository->showByFirstResultFilterEmployees(
             $showEmployeesCommand->firstResultPosition(),
             $showEmployeesCommand->name(),

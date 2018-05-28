@@ -39,13 +39,12 @@ class UpdateBasicFieldsEmployee extends RoleEmployee
      */
     public function handle(UpdateBasicFieldsEmployeeCommand $updateBasicFieldsEmployeeCommand): array
     {
-        $dataToken = $this->checkToken();
         $this->checkNotExistTelephoneEmployee->execute(
             $updateBasicFieldsEmployeeCommand->telephone(),
-            $dataToken->nif
+            $this->dataToken()->nif
         );
         $employee = $this->searchEmployeeByNif->execute(
-            $dataToken->nif
+            $this->dataToken()->nif
         );
         $passwordHash = $this->encryptPassword->execute(
             $updateBasicFieldsEmployeeCommand->password()

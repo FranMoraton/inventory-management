@@ -37,7 +37,7 @@ services:
             - { name: kernel.event_listener, event: kernel.controller, method: onKernelController }
 
     # token utility class
-    Inventory\Management\Infrastructure\Util\JwtToken\JwtTokenUtil:
+    Inventory\Management\Infrastructure\JwtToken\JwtTokenClass:
         arguments:
             - '@Symfony\Component\HttpFoundation\RequestStack'
 

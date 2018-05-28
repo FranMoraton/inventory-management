@@ -42,10 +42,10 @@ class UpdateFieldsEmployeeStatus extends RoleAdmin
      * @throws \Inventory\Management\Domain\Model\Entity\Department\NotFoundDepartmentsException
      * @throws \Inventory\Management\Domain\Model\Entity\Department\NotFoundSubDepartmentsException
      * @throws \Inventory\Management\Domain\Model\Entity\Employee\NotFoundEmployeesException
+     * @throws \Inventory\Management\Domain\Model\File\ImageCanNotUploadException
      */
     public function handle(UpdateFieldsEmployeeStatusCommand $updateFieldsEmployeeStatusCommand): array
     {
-        $this->checkToken();
         $department = $this->searchDepartmentById->execute(
             $updateFieldsEmployeeStatusCommand->department()
         );

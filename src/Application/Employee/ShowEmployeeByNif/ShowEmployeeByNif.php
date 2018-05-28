@@ -29,7 +29,6 @@ class ShowEmployeeByNif extends RoleAdmin
      */
     public function handle(ShowEmployeeByNifCommand $showEmployeeByNifCommand)
     {
-        $this->checkToken();
         $employee = $this->searchEmployeeByNif->execute(
             $showEmployeeByNifCommand->nif()
         );

@@ -30,7 +30,6 @@ class UpdateNameSubDepartment extends RoleAdmin
      */
     public function handle(UpdateNameSubDepartmentCommand $updateNameSubDepartmentCommand)
     {
-        $this->checkToken();
         $subDepartment = $this->searchSubDepartmentById->execute(
             $updateNameSubDepartmentCommand->subDepartment()
         );

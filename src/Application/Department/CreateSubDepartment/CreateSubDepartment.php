@@ -36,7 +36,6 @@ class CreateSubDepartment extends RoleAdmin
      */
     public function handle(CreateSubDepartmentCommand $createSubDepartmentCommand): array
     {
-        $this->checkToken();
         $this->checkNotExistNameSubDepartment->execute(
             $createSubDepartmentCommand->name()
         );

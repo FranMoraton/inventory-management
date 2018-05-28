@@ -24,7 +24,6 @@ class ShowDepartments extends RoleAdmin
 
     public function handle(): array
     {
-        $this->checkToken();
         $listDepartments = $this->departmentRepository->showAllDepartments();
 
         return [

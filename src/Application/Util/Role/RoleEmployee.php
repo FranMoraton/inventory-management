@@ -7,16 +7,18 @@ use Inventory\Management\Domain\Service\JwtToken\CheckToken;
 
 class RoleEmployee
 {
-    private $checkToken;
+    private $dataToken;
 
     public function __construct(CheckToken $checkToken)
     {
-        $this->checkToken = $checkToken;
+        $this->dataToken = $checkToken->execute(
+            $this->role()
+        );
     }
 
-    public function checkToken()
+    public function dataToken()
     {
-        return $this->checkToken->execute($this->role());
+        return $this->dataToken;
     }
 
     private function role(): string

@@ -10,6 +10,6 @@ admin_employee:
     resource: ./routes/admin/employee/employee.yaml
     prefix: /admin/employee
 
-user_employee:
-    resource: ./routes/user/employee/employee.yaml
+employee_employee:
+    resource: ./routes/employee/employee.yaml
     prefix: /employee

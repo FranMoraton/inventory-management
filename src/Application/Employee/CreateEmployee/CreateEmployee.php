@@ -53,7 +53,6 @@ class CreateEmployee extends RoleAdmin
      */
     public function handle(CreateEmployeeCommand $createEmployeeCommand): array
     {
-        $this->checkToken();
         $this->checkNotExistsUniqueFields->execute(
             $createEmployeeCommand->nif(),
             $createEmployeeCommand->inSsNumber(),
