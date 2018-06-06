@@ -6,7 +6,6 @@ use Inventory\Management\Application\RequestEmployee\ChangeStatusToSendRequest\C
 use Inventory\Management\Application\RequestEmployee\ChangeStatusToSendRequest\ChangeStatusToSendRequestTransform;
 use Inventory\Management\Domain\Model\Entity\RequestEmployee\RequestEmployeeRepository;
 use Inventory\Management\Domain\Service\RequestEmployee\CheckRequestIsFromEmployee;
-use Inventory\Management\Domain\Service\RequestEmployee\SearchRequestEmployeeById;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
@@ -29,7 +28,6 @@ class ChangeStatusToSendRequestTest extends TestCase
         $this->handler = new ChangeStatusToSendRequest(
             $this->requestEmployeeRepository,
             new ChangeStatusToSendRequestTransform(),
-            new SearchRequestEmployeeById($this->requestEmployeeRepository),
             new CheckRequestIsFromEmployee($this->requestEmployeeRepository)
         );
     }
